@@ -1,0 +1,29 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+plan.txt
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Real variable files stay local unless they contain identifiers only.
+# Commit terraform.tfvars for Day 1 / Day 2 deliberately (no secrets!).
+code/day-0-bootstrap-oidc/terraform.tfvars
+*.auto.tfvars.json
+backend.hcl
+
+# ALZ provider library cache
+.alzlib
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store

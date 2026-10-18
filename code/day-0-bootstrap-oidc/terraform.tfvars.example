@@ -1,0 +1,26 @@
+# Day 0 - Bootstrap example values.
+# Copy to terraform.tfvars and replace every value. GUIDs below are documentation placeholders.
+
+tenant_id                       = "00000000-0000-0000-0000-000000000000"
+bootstrap_subscription_id       = "11111111-1111-1111-1111-111111111111" # Management subscription
+root_parent_management_group_id = "00000000-0000-0000-0000-000000000000" # Tenant Root Group = tenant ID
+
+location    = "westeurope"
+name_prefix = "nbn"
+
+github_organization      = "nubenetes"
+github_repository        = "azure-landing-zones-2026-masterclass"
+github_default_branch    = "main"
+github_apply_environment = "production"
+
+# Lock the Key Vault firewall to the operators' egress IPs while running Day 0.
+operator_ip_cidrs = ["203.0.113.10/32"]
+
+# Keep true for GitHub-hosted runners; set false with self-hosted/private runners + Private Endpoint.
+state_storage_public_network_access_enabled = true
+
+key_rotation_period = "P180D"
+
+additional_state_readers = {
+  # "grp-cloud-audit" = "22222222-2222-2222-2222-222222222222"
+}

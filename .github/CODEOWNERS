@@ -1,0 +1,20 @@
+# Separation of duties (CAF): the platform team owns guardrails and shared
+# platform subscriptions; workload teams request landing zones via PR.
+# Generated with Claude Opus 5.5 - untested reference. Replace team slugs.
+
+*                                                     @nubenetes/platform-team
+
+# Identity trust anchors: security + platform approval required
+/code/day-0-bootstrap-oidc/                           @nubenetes/platform-team @nubenetes/security-team
+
+# Platform landing zone & ALZ custom library (policy changes)
+/code/day-1-platform-landing-zone/                    @nubenetes/platform-team
+/code/day-1-platform-landing-zone/lib/                @nubenetes/platform-team @nubenetes/security-team
+
+# Vending: platform owns the code; the order form also needs FinOps review
+/code/day-2-workload-vending-operations/              @nubenetes/platform-team
+/code/day-2-workload-vending-operations/terraform.tfvars @nubenetes/platform-team @nubenetes/finops
+/code/day-2-workload-vending-operations/policies/     @nubenetes/platform-team @nubenetes/security-team
+
+# Pipelines are part of the trust boundary
+/.github/                                             @nubenetes/platform-team @nubenetes/security-team

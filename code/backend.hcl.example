@@ -1,0 +1,6 @@
+# Shared partial backend configuration for Day 1 and Day 2 (local runs).
+# Copy to code/backend.hcl (git-ignored) and fill in the Day 0 outputs.
+# CI passes the same values through -backend-config flags instead.
+resource_group_name  = "rg-nbn-iac-state-westeurope"
+storage_account_name = "stnbntfstatea1b2c3"
+use_azuread_auth     = true

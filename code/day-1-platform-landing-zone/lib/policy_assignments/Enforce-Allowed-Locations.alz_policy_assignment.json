@@ -1,0 +1,28 @@
+{
+  "type": "Microsoft.Authorization/policyAssignments",
+  "apiVersion": "2024-04-01",
+  "name": "Enforce-Allowed-Locations",
+  "location": "${default_location}",
+  "dependsOn": [],
+  "identity": {
+    "type": "None"
+  },
+  "properties": {
+    "description": "Restricts the Azure regions in which resources can be deployed to the organisation's approved data-residency list. Global resources are exempt by the built-in definition.",
+    "displayName": "Allowed locations for resources",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
+    "enforcementMode": "Default",
+    "nonComplianceMessages": [
+      {
+        "message": "Resources {enforcementMode} be deployed only to approved Azure regions."
+      }
+    ],
+    "parameters": {
+      "listOfAllowedLocations": {
+        "value": []
+      }
+    },
+    "scope": "/providers/Microsoft.Management/managementGroups/placeholder",
+    "notScopes": []
+  }
+}

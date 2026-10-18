@@ -1,0 +1,97 @@
+# Management group hierarchy - CAF / ALZ reference architecture (2026)
+# Generated with Claude Opus 5.5 - untested architectural reference.
+#
+#   <Tenant Root Group>
+#   └── alz                      Intermediate root (org-wide guardrails)
+#       ├── platform             Platform landing zone (owned by the platform team)
+#       │   ├── identity         AD DS / Entra Domain Services / identity infra
+#       │   ├── management       Log Analytics, AMA DCRs, Automation, Monitoring
+#       │   ├── connectivity     Hubs / Virtual WAN, Firewall, DNS, DDoS, gateways
+#       │   └── security         SOC tooling (Sentinel, Defender exports) - 2026 ALZ addition
+#       ├── landingzones         Workload Landing Zones (CAF "application landing zones")
+#       │   ├── corp             Private, hub-connected workloads (no public endpoints)
+#       │   └── online           Internet-facing workloads
+#       ├── sandbox              Isolated experimentation, no hybrid connectivity
+#       └── decommissioned       Subscriptions pending cancellation
+#
+# IDs are deliberately short and flat. To adopt an existing (brownfield)
+# hierarchy, change each `id` to the existing management group name - see
+# docs/01 "Brownfield adoption".
+name: alz_2026_masterclass
+management_groups:
+  - id: alz
+    display_name: Azure Landing Zones
+    archetypes:
+      - root_masterclass
+    exists: false
+    parent_id: null
+
+  - id: platform
+    display_name: Platform
+    archetypes:
+      - platform
+    exists: false
+    parent_id: alz
+
+  - id: identity
+    display_name: Identity
+    archetypes:
+      - identity
+    exists: false
+    parent_id: platform
+
+  - id: management
+    display_name: Management
+    archetypes:
+      - management
+    exists: false
+    parent_id: platform
+
+  - id: connectivity
+    display_name: Connectivity
+    archetypes:
+      - connectivity
+    exists: false
+    parent_id: platform
+
+  - id: security
+    display_name: Security
+    archetypes:
+      - security
+    exists: false
+    parent_id: platform
+
+  - id: landingzones
+    display_name: Workload Landing Zones
+    archetypes:
+      - landing_zones_masterclass
+    exists: false
+    parent_id: alz
+
+  - id: corp
+    display_name: Corp
+    archetypes:
+      - corp_masterclass
+    exists: false
+    parent_id: landingzones
+
+  - id: online
+    display_name: Online
+    archetypes:
+      - online
+    exists: false
+    parent_id: landingzones
+
+  - id: sandbox
+    display_name: Sandbox
+    archetypes:
+      - sandbox
+    exists: false
+    parent_id: alz
+
+  - id: decommissioned
+    display_name: Decommissioned
+    archetypes:
+      - decommissioned
+    exists: false
+    parent_id: alz

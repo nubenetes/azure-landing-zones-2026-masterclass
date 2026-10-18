@@ -1,0 +1,137 @@
+{
+  "name": "Deploy-MDFC-Storage-V2",
+  "properties": {
+    "displayName": "Deploy Microsoft Defender for Storage (plan V2, on-upload malware scanning) on workload subscriptions",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "DeployIfNotExists at subscription scope: enables the Defender for Storage V2 plan with on-upload malware scanning and a per-landing-zone monthly scanning cap. Generated with Claude Opus 5.5 - untested reference. NOTE: the ALZ 'Deploy-MDFC-Config' initiative also enables Defender for Storage at the intermediate root; keep the malware-scanning parameters identical in both places (or disable one) to avoid configuration ping-pong.",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Security Center",
+      "source": "nubenetes/azure-landing-zones-2026-masterclass"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "DeployIfNotExists remediates, AuditIfNotExists only reports, Disabled turns the policy off."
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "AuditIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      },
+      "malwareScanningCapGBPerMonth": {
+        "type": "Integer",
+        "metadata": {
+          "displayName": "Malware scanning cap (GB / month / storage account)",
+          "description": "Upper bound for on-upload malware scanning volume per storage account. -1 means unlimited."
+        },
+        "defaultValue": 5000
+      },
+      "sensitiveDataDiscoveryEnabled": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Sensitive data threat detection",
+          "description": "Enable the SensitiveDataDiscovery extension."
+        },
+        "allowedValues": [
+          "True",
+          "False"
+        ],
+        "defaultValue": "True"
+      },
+      "deploymentLocation": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Deployment location",
+          "description": "Location of the subscription-scope remediation deployment (metadata only).",
+          "strongType": "location"
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "equals": "Microsoft.Resources/subscriptions"
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "type": "Microsoft.Security/pricings",
+          "name": "StorageAccounts",
+          "deploymentScope": "subscription",
+          "existenceScope": "subscription",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+          ],
+          "existenceCondition": {
+            "allOf": [
+              {
+                "field": "Microsoft.Security/pricings/pricingTier",
+                "equals": "Standard"
+              },
+              {
+                "field": "Microsoft.Security/pricings/subPlan",
+                "equals": "DefenderForStorageV2"
+              }
+            ]
+          },
+          "deployment": {
+            "location": "[parameters('deploymentLocation')]",
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "capGBPerMonth": {
+                    "type": "int"
+                  },
+                  "sensitiveDataDiscoveryEnabled": {
+                    "type": "string"
+                  }
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.Security/pricings",
+                    "apiVersion": "2024-01-01",
+                    "name": "StorageAccounts",
+                    "properties": {
+                      "pricingTier": "Standard",
+                      "subPlan": "DefenderForStorageV2",
+                      "extensions": [
+                        {
+                          "name": "OnUploadMalwareScanning",
+                          "isEnabled": "True",
+                          "additionalExtensionProperties": {
+                            "CapGBPerMonthPerStorageAccount": "[string(parameters('capGBPerMonth'))]"
+                          }
+                        },
+                        {
+                          "name": "SensitiveDataDiscovery",
+                          "isEnabled": "[parameters('sensitiveDataDiscoveryEnabled')]"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "capGBPerMonth": {
+                  "value": "[parameters('malwareScanningCapGBPerMonth')]"
+                },
+                "sensitiveDataDiscoveryEnabled": {
+                  "value": "[parameters('sensitiveDataDiscoveryEnabled')]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

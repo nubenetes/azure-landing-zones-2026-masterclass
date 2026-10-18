@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/Azure-Landing-Zones-Library/main/schemas/default_policy_values.json",
+  "defaults": [
+    {
+      "default_name": "allowed_locations",
+      "description": "Azure regions in which resources and resource groups may be created (data residency).",
+      "policy_assignments": [
+        {
+          "policy_assignment_name": "Enforce-Allowed-Locations",
+          "parameter_names": [
+            "listOfAllowedLocations"
+          ]
+        },
+        {
+          "policy_assignment_name": "Enforce-Allowed-Loc-RG",
+          "parameter_names": [
+            "listOfAllowedLocations"
+          ]
+        }
+      ]
+    }
+  ]
+}

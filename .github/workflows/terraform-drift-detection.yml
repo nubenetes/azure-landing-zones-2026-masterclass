@@ -1,0 +1,97 @@
+# -----------------------------------------------------------------------------
+# Scheduled drift detection (Day 2 operations).
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox repository/tenant first.
+#
+# Runs read-only plans against main. Any diff between code and Azure
+# (portal "click-ops", out-of-band policy changes, provider schema drift)
+# opens or updates a GitHub issue per stack. Remediation is always a PR:
+# either codify the change or let the next apply revert it.
+# -----------------------------------------------------------------------------
+name: terraform-drift-detection
+
+on:
+  schedule:
+    - cron: "17 5 * * 1-5" # weekdays 05:17 UTC (off the top of the hour)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alz-drift-detection
+  cancel-in-progress: true
+
+jobs:
+  platform:
+    name: drift - day-1 platform
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/_reusable-terraform-stack.yml
+    with:
+      stack_path: code/day-1-platform-landing-zone
+      state_container: tfstate-platform
+      state_key: day-1-platform-landing-zone.tfstate
+
+  workloads:
+    name: drift - day-2 workloads
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/_reusable-terraform-stack.yml
+    with:
+      stack_path: code/day-2-workload-vending-operations
+      state_container: tfstate-workloads
+      state_key: day-2-workload-vending-operations.tfstate
+
+  report:
+    name: open / update drift issues
+    needs: [platform, workloads]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Upsert drift issues
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PLATFORM_CHANGES: ${{ needs.platform.outputs.has_changes }}
+          PLATFORM_SUMMARY: ${{ needs.platform.outputs.plan_summary }}
+          PLATFORM_RESULT: ${{ needs.platform.result }}
+          WORKLOADS_CHANGES: ${{ needs.workloads.outputs.has_changes }}
+          WORKLOADS_SUMMARY: ${{ needs.workloads.outputs.plan_summary }}
+          WORKLOADS_RESULT: ${{ needs.workloads.result }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const stacks = [
+              { name: 'day-1-platform-landing-zone', changes: process.env.PLATFORM_CHANGES, summary: process.env.PLATFORM_SUMMARY, result: process.env.PLATFORM_RESULT },
+              { name: 'day-2-workload-vending-operations', changes: process.env.WORKLOADS_CHANGES, summary: process.env.WORKLOADS_SUMMARY, result: process.env.WORKLOADS_RESULT },
+            ];
+            for (const s of stacks) {
+              const title = `Drift detected: ${s.name}`;
+              const open = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: 'open', labels: 'drift' });
+              const existing = open.find(i => i.title === title);
+              const failed = s.result !== 'success';
+              const drifted = s.changes === 'true';
+              if (!drifted && !failed) {
+                if (existing) {
+                  await github.rest.issues.createComment({ owner, repo, issue_number: existing.number, body: `No drift on ${new Date().toISOString()} ([run](${runUrl})). Closing.` });
+                  await github.rest.issues.update({ owner, repo, issue_number: existing.number, state: 'closed' });
+                }
+                continue;
+              }
+              const body = failed
+                ? `The drift-detection plan **failed** (${s.result}). Investigate: ${runUrl}`
+                : `**${s.summary}**\n\nThe live Azure estate no longer matches \`main\`. Download the plan artifact from ${runUrl}, then either codify the change in a PR or let the next apply revert it.`;
+              if (existing) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: existing.number, body });
+              } else {
+                await github.rest.issues.create({ owner, repo, title, body, labels: ['drift'] });
+              }
+            }

@@ -1,0 +1,23 @@
+# Workload Landing Zones archetype = Microsoft "landing_zones" archetype.
+# Removing an assignment here is the RECOMMENDED way to opt out of a control
+# (it is reviewed as a library diff). `policy_assignments_to_modify` in HCL
+# is reserved for parameter/enforcement tweaks.
+base_archetype: landing_zones
+name: landing_zones_masterclass
+policy_assignments_to_add: []
+policy_assignments_to_remove: [
+  # Uncomment if a third-party monitoring agent replaces Azure Monitor Agent:
+  # Deploy-VM-Monitoring,
+  # Deploy-VMSS-Monitoring,
+  # Deploy-VM-ChangeTrack,
+  # Deploy-VMSS-ChangeTrack,
+  # Deploy-vmArc-ChangeTrack,
+  # Deploy-vmHybr-Monitoring,
+  # Deploy-MDFC-DefSQL-AMA,
+]
+policy_definitions_to_add: []
+policy_definitions_to_remove: []
+policy_set_definitions_to_add: []
+policy_set_definitions_to_remove: []
+role_definitions_to_add: []
+role_definitions_to_remove: []

@@ -1,0 +1,82 @@
+{
+  "name": "Deny-Subnet-Service-Endpoints",
+  "properties": {
+    "displayName": "Subnets must not use service endpoints outside the approved list (Private Endpoints are the default)",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "Service endpoints keep the PaaS public endpoint exposed and let a subnet reach ANY instance of the service (including instances in other tenants) unless Service Endpoint Policies are also applied - a data-exfiltration / shadow-IT path. This policy blocks service endpoints that are not explicitly approved, both on standalone subnet resources and on subnets declared inline in a virtual network. Generated with Claude Opus 5.5 - untested reference.",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Network",
+      "source": "nubenetes/azure-landing-zones-2026-masterclass"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Deny blocks, Audit reports, Disabled turns the policy off."
+        },
+        "allowedValues": [
+          "Deny",
+          "Audit",
+          "Disabled"
+        ],
+        "defaultValue": "Deny"
+      },
+      "allowedServiceEndpoints": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Approved service endpoints",
+          "description": "Service endpoint names that remain allowed, e.g. [\"Microsoft.Storage.Global\"] for a documented exception. Empty = none allowed."
+        },
+        "defaultValue": []
+      }
+    },
+    "policyRule": {
+      "if": {
+        "anyOf": [
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Network/virtualNetworks/subnets"
+              },
+              {
+                "count": {
+                  "field": "Microsoft.Network/virtualNetworks/subnets/serviceEndpoints[*]",
+                  "where": {
+                    "field": "Microsoft.Network/virtualNetworks/subnets/serviceEndpoints[*].service",
+                    "notIn": "[parameters('allowedServiceEndpoints')]"
+                  }
+                },
+                "greater": 0
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Network/virtualNetworks"
+              },
+              {
+                "count": {
+                  "field": "Microsoft.Network/virtualNetworks/subnets[*].serviceEndpoints[*]",
+                  "where": {
+                    "field": "Microsoft.Network/virtualNetworks/subnets[*].serviceEndpoints[*].service",
+                    "notIn": "[parameters('allowedServiceEndpoints')]"
+                  }
+                },
+                "greater": 0
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}

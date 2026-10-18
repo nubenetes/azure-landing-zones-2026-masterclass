@@ -1,0 +1,56 @@
+# -----------------------------------------------------------------------------
+# Main-branch deployment: plan -> human approval (environment) -> apply.
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox repository/tenant first.
+#
+# Order is deterministic: Day 1 (platform) must converge before Day 2
+# (vending) because Day 2 consumes Day 1 outputs through remote state.
+# A single concurrency group serialises all applies to the platform.
+# -----------------------------------------------------------------------------
+name: terraform-apply
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "code/day-1-platform-landing-zone/**"
+      - "code/day-2-workload-vending-operations/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alz-platform-apply
+  cancel-in-progress: false # never interrupt an in-flight apply
+
+jobs:
+  platform:
+    name: day-1 platform landing zone
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/_reusable-terraform-stack.yml
+    with:
+      stack_path: code/day-1-platform-landing-zone
+      state_container: tfstate-platform
+      state_key: day-1-platform-landing-zone.tfstate
+      apply: true
+      environment: production
+
+  workloads:
+    name: day-2 workload vending & operations
+    needs: platform
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/_reusable-terraform-stack.yml
+    with:
+      stack_path: code/day-2-workload-vending-operations
+      state_container: tfstate-workloads
+      state_key: day-2-workload-vending-operations.tfstate
+      apply: true
+      environment: production

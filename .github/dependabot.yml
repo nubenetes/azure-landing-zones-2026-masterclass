@@ -1,0 +1,20 @@
+# Keeps SHA-pinned GitHub Actions and Terraform providers/modules current.
+# Generated with Claude Opus 5.5 - untested reference.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: terraform
+    directories:
+      - /code/day-0-bootstrap-oidc
+      - /code/day-1-platform-landing-zone
+      - /code/day-2-workload-vending-operations
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10

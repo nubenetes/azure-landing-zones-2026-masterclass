@@ -1,0 +1,17 @@
+# Corp archetype = Microsoft "corp" archetype.
+# Corp is the home of private, hub-connected workloads. It keeps:
+#   * Deny-Public-Endpoints      (PaaS public network access denied)
+#   * Deploy-Private-DNS-Zones   (DINE: Private Endpoint A-records land in the
+#                                 central Private DNS zones in Connectivity)
+#   * Audit-PeDnsZones           (flags rogue Private DNS zones in spokes)
+# This is the policy backbone of the "Private Endpoints by default" decision (docs/04).
+base_archetype: corp
+name: corp_masterclass
+policy_assignments_to_add: []
+policy_assignments_to_remove: []
+policy_definitions_to_add: []
+policy_definitions_to_remove: []
+policy_set_definitions_to_add: []
+policy_set_definitions_to_remove: []
+role_definitions_to_add: []
+role_definitions_to_remove: []

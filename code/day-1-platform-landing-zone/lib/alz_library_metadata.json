@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/Azure-Landing-Zones-Library/main/schemas/library_metadata.json",
+  "name": "nubenetes_masterclass",
+  "display_name": "Nubenetes ALZ 2026 Masterclass - custom library",
+  "description": "Custom ALZ library (generated with Claude Opus 5.5, untested reference). Overrides the Microsoft ALZ Library: renames the landing zones tier to 'Workload Landing Zones', adds a data-residency assignment and documents archetype customisation. Bump the dependency ref deliberately via pull request.",
+  "dependencies": [
+    {
+      "path": "platform/alz",
+      "ref": "2026.10.0"
+    }
+  ]
+}
