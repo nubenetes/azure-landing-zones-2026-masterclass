@@ -18,3 +18,8 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    ignore:
+      # The ALZ Azure Verified Modules require AzureRM ~> 4.x; v5 is not
+      # supported yet (docs/02). Remove once the ALZ module index allows v5.
+      - dependency-name: "hashicorp/azurerm"
+        update-types: ["version-update:semver-major"]
