@@ -4,15 +4,33 @@
 
 > **Disclaimer**: This repository serves purely as an advanced theoretical and architectural reference framework incorporating the latest 2026 Microsoft Azure Landing Zone best practices. The code, Terraform manifests, and pipeline configurations provided herein **have not been physically deployed, executed, or tested in a live production environment**. Users should thoroughly validate, plan, and test all code in a sandbox environment prior to enterprise implementation.
 
-![Terraform](https://img.shields.io/badge/Terraform-~%3E%201.12-7B42BC?logo=terraform)
-![AzureRM](https://img.shields.io/badge/azurerm-~%3E%204.x-0078D4?logo=microsoftazure)
-![AzAPI](https://img.shields.io/badge/azapi-~%3E%202.x-0078D4?logo=microsoftazure)
-![ALZ provider](https://img.shields.io/badge/alz-~%3E%200.21-0078D4)
-![ALZ Library](https://img.shields.io/badge/ALZ%20Library-2026.10.0-005BA1)
-![AVM](https://img.shields.io/badge/Azure%20Verified%20Modules-pattern%20modules-005BA1)
-![CI](https://img.shields.io/badge/CI-GitHub%20Actions%20%2B%20OIDC-2088FF?logo=githubactions)
-![Status](https://img.shields.io/badge/status-untested%20reference-orange)
-![License](https://img.shields.io/badge/license-MIT-green)
+<table>
+  <tr><th align="left">Project</th><td><a href="https://www.anthropic.com/claude"><img alt="Generated with Claude Opus 5.5" src="https://img.shields.io/badge/Generated%20with-Claude%20Opus%205.5-D97757?style=flat-square&logo=claude&logoColor=white"></a>
+    <a href="#static-checks-performed-at-generation-time"><img alt="Status: untested reference" src="https://img.shields.io/badge/status-untested%20reference-orange?style=flat-square"></a>
+    <a href="#static-checks-performed-at-generation-time"><img alt="Static checks passing" src="https://img.shields.io/badge/static%20checks-validate%20%C2%B7%20tflint%20%C2%B7%20actionlint%20%C2%B7%20mermaid-2EA44F?style=flat-square"></a>
+    <a href="https://github.com/nubenetes/azure-landing-zones-2026-masterclass/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/nubenetes/azure-landing-zones-2026-masterclass?style=flat-square"></a>
+    <a href="https://github.com/nubenetes/azure-landing-zones-2026-masterclass/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/nubenetes/azure-landing-zones-2026-masterclass?style=flat-square&logo=github"></a>
+    <a href="https://github.com/nubenetes/azure-landing-zones-2026-masterclass/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/nubenetes/azure-landing-zones-2026-masterclass?style=flat-square&logo=github"></a></td></tr>
+  <tr><th align="left">IaC stack</th><td><a href="https://developer.hashicorp.com/terraform"><img alt="Terraform" src="https://img.shields.io/badge/Terraform-~%3E%201.12-844FBA?style=flat-square&logo=terraform&logoColor=white"></a>
+    <a href="https://opentofu.org"><img alt="OpenTofu validated" src="https://img.shields.io/badge/OpenTofu-validated%201.13-FFDA18?style=flat-square&logo=opentofu&logoColor=white"></a>
+    <a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest"><img alt="azurerm" src="https://img.shields.io/badge/azurerm-~%3E%204.x%20(not%20v5)-0078D4?style=flat-square&logo=terraform&logoColor=white"></a>
+    <a href="https://registry.terraform.io/providers/Azure/azapi/latest"><img alt="azapi" src="https://img.shields.io/badge/azapi-~%3E%202.12-0078D4?style=flat-square&logo=terraform&logoColor=white"></a>
+    <a href="https://registry.terraform.io/providers/Azure/alz/latest"><img alt="alz provider" src="https://img.shields.io/badge/alz%20provider-~%3E%200.21-0078D4?style=flat-square&logo=terraform&logoColor=white"></a>
+    <a href="https://registry.terraform.io/providers/hashicorp/azuread/latest"><img alt="azuread" src="https://img.shields.io/badge/azuread-~%3E%203.10-0078D4?style=flat-square&logo=terraform&logoColor=white"></a>
+    <a href="https://github.com/Azure/Azure-Landing-Zones-Library/tree/platform/alz/2026.10.0"><img alt="ALZ Library" src="https://img.shields.io/badge/ALZ%20Library-2026.10.0-005BA1?style=flat-square&logo=github&logoColor=white"></a>
+    <a href="https://aka.ms/avm"><img alt="Azure Verified Modules" src="https://img.shields.io/badge/Azure%20Verified%20Modules-pattern%20modules-005BA1?style=flat-square"></a></td></tr>
+  <tr><th align="left">Architecture</th><td><a href="docs/01-architecture-conceptual.md"><img alt="CAF Azure Landing Zones" src="https://img.shields.io/badge/Microsoft%20CAF-Azure%20Landing%20Zones-0078D4?style=flat-square"></a>
+    <a href="docs/03-networking-hubspoke-vs-vwan.md"><img alt="topology" src="https://img.shields.io/badge/topology-hub--and--spoke%20%7C%20vWAN-0063B1?style=flat-square"></a>
+    <a href="docs/04-security-private-vs-service.md"><img alt="PaaS access" src="https://img.shields.io/badge/PaaS%20access-Private%20Endpoints%20by%20default-0063B1?style=flat-square"></a>
+    <a href="docs/06-waf-simplicity-vs-security.md"><img alt="governance" src="https://img.shields.io/badge/governance-Policy--as--Code%20%C2%B7%20audit%20%E2%86%92%20enforce-5C2D91?style=flat-square"></a>
+    <a href="code/day-2-workload-vending-operations/README.md"><img alt="workloads" src="https://img.shields.io/badge/workloads-subscription%20vending-5C2D91?style=flat-square"></a>
+    <a href="docs/06-waf-simplicity-vs-security.md"><img alt="Well-Architected" src="https://img.shields.io/badge/Well--Architected-5%20pillars-0078D4?style=flat-square"></a></td></tr>
+  <tr><th align="left">Pipeline security</th><td><a href="docs/05-cicd-oidc-security.md"><img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-OIDC%20%C2%B7%20zero%20secrets-2088FF?style=flat-square&logo=githubactions&logoColor=white"></a>
+    <a href="docs/05-cicd-oidc-security.md"><img alt="apply" src="https://img.shields.io/badge/apply-environment--gated-2088FF?style=flat-square&logo=githubactions&logoColor=white"></a>
+    <a href="docs/05-cicd-oidc-security.md#31-the-abac-condition-on-the-apply-identity"><img alt="RBAC" src="https://img.shields.io/badge/RBAC-ABAC--conditioned%20Owner-D83B01?style=flat-square"></a>
+    <a href=".github/workflows"><img alt="actions" src="https://img.shields.io/badge/actions-pinned%20by%20SHA-24292F?style=flat-square&logo=github&logoColor=white"></a>
+    <a href=".github/dependabot.yml"><img alt="Dependabot" src="https://img.shields.io/badge/Dependabot-enabled-025E8C?style=flat-square&logo=dependabot&logoColor=white"></a></td></tr>
+</table>
 
 A complete, opinionated reference for deploying an **Azure Landing Zone** the way Microsoft's Cloud Adoption Framework (CAF) recommends it in late 2026: composed from **Azure Verified Modules (AVM)**, governed by the **ALZ Library** through the `alz` provider, delivered by **zero-secret GitHub Actions pipelines** (Workload Identity Federation / OIDC), and operated with **subscription vending** and a phased **Policy-as-Code** lifecycle.
 
