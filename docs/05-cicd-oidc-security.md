@@ -40,7 +40,7 @@ Both are supported by the official ALZ accelerator and both can run this reposit
 | Best fit | Code-centric platform teams, open-source style collaboration, GitHub-hosted repos | Enterprises standardised on Azure Boards/Repos, heavy template-based compliance |
 
 > [!NOTE]
-> This repository ships GitHub Actions workflows because it is hosted on GitHub. For Azure DevOps, keep the same structure: plan stage with a read-only WIF service connection, deploy stage bound to an environment with approvals and an exclusive lock, and `ARM_USE_OIDC=true` + `ARM_OIDC_AZURE_SERVICE_CONNECTION_ID` for the providers.
+> The repository ships **both**: GitHub Actions workflows in [`.github/workflows`](../.github/workflows) and Azure DevOps YAML pipelines in [`pipelines/azure-devops`](../pipelines/azure-devops) (bootstrapped by [`code/day-0-cicd-azure-devops`](../code/day-0-cicd-azure-devops)). HCP Terraform / Terraform Enterprise workspaces and Terraform Stacks are covered in [docs/07](07-delivery-platforms.md), which also contains the full identity matrix for every platform.
 
 ---
 
@@ -60,6 +60,8 @@ sequenceDiagram
     Entra-->>GH: access token (short-lived)
     GH->>ARM: terraform apply with bearer token
 ```
+
+GitHub Actions view below; the equivalent subjects for Azure DevOps, HCP Terraform / TFE workspaces and Terraform Stacks are listed in [docs/07](07-delivery-platforms.md#federated-identity-credentials-entra-id-trusts-exactly-these-subjects).
 
 | Identity | Federated subjects (exact match) | Azure RBAC | State access |
 |---|---|---|---|

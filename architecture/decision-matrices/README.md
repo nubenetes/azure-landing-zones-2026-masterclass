@@ -11,5 +11,6 @@ Each record follows the same structure: **context -> options -> weighted scoring
 | [ADR-003](ADR-003-paas-network-access.md) | Private Endpoints by default; Service Endpoints only as approved exceptions | Accepted |
 | [ADR-004](ADR-004-cicd-platform.md) | GitHub Actions with OIDC, split identities, environment-gated apply | Accepted |
 | [ADR-005](ADR-005-policy-rollout.md) | Phased policy rollout: audit -> remediate -> enforce | Accepted |
+| [ADR-006](ADR-006-delivery-platform.md) | Platform-neutral code: GitHub Actions, Azure DevOps, HCP Terraform / TFE workspaces or Terraform Stacks | Accepted |
 
 The narrative comparisons live in [`docs/`](../../docs/); these records capture *why* the repository chose what it chose.

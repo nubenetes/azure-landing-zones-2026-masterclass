@@ -62,8 +62,8 @@ stateDiagram-v2
 
 | Stack | Variable | Mechanism |
 |---|---|---|
-| Day 1 (ALZ Library assignments) | `policy_enforcement_phase` | Toggles `enforcement_mode` on a curated list of Deny and DINE assignments through `policy_assignments_to_modify` ([`locals.tf`](../code/day-1-platform-landing-zone/locals.tf)) |
-| Day 2 (custom guardrails initiative) | `policy_enforcement_phase` | Switches initiative effect parameters and creates `azurerm_management_group_policy_remediation` resources ([`policies.tf`](../code/day-2-workload-vending-operations/policies.tf)) |
+| Day 1 (ALZ Library assignments) | `policy_enforcement_phase` | Toggles `enforcement_mode` on a curated list of Deny and DINE assignments through `policy_assignments_to_modify` ([`locals.tf`](../code/modules/platform-landing-zone/locals.tf)) |
+| Day 2 (custom guardrails initiative) | `policy_enforcement_phase` | Switches initiative effect parameters and creates `azurerm_management_group_policy_remediation` resources ([`policies.tf`](../code/modules/workload-vending/policies.tf)) |
 
 > [!NOTE]
 > Two different mechanisms are used on purpose. `enforcementMode = DoNotEnforce` is the only lever for ALZ Library assignments whose effect parameters differ per policy. For the custom initiative, explicit effect parameters make the phase visible in the compliance blade ("Audit" vs "Deny"), which auditors prefer.

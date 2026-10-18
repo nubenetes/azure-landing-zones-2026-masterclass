@@ -1,0 +1,158 @@
+# -----------------------------------------------------------------------------
+# Stage template: plan (and optionally apply) ONE Terraform stack with
+# Workload Identity Federation service connections - no secrets.
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox organisation/tenant first.
+#
+# Identity model (mirrors the GitHub Actions workflows):
+#   Plan stage  -> planServiceConnection  (sc-alz-plan)  read-only, -lock=false
+#   Apply stage -> applyServiceConnection (sc-alz-apply) deployment job bound
+#                  to the protected environment; the service connection itself
+#                  carries a branch-control check (main only) and is authorised
+#                  for the apply pipeline only (code/azure-devops/bootstrap).
+# -----------------------------------------------------------------------------
+parameters:
+  - name: name
+    type: string
+  - name: stackPath
+    type: string
+  - name: stateContainer
+    type: string
+  - name: stateKey
+    type: string
+  - name: apply
+    type: boolean
+    default: false
+  - name: dependsOn
+    type: object
+    default: []
+  - name: condition
+    type: string
+    default: succeeded()
+  - name: environment
+    type: string
+    default: alz-production
+  - name: planServiceConnection
+    type: string
+    default: sc-alz-plan
+  - name: applyServiceConnection
+    type: string
+    default: sc-alz-apply
+  - name: terraformVersion
+    type: string
+    default: "1.16.6"
+
+stages:
+  - stage: Plan_${{ parameters.name }}
+    displayName: Plan ${{ parameters.stackPath }}
+    dependsOn: ${{ parameters.dependsOn }}
+    condition: ${{ parameters.condition }}
+    jobs:
+      - job: plan
+        displayName: terraform plan (read-only identity)
+        timeoutInMinutes: 60
+        steps:
+          - checkout: self
+            fetchDepth: 1
+          - template: install-terraform.yml
+            parameters:
+              version: ${{ parameters.terraformVersion }}
+          - task: AzureCLI@2
+            name: tf
+            displayName: init + plan
+            inputs:
+              azureSubscription: ${{ parameters.planServiceConnection }}
+              scriptType: bash
+              scriptLocation: inlineScript
+              workingDirectory: $(Build.SourcesDirectory)/${{ parameters.stackPath }}
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                terraform init -input=false \
+                  -backend-config="resource_group_name=$(TF_STATE_RESOURCE_GROUP)" \
+                  -backend-config="storage_account_name=$(TF_STATE_STORAGE_ACCOUNT)" \
+                  -backend-config="container_name=${{ parameters.stateContainer }}" \
+                  -backend-config="key=${{ parameters.stateKey }}" \
+                  -backend-config="use_azuread_auth=true"
+                set +e
+                terraform plan -input=false -lock=false -out=tfplan -detailed-exitcode
+                rc=$?
+                set -e
+                if [ "$rc" -eq 1 ]; then
+                  echo "##vso[task.logissue type=error]terraform plan failed"
+                  exit 1
+                fi
+                terraform show -no-color tfplan > plan.txt
+                summary=$(grep -E '^(Plan:|No changes\.)' plan.txt | tail -n 1 || true)
+                echo "##vso[task.setvariable variable=hasChanges;isOutput=true]$([ "$rc" -eq 2 ] && echo true || echo false)"
+                echo "##vso[task.setvariable variable=summary;isOutput=true]${summary:-unknown}"
+                printf '### %s\n\n**%s**\n' "${{ parameters.stackPath }}" "${summary:-unknown}" > summary.md
+                echo "##vso[task.uploadsummary]$(pwd)/summary.md"
+              addSpnToEnvironment: true
+            env:
+              ARM_USE_OIDC: "true"
+              ARM_USE_AZUREAD: "true"
+              ARM_TENANT_ID: $(AZURE_TENANT_ID)
+              ARM_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+              ARM_ADO_PIPELINE_SERVICE_CONNECTION_ID: $(PLAN_SERVICE_CONNECTION_ID)
+              ARM_OIDC_AZURE_SERVICE_CONNECTION_ID: $(PLAN_SERVICE_CONNECTION_ID)
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+              SYSTEM_OIDCREQUESTURI: $(System.OidcRequestUri)
+              TF_IN_AUTOMATION: "true"
+          - publish: $(Build.SourcesDirectory)/${{ parameters.stackPath }}/tfplan
+            artifact: tfplan-${{ parameters.name }}
+            displayName: Publish reviewed plan
+
+  - ${{ if eq(parameters.apply, true) }}:
+      - stage: Apply_${{ parameters.name }}
+        displayName: Apply ${{ parameters.stackPath }}
+        dependsOn: Plan_${{ parameters.name }}
+        condition: and(succeeded(), eq(dependencies.Plan_${{ parameters.name }}.outputs['plan.tf.hasChanges'], 'true'))
+        jobs:
+          - deployment: apply
+            displayName: terraform apply (environment-gated identity)
+            timeoutInMinutes: 120
+            # Approvals, exclusive lock and branch control are configured on
+            # the environment and on the apply service connection.
+            environment: ${{ parameters.environment }}
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - checkout: self
+                      fetchDepth: 1
+                    - download: current
+                      artifact: tfplan-${{ parameters.name }}
+                    - template: install-terraform.yml
+                      parameters:
+                        version: ${{ parameters.terraformVersion }}
+                    - task: AzureCLI@2
+                      displayName: init + apply saved plan
+                      inputs:
+                        azureSubscription: ${{ parameters.applyServiceConnection }}
+                        scriptType: bash
+                        scriptLocation: inlineScript
+                        workingDirectory: $(Build.SourcesDirectory)/${{ parameters.stackPath }}
+                        inlineScript: |
+                          set -euo pipefail
+                          export ARM_CLIENT_ID="$servicePrincipalId"
+                          cp "$(Pipeline.Workspace)/tfplan-${{ parameters.name }}/tfplan" ./tfplan
+                          terraform init -input=false \
+                            -backend-config="resource_group_name=$(TF_STATE_RESOURCE_GROUP)" \
+                            -backend-config="storage_account_name=$(TF_STATE_STORAGE_ACCOUNT)" \
+                            -backend-config="container_name=${{ parameters.stateContainer }}" \
+                            -backend-config="key=${{ parameters.stateKey }}" \
+                            -backend-config="use_azuread_auth=true"
+                          terraform apply -input=false tfplan
+                        addSpnToEnvironment: true
+                      env:
+                        ARM_USE_OIDC: "true"
+                        ARM_USE_AZUREAD: "true"
+                        ARM_TENANT_ID: $(AZURE_TENANT_ID)
+                        ARM_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+                        ARM_ADO_PIPELINE_SERVICE_CONNECTION_ID: $(APPLY_SERVICE_CONNECTION_ID)
+                        ARM_OIDC_AZURE_SERVICE_CONNECTION_ID: $(APPLY_SERVICE_CONNECTION_ID)
+                        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+                        SYSTEM_OIDCREQUESTURI: $(System.OidcRequestUri)
+                        TF_IN_AUTOMATION: "true"

@@ -1,0 +1,87 @@
+# CANARY management group hierarchy - identical tree and archetypes, but every
+# ID carries the "canary-" prefix so it can coexist with production in the
+# same tenant. Used by the "canary" Terraform Stacks deployment (and by any
+# delivery platform with management_group_id_prefix = "canary-").
+# CAF recommends validating platform/policy changes in such a canary
+# hierarchy before promoting them to production.
+# Generated with Claude Opus 5.5 - untested architectural reference.
+#
+# KEEP IN SYNC with alz_2026_masterclass.alz_architecture_definition.yaml.
+name: alz_2026_masterclass_canary
+management_groups:
+  - id: canary-alz
+    display_name: Canary - Azure Landing Zones
+    archetypes:
+      - root_masterclass
+    exists: false
+    parent_id: null
+
+  - id: canary-platform
+    display_name: Canary - Platform
+    archetypes:
+      - platform
+    exists: false
+    parent_id: canary-alz
+
+  - id: canary-identity
+    display_name: Canary - Identity
+    archetypes:
+      - identity
+    exists: false
+    parent_id: canary-platform
+
+  - id: canary-management
+    display_name: Canary - Management
+    archetypes:
+      - management
+    exists: false
+    parent_id: canary-platform
+
+  - id: canary-connectivity
+    display_name: Canary - Connectivity
+    archetypes:
+      - connectivity
+    exists: false
+    parent_id: canary-platform
+
+  - id: canary-security
+    display_name: Canary - Security
+    archetypes:
+      - security
+    exists: false
+    parent_id: canary-platform
+
+  - id: canary-landingzones
+    display_name: Canary - Workload Landing Zones
+    archetypes:
+      - landing_zones_masterclass
+    exists: false
+    parent_id: canary-alz
+
+  - id: canary-corp
+    display_name: Canary - Corp
+    archetypes:
+      - corp_masterclass
+    exists: false
+    parent_id: canary-landingzones
+
+  - id: canary-online
+    display_name: Canary - Online
+    archetypes:
+      - online
+    exists: false
+    parent_id: canary-landingzones
+
+  - id: canary-sandbox
+    display_name: Canary - Sandbox
+    archetypes:
+      - sandbox
+    exists: false
+    parent_id: canary-alz
+
+  - id: canary-decommissioned
+    display_name: Canary - Decommissioned
+    archetypes:
+      - decommissioned
+    exists: false
+    parent_id: canary-alz

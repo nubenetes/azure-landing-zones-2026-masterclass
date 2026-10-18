@@ -25,7 +25,10 @@
     <a href="docs/06-waf-simplicity-vs-security.md"><img alt="governance" src="https://img.shields.io/badge/governance-Policy--as--Code%20%C2%B7%20audit%20%E2%86%92%20enforce-5C2D91?style=flat-square"></a>
     <a href="code/day-2-workload-vending-operations/README.md"><img alt="workloads" src="https://img.shields.io/badge/workloads-subscription%20vending-5C2D91?style=flat-square"></a>
     <a href="docs/06-waf-simplicity-vs-security.md"><img alt="Well-Architected" src="https://img.shields.io/badge/Well--Architected-5%20pillars-0078D4?style=flat-square"></a></td></tr>
-  <tr><th align="left">Pipeline security</th><td><a href="docs/05-cicd-oidc-security.md"><img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-OIDC%20%C2%B7%20zero%20secrets-2088FF?style=flat-square&logo=githubactions&logoColor=white"></a>
+  <tr><th align="left">Delivery &amp; security</th><td><a href="docs/05-cicd-oidc-security.md"><img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-OIDC%20%C2%B7%20zero%20secrets-2088FF?style=flat-square&logo=githubactions&logoColor=white"></a>
+    <a href="pipelines/azure-devops/README.md"><img alt="Azure DevOps" src="https://img.shields.io/badge/Azure%20DevOps-WIF%20service%20connections-0078D7?style=flat-square"></a>
+    <a href="code/day-0-cicd-hcp-terraform/README.md"><img alt="HCP Terraform / TFE" src="https://img.shields.io/badge/HCP%20Terraform%20%7C%20TFE-dynamic%20credentials-844FBA?style=flat-square&logo=terraform&logoColor=white"></a>
+    <a href="code/hcp-terraform-stacks/alz/README.md"><img alt="Terraform Stacks" src="https://img.shields.io/badge/Terraform%20Stacks-canary%20%E2%86%92%20production-844FBA?style=flat-square&logo=terraform&logoColor=white"></a>
     <a href="docs/05-cicd-oidc-security.md"><img alt="apply" src="https://img.shields.io/badge/apply-environment--gated-2088FF?style=flat-square&logo=githubactions&logoColor=white"></a>
     <a href="docs/05-cicd-oidc-security.md#31-the-abac-condition-on-the-apply-identity"><img alt="RBAC" src="https://img.shields.io/badge/RBAC-ABAC--conditioned%20Owner-D83B01?style=flat-square"></a>
     <a href=".github/workflows"><img alt="actions" src="https://img.shields.io/badge/actions-pinned%20by%20SHA-24292F?style=flat-square&logo=github&logoColor=white"></a>
@@ -109,19 +112,27 @@ Detailed diagrams: [`architecture/diagrams/`](architecture/diagrams/README.md).
 ```text
 azure-landing-zones-2026-masterclass/
 ├── README.md                                   # This portal
-├── docs/                                       # Architecture guides & decision matrices
+├── docs/                                       # Architecture guides & decision matrices (01-07)
 ├── architecture/
 │   ├── diagrams/                               # Mermaid + ASCII diagrams
 │   └── decision-matrices/                      # ADR-style weighted decision records
 ├── code/
 │   ├── backend.hcl.example                     # Shared partial backend config (local runs)
-│   ├── day-0-bootstrap-oidc/                   # State storage (CMK), Entra apps, OIDC, RBAC
-│   ├── day-1-platform-landing-zone/            # AVM ALZ: MGs, policy, management, hub/vWAN
-│   │   └── lib/                                # Custom ALZ library (architecture, archetypes, assignments)
-│   └── day-2-workload-vending-operations/      # Subscription vending, DINE/Deny guardrails, DNS links
-│       └── policies/                           # Custom policy definitions (JSON)
+│   ├── day-0-bootstrap-oidc/                   # State storage (CMK), Entra apps, OIDC for every platform, RBAC
+│   ├── day-0-cicd-azure-devops/                # (optional) WIF service connections, environment, checks, pipelines
+│   ├── day-0-cicd-hcp-terraform/               # (optional) HCP Terraform / TFE project, workspaces or Stack
+│   ├── modules/
+│   │   ├── platform-landing-zone/              # AVM ALZ composition (no providers/backend)
+│   │   │   └── lib/                            # Custom ALZ library (production + canary architectures)
+│   │   └── workload-vending/                   # Subscription vending + guardrails (no providers/backend)
+│   │       └── policies/                       # Custom policy definitions (JSON)
+│   ├── day-1-platform-landing-zone/            # Root module: backend + auth -> modules/platform-landing-zone
+│   ├── day-2-workload-vending-operations/      # Root module: backend + auth -> modules/workload-vending
+│   └── hcp-terraform-stacks/alz/               # Terraform Stack: components + canary/production deployments
+├── pipelines/
+│   └── azure-devops/                           # Azure DevOps YAML: PR validation, apply, drift + templates
 ├── .github/
-│   ├── workflows/                              # plan / apply / drift + reusable stack workflow
+│   ├── workflows/                              # GitHub Actions: plan / apply / drift + reusable stack workflow
 │   ├── CODEOWNERS                              # Separation of duties
 │   └── dependabot.yml                          # SHA-pinned actions & Terraform updates
 └── .tflint.hcl                                 # Lint rules (terraform + azurerm rulesets)
@@ -139,6 +150,7 @@ azure-landing-zones-2026-masterclass/
 | 04 | [Private Endpoints vs Service Endpoints](docs/04-security-private-vs-service.md) | Why Private Endpoints are the default and when Service Endpoints are acceptable. |
 | 05 | [CI/CD, OIDC & pipeline security](docs/05-cicd-oidc-security.md) | GitHub Actions vs Azure DevOps, Workload Identity Federation, least privilege. |
 | 06 | [WAF: simplicity vs security & policy rollout](docs/06-waf-simplicity-vs-security.md) | Audit -> Remediate -> Enforce, trade-offs per WAF pillar. |
+| 07 | [Delivery platforms](docs/07-delivery-platforms.md) | GitHub Actions vs Azure DevOps vs HCP Terraform vs Terraform Enterprise vs Terraform Stacks - and how one codebase serves them all. |
 
 | Decision record | Topic |
 |---|---|
@@ -147,6 +159,7 @@ azure-landing-zones-2026-masterclass/
 | [ADR-003](architecture/decision-matrices/ADR-003-paas-network-access.md) | PaaS network access |
 | [ADR-004](architecture/decision-matrices/ADR-004-cicd-platform.md) | CI/CD platform & identity |
 | [ADR-005](architecture/decision-matrices/ADR-005-policy-rollout.md) | Policy rollout strategy |
+| [ADR-006](architecture/decision-matrices/ADR-006-delivery-platform.md) | Delivery platform (CI/CD vs HCP Terraform / TFE vs Stacks) |
 
 ---
 
@@ -270,52 +283,53 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 > [!WARNING]
 > Run everything first in a **sandbox tenant**. Day 1 creates management groups and policy assignments at tenant scope and moves subscriptions; Day 2 creates billable subscriptions.
 
+The Terraform CLI is used **only** for the one-off Day 0 bootstrap (and break-glass). Every Day 1 and Day 2 change reaches Azure through a delivery platform - pick one:
+
+| Delivery platform | Day 1 / Day 2 runs from | Bootstrap after Day 0 | Approvals | Drift detection |
+|---|---|---|---|---|
+| **GitHub Actions** | [`.github/workflows`](.github/workflows) | `terraform output -raw github_configuration_commands \| bash` | Environment `production` (required reviewers) | Scheduled workflow -> GitHub issues |
+| **Azure DevOps Pipelines** | [`pipelines/azure-devops`](pipelines/azure-devops) | [`code/day-0-cicd-azure-devops`](code/day-0-cicd-azure-devops) | Environment `alz-production` checks + branch control on `sc-alz-apply` | Scheduled pipeline |
+| **HCP Terraform workspaces** | VCS-driven workspaces `alz-platform` -> `alz-workloads` | [`code/day-0-cicd-hcp-terraform`](code/day-0-cicd-hcp-terraform) (`delivery_model = "workspaces"`) | Confirm apply (no auto-apply) | Health assessments |
+| **Terraform Enterprise** (self-managed) | Same as HCP Terraform, on your TFE host | Same, with `hostname = "tfe.example.com"` | Same | Same |
+| **Terraform Stacks** (HCP Terraform; TFE 2.0+) | [`code/hcp-terraform-stacks/alz`](code/hcp-terraform-stacks/alz) | Same, with `delivery_model = "stacks"` | Production manual; canary auto-approve rules (Premium) | Per deployment |
+
+All five run the **same modules** (`code/modules/*`) - see [docs/07](docs/07-delivery-platforms.md).
+
 ### Prerequisites
 
 | Item | Requirement |
 |---|---|
-| Tools | Terraform `~> 1.12` (CI pins 1.16.6), Azure CLI, GitHub CLI `gh`, TFLint 0.64+ |
+| Tools (Day 0 only) | Terraform `~> 1.12` (CI pins 1.16.6), Azure CLI; plus `gh` (GitHub), `AZDO_ORG_SERVICE_URL` (Azure DevOps) or `TFE_TOKEN` (HCP Terraform / TFE) |
 | Entra ID | Permission to create app registrations (Application Developer or higher) |
 | Azure RBAC | Owner (or User Access Administrator + Contributor) at the Tenant Root Group for the Day 0 operator - elevate via PIM, drop afterwards |
 | Subscriptions | Management, Connectivity, Identity (and optionally Security) subscriptions already exist |
 | Billing (Day 2) | EA *Enrollment account subscription creator* or MCA *Azure subscription creator* role for the apply identity |
-| GitHub | Repository in `github.com/nubenetes/`, an environment named `production` with required reviewers |
 
 ### Day 0 - Bootstrap trust (local, once)
 
 ```bash
 cd code/day-0-bootstrap-oidc
-cp terraform.tfvars.example terraform.tfvars    # edit values
+cp terraform.tfvars.example terraform.tfvars    # enable github_enabled and/or hcp_terraform
 az login --tenant <tenant-id>
-terraform init
-terraform apply
-
-# Configure GitHub variables + environment (identifiers only, no secrets):
-terraform output -raw github_configuration_commands | bash
-
-# Migrate this stack's own state into the new account (see code/day-0-bootstrap-oidc/README.md)
+terraform init && terraform apply
+terraform output federated_credentials          # every OIDC subject Entra ID now trusts
 ```
 
-Outputs: state storage account (Entra-only, CMK), `plan` and `apply` app registrations with federated credentials, least-privilege RBAC.
+Outputs: state storage account (Entra-only, CMK), **one** `plan` and **one** `apply` app registration with federated credentials for each enabled platform, least-privilege RBAC. Then run the bootstrap of your platform from the table above.
 
-### Day 1 - Platform landing zone (CI/CD)
+### Day 1 - Platform landing zone (through the platform)
 
-```bash
-cd code/day-1-platform-landing-zone
-cp terraform.tfvars.example terraform.tfvars    # edit, then COMMIT (identifiers only)
-git checkout -b feat/platform-landing-zone && git add . && git commit -m "feat: platform landing zone"
-git push -u origin HEAD                          # open a PR -> plan is posted as a comment
-```
+1. Copy `code/day-1-platform-landing-zone/terraform.tfvars.example` to **`platform.auto.tfvars`**, edit it and open a PR (identifiers only - no secrets).
+2. The platform posts a read-only plan (PR comment, pipeline summary or HCP speculative plan).
+3. Merge; approve the gated apply. Order: management resources -> connectivity (hub-and-spoke **or** vWAN) -> management groups, policies and subscription placement.
 
-Merge the PR, approve the `production` environment deployment, and the pipeline applies: management resources -> connectivity (hub-and-spoke **or** vWAN) -> management groups, policies and subscription placement.
+### Day 2 - Workload landing zones & operations (through the platform)
 
-### Day 2 - Workload landing zones & operations (CI/CD)
-
-1. A workload team opens a PR adding one entry to `code/day-2-workload-vending-operations/terraform.tfvars` (the *order form*).
-2. CODEOWNERS routes it to platform + FinOps; the PR plan shows the subscription, spoke CIDR, peering, RBAC and budget.
+1. A workload team opens a PR adding one entry to `code/day-2-workload-vending-operations/workloads.auto.tfvars` (the *order form*).
+2. CODEOWNERS routes it to platform + FinOps; the plan shows subscription, spoke CIDR, peering, RBAC and budget.
 3. After merge and approval, the subscription is vended into `corp` / `online` / `sandbox` with networking, DNS, RBAC, budget and an optional OIDC identity for the workload's own pipeline.
 4. Governance is promoted through `policy_enforcement_phase`: `audit` -> `remediate` -> `enforce` (one PR per promotion).
-5. `terraform-drift-detection.yml` runs every weekday and opens an issue if Azure diverges from `main`.
+5. Drift is detected by the platform (scheduled workflow / pipeline or HCP health assessments).
 
 ---
 
@@ -328,6 +342,7 @@ Merge the PR, approve the `production` environment deployment, and the pipeline 
 | IPAM | `/8` org -> `/12` region -> `/16` archetype+env -> `/24` workload | Deterministic, collision-free, computed in code | [docs/03](docs/03-networking-hubspoke-vs-vwan.md#ip-address-management-ipam) |
 | PaaS access | Private Endpoints by default; Service Endpoints denied unless approved | Removes public exposure, closes the shadow-IT path | [docs/04](docs/04-security-private-vs-service.md) |
 | CI/CD identity | Two Entra apps, OIDC only; apply bound to a protected environment; ABAC-conditioned Owner | No secrets, no standing path from a PR to production | [docs/05](docs/05-cicd-oidc-security.md) |
+| Delivery platform | Platform-neutral modules; GitHub Actions, Azure DevOps, HCP Terraform / TFE workspaces or Terraform Stacks | Organisations differ; the code should not | [docs/07](docs/07-delivery-platforms.md) |
 | Policy rollout | Phased: audit -> remediate -> enforce | Brownfield-safe, measurable, reversible | [docs/06](docs/06-waf-simplicity-vs-security.md) |
 
 ---
@@ -339,15 +354,20 @@ Merge the PR, approve the `production` environment deployment, and the pipeline 
 | Terraform | `~> 1.12` (CI: 1.16.6) | Provider-defined functions (`provider::azapi::*`) require >= 1.8 |
 | `hashicorp/azurerm` | `~> 4.35` (Day 1), `~> 4.81` (Day 0/2) | **v5 not supported** by ALZ AVM modules |
 | `Azure/azapi` | `~> 2.12` | Required by every AVM pattern module |
-| `hashicorp/azuread` | `~> 3.10` | Day 0 only |
+| `hashicorp/azuread` | `~> 3.10` | Day 0 and Azure DevOps bootstrap |
 | `Azure/alz` | `~> 0.21` | Library processing |
-| ALZ Library | `platform/alz` `2026.10.0` | Pinned in `code/day-1-platform-landing-zone/lib/alz_library_metadata.json` |
+| ALZ Library | `platform/alz` `2026.10.0` | Pinned in `code/modules/platform-landing-zone/lib/alz_library_metadata.json` |
 | `Azure/avm-ptn-alz/azurerm` | `0.22.0` | Management groups, policy, RBAC, placement |
 | `Azure/avm-ptn-alz-management/azurerm` | `0.9.0` | Log Analytics, AMA identity + DCRs, Sentinel |
 | `Azure/avm-ptn-alz-connectivity-hub-and-spoke-vnet/azurerm` | `0.17.7` | Customer-managed hubs |
 | `Azure/avm-ptn-alz-connectivity-virtual-wan/azurerm` | `0.18.0` | Microsoft-managed hubs |
 | `Azure/avm-ptn-alz-sub-vending/azure` | `0.3.4` | Subscription vending (AzAPI-based successor of `lz-vending`) |
+| `Azure/avm-res-resources-resourcegroup/azurerm` | `0.4.0` | AzAPI-based - pass `azapi`, not `azurerm` |
+| `microsoft/azuredevops` | `~> 1.16` | Azure DevOps bootstrap |
+| `hashicorp/tfe` | `~> 0.82` | HCP Terraform / TFE bootstrap (workspaces, Stack) |
+| Terraform Stacks | CLI 1.13+ (`.terraform-version` 1.16.6) | GA on HCP Terraform; Terraform Enterprise 2.0+ |
 | GitHub Actions | `checkout@v7`, `azure/login@v3`, `setup-terraform@v4`, `setup-tflint@v6` | Pinned by commit SHA |
+| Azure DevOps | `AzureCLI@2`, Terraform installed with SHA256 check | No Marketplace extension required |
 
 > [!NOTE]
 > Versions were current when this repository was generated (October 2026). The original brief asked for `azure/login@v2` and ALZ Library ref `2025.02.0`; newer releases (`v3`, `2026.10.0`) are used instead. Re-check every version before use.
@@ -361,11 +381,14 @@ No Azure tenant was ever touched. The following **offline, static** checks were 
 | Check | Tool | Result |
 |---|---|---|
 | HCL formatting | `tofu fmt -check -recursive` | Pass |
-| Configuration validity (all three stacks, real provider schemas, AVM modules resolved at the pinned versions) | `tofu validate` with AzureRM 4.81.0, AzureAD 3.10.0, AzAPI 2.13.0, ALZ 0.22.0 | Pass |
+| Validity of all root modules and modules (real provider schemas, AVM modules resolved at the pinned versions): Day 0, Day 1, Day 2, Azure DevOps bootstrap, both modules | `tofu validate` with AzureRM 4.81.0, AzureAD 3.10.0, AzAPI 2.13.0, ALZ 0.22.0, AzureDevOps 1.16.0 | Pass |
+| HCP Terraform / TFE bootstrap | `tofu validate` against a schema stub built from the `hashicorp/tfe` 0.82 docs (binary unavailable offline) | Pass (schema from docs) |
+| Terraform Stack configuration | HCL parser only (`terraform stacks validate` unavailable offline) | Syntax OK - **run `terraform stacks validate`** |
 | Lint | TFLint 0.64 (terraform + azurerm rulesets) | Pass |
-| Day 1 locals (IPAM, policy defaults, rollout phase) evaluated with `terraform.tfvars.example` | `tofu console` | Expected values |
-| Workflows | `actionlint`, `yamllint` | Pass |
-| Mermaid diagrams (21) | `mermaid.parse` | Pass |
+| Day 1 / Day 0 locals (IPAM, policy defaults, rollout phase, OIDC subjects) evaluated with the example values | `tofu console` | Expected values |
+| GitHub workflows | `actionlint`, `yamllint` | Pass |
+| Azure DevOps pipelines | `yamllint` (no offline ADO schema validator) | Pass |
+| Mermaid diagrams | `mermaid.parse` | Pass |
 | Policy definitions / library files | JSON / YAML parsers | Pass |
 
 > [!WARNING]
@@ -388,6 +411,9 @@ No Azure tenant was ever touched. The following **offline, static** checks were 
 - ALZ-Bicep classic migration and retirement dates: <https://azure.github.io/Azure-Landing-Zones/bicep/migration/>
 - Azure Blueprints retirement timeline: <https://learn.microsoft.com/azure/governance/blueprints/blueprint-retirement-faq>
 - Default outbound access changes: <https://learn.microsoft.com/azure/virtual-network/ip-services/default-outbound-access>
+- Terraform Stacks (GA) and HCP Terraform features: <https://www.hashicorp.com/blog/scale-infrastructure-with-new-terraform-and-packer-features-at-hashiconf-2025>
+- Terraform Enterprise 2.0.x release notes: <https://developer.hashicorp.com/terraform/enterprise/releases/2.0.x>
+- HCP Terraform dynamic provider credentials (Azure): <https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/azure-configuration>
 - Cloud Adoption Framework - Ready: <https://learn.microsoft.com/azure/cloud-adoption-framework/ready>
 - Azure Verified Modules: <https://aka.ms/avm>
 - ALZ Library: <https://github.com/Azure/Azure-Landing-Zones-Library>

@@ -1,5 +1,7 @@
 ###############################################################################
-# Day 2 - Workload vending & operations: input variables
+# Day 2 - Workload vending & operations (root): input variables
+# Everything except the "platform contract" mirrors
+# ../modules/workload-vending/variables.tf - keep them in sync.
 ###############################################################################
 
 #------------------------------------------------------------------------------
@@ -13,7 +15,18 @@ variable "platform_state" {
     container_name       = optional(string, "tfstate-platform")
     key                  = optional(string, "day-1-platform-landing-zone.tfstate")
   })
-  description = "Location of the Day 1 state. Day 2 reads it (read-only) to discover MGs, hubs, DNS servers, firewall IPs, Private DNS zones and the IPAM plan."
+  description = "Azure Storage location of the Day 1 state (GitHub Actions / Azure DevOps). Ignored when hcp_platform_workspace is set. Read-only access is sufficient."
+  default     = null
+}
+
+variable "hcp_platform_workspace" {
+  type = object({
+    hostname     = optional(string, "app.terraform.io") # or your Terraform Enterprise hostname
+    organization = string
+    workspace    = optional(string, "alz-platform")
+  })
+  description = "HCP Terraform / Terraform Enterprise workspace that holds the Day 1 state. When set (the HCP bootstrap sets it as a workspace variable), it takes precedence over platform_state. The platform workspace must share its state with this workspace."
+  default     = null
 }
 
 variable "management_subscription_id" {
@@ -132,4 +145,23 @@ variable "tags" {
     generated_by = "claude-opus-5.5"
     tested       = "false"
   }
+}
+
+#------------------------------------------------------------------------------
+# HCP Terraform / Terraform Enterprise dynamic provider credentials
+#------------------------------------------------------------------------------
+
+variable "tfc_azure_dynamic_credentials" {
+  type = object({
+    default = object({
+      client_id_file_path  = string
+      oidc_token_file_path = string
+    })
+    aliases = map(object({
+      client_id_file_path  = string
+      oidc_token_file_path = string
+    }))
+  })
+  description = "Populated automatically by HCP Terraform / Terraform Enterprise when TFC_AZURE_PROVIDER_AUTH=true. Leave unset elsewhere."
+  default     = null
 }

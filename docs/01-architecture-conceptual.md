@@ -27,7 +27,7 @@ An **Azure landing zone** is the output of a multi-subscription environment that
 
 ### Terminology
 
-Microsoft Learn presents the second layer as **application (workload) landing zones**. This repository consistently uses **Workload Landing Zones**, because in 2026 the same vending, policy and network model serves applications, AI/ML model hosting, data platforms and containerised platforms alike. The management group that hosts them keeps the ALZ ID `landingzones` (so the ALZ Library archetypes apply unchanged) but is displayed as *Workload Landing Zones* through the custom library in [`code/day-1-platform-landing-zone/lib`](../code/day-1-platform-landing-zone/lib).
+Microsoft Learn presents the second layer as **application (workload) landing zones**. This repository consistently uses **Workload Landing Zones**, because in 2026 the same vending, policy and network model serves applications, AI/ML model hosting, data platforms and containerised platforms alike. The management group that hosts them keeps the ALZ ID `landingzones` (so the ALZ Library archetypes apply unchanged) but is displayed as *Workload Landing Zones* through the custom library in [`code/modules/platform-landing-zone/lib`](../code/modules/platform-landing-zone/lib).
 
 > [!NOTE]
 > Choose one term and use it everywhere: pipelines, tags, RBAC group names and runbooks. Mixed terminology is a common source of governance gaps ("is a data platform a landing zone?" - yes, it is a workload landing zone).
@@ -101,11 +101,12 @@ flowchart TD
 ### 3.2 The local library (how the hierarchy is defined in code)
 
 ```text
-code/day-1-platform-landing-zone/lib/
+code/modules/platform-landing-zone/lib/
 ├── alz_library_metadata.json                     # depends on platform/alz @ 2026.10.0
 ├── alz_policy_default_values.json                # adds the "allowed_locations" default
 ├── architecture_definitions/
-│   └── alz_2026_masterclass.alz_architecture_definition.yaml   # the MG tree above
+│   ├── alz_2026_masterclass.alz_architecture_definition.yaml          # the MG tree above
+│   └── alz_2026_masterclass_canary.alz_architecture_definition.yaml   # same tree, "canary-" IDs
 ├── archetype_definitions/
 │   ├── root_masterclass.alz_archetype_override.yaml            # root + data residency
 │   ├── landing_zones_masterclass.alz_archetype_override.yaml   # opt-out examples
@@ -114,6 +115,9 @@ code/day-1-platform-landing-zone/lib/
     ├── Enforce-Allowed-Locations.alz_policy_assignment.json
     └── Enforce-Allowed-Loc-RG.alz_policy_assignment.json
 ```
+
+> [!TIP]
+> **Canary hierarchy.** CAF recommends validating platform and policy changes in a canary environment before production. Because management group IDs are tenant-unique, the canary architecture uses the same tree with `canary-` IDs (`management_group_id_prefix = "canary-"`). The Terraform Stack in `code/hcp-terraform-stacks/alz` deploys it as its `canary` deployment (docs/07).
 
 Three levers, in order of preference:
 
@@ -147,7 +151,7 @@ flowchart LR
 Rules of thumb:
 
 - **One subscription per workload per environment.** Subscriptions are the unit of RBAC, budget, quota and blast radius - and they are free.
-- **Vend, never hand-build.** Every workload subscription comes from [Day 2 vending](../code/day-2-workload-vending-operations/main.tf) with network, DNS, RBAC, budget and identity pre-wired.
+- **Vend, never hand-build.** Every workload subscription comes from [Day 2 vending](../code/modules/workload-vending/main.tf) with network, DNS, RBAC, budget and identity pre-wired.
 - **Platform state lives in the Management subscription** (Day 0), separate from any workload.
 
 ---

@@ -15,6 +15,19 @@ Creates the trust anchors that every later stage depends on. Run **once**, local
 | App registration + SP **plan** | PR / main plans, drift detection | OIDC subjects `pull_request` and `ref:refs/heads/main`; `Reader` + `Storage Blob Data Reader` |
 | App registration + SP **apply** | Environment-gated applies | OIDC subject `environment:production` only; `Owner` **with ABAC condition** + `Storage Blob Data Contributor` |
 
+## Delivery platforms
+
+Day 0 creates **one** pair of identities and the federated credentials for every platform you enable (docs/07):
+
+| Platform | Enable with | Federated credentials created here |
+|---|---|---|
+| GitHub Actions | `github_enabled = true` (default) | `pull_request`, `ref:refs/heads/main` (plan); `environment:production` (apply) |
+| HCP Terraform / Terraform Enterprise workspaces | `hcp_terraform = { organization = ..., workspaces = [...] }` | `...:workspace:<ws>:run_phase:plan` (plan) / `...:run_phase:apply` (apply) |
+| Terraform Stacks | `hcp_terraform.stack = { name = "alz", deployments = [...] }` | `...:stack:alz:deployment:<dep>:operation:{plan,apply}` (apply) |
+| Azure DevOps | run `code/day-0-cicd-azure-devops` afterwards | created there (issuer/subject come from the service connections) |
+
+`terraform output federated_credentials` lists every trusted subject for audit.
+
 ## Steps
 
 ```bash
@@ -38,11 +51,13 @@ terraform init -migrate-state \
   -backend-config="key=day-0-bootstrap-oidc.tfstate"
 rm -f terraform.tfstate terraform.tfstate.backup      # after verifying the remote copy
 
-# 5. Configure GitHub (identifiers only - no secrets)
+# 5a. GitHub Actions (identifiers only - no secrets)
 terraform output -raw github_configuration_commands | bash
-```
+#     then add required reviewers to the `production` environment and protect `main`
 
-Then, in GitHub: add **required reviewers** to the `production` environment and protect `main`.
+# 5b. Azure DevOps      -> code/day-0-cicd-azure-devops
+# 5c. HCP Terraform/TFE -> code/day-0-cicd-hcp-terraform
+```
 
 ## Required permissions for the operator
 

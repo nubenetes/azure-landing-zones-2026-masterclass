@@ -1,5 +1,5 @@
 ###############################################################################
-# Day 2 - Private DNS: automated zone linking (exception path)
+# Module: workload-vending - Private DNS zone linking (exception path)
 #
 # DEFAULT PATTERN (no links needed):
 #   spoke VNet DNS = Azure Firewall DNS proxy (hub-and-spoke) or hub resolver

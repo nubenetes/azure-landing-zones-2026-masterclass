@@ -40,3 +40,24 @@ flowchart LR
  context = pull_request | ref:refs/heads/main      -> PLAN app  (read-only)
  context = environment:production (after approval) -> APPLY app (write, ABAC-limited)
 ```
+
+## Same identities, every delivery platform
+
+```mermaid
+flowchart LR
+    gha["GitHub Actions<br/>repo:...:pull_request / ref main / environment:production"]
+    ado["Azure DevOps<br/>sc://org/project/sc-alz-plan | sc-alz-apply"]
+    hcp["HCP Terraform / TFE workspaces<br/>...:workspace:ws:run_phase:plan | apply"]
+    stk["Terraform Stacks<br/>...:stack:alz:deployment:d:operation:plan + apply"]
+    plan["App: plan (read-only)"]
+    apply["App: apply (ABAC-conditioned Owner)"]
+    gha -- "PR / main" --> plan
+    gha -- "environment" --> apply
+    ado -- "sc-alz-plan" --> plan
+    ado -- "sc-alz-apply" --> apply
+    hcp -- "plan phase" --> plan
+    hcp -- "apply phase" --> apply
+    stk -- "plan + apply" --> apply
+```
+
+Full subject list: [docs/07](../../docs/07-delivery-platforms.md#federated-identity-credentials-entra-id-trusts-exactly-these-subjects).

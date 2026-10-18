@@ -4,10 +4,21 @@
 # to workload_landing_zones. CODEOWNERS routes the review to the platform team.
 ###############################################################################
 
+# Where the Day 1 outputs live:
+#   GitHub Actions / Azure DevOps -> platform_state (Azure Storage)
+#   HCP Terraform / TFE           -> hcp_platform_workspace (set as a workspace
+#                                    variable by code/hcp-terraform/bootstrap;
+#                                    it takes precedence when present)
 platform_state = {
   resource_group_name  = "rg-nbn-iac-state-westeurope"
   storage_account_name = "stnbntfstatea1b2c3"
 }
+
+# hcp_platform_workspace = {
+#   hostname     = "app.terraform.io" # or tfe.example.com
+#   organization = "nubenetes"
+#   workspace    = "alz-platform"
+# }
 
 management_subscription_id   = "11111111-1111-1111-1111-111111111111"
 connectivity_subscription_id = "22222222-2222-2222-2222-222222222222"

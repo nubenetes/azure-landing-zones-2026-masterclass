@@ -1,5 +1,5 @@
 ###############################################################################
-# Day 2 - Workload vending & operations: Terraform & providers
+# Day 2 - Workload vending & operations (root): Terraform & providers
 #
 # Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
 # live environment. Validate in a sandbox tenant before any real use.
@@ -19,30 +19,11 @@ terraform {
     }
   }
 
+  # Partial configuration for GitHub Actions / Azure DevOps runs:
   #   terraform init \
   #     -backend-config=../backend.hcl \
   #     -backend-config="container_name=tfstate-workloads" \
   #     -backend-config="key=day-2-workload-vending-operations.tfstate"
+  # HCP Terraform / Terraform Enterprise override it during remote runs.
   backend "azurerm" {}
-}
-
-# Tenant-scope operations (subscription aliases) and the vending module run
-# through azapi; the default context is the Management subscription.
-provider "azapi" {
-  subscription_id            = var.management_subscription_id
-  skip_provider_registration = true
-}
-
-provider "azurerm" {
-  subscription_id                 = var.management_subscription_id
-  resource_provider_registrations = "none"
-  features {}
-}
-
-# Central Private DNS zones live in the Connectivity subscription.
-provider "azurerm" {
-  alias                           = "connectivity"
-  subscription_id                 = var.connectivity_subscription_id
-  resource_provider_registrations = "none"
-  features {}
 }

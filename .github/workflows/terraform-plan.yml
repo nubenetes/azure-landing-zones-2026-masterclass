@@ -18,6 +18,7 @@ on:
     paths:
       - "code/**"
       - ".github/workflows/**"
+      - "pipelines/**"
       - ".tflint.hcl"
 
 permissions:
@@ -41,6 +42,10 @@ jobs:
       matrix:
         stack:
           - code/day-0-bootstrap-oidc
+          - code/day-0-cicd-azure-devops
+          - code/day-0-cicd-hcp-terraform
+          - code/modules/platform-landing-zone
+          - code/modules/workload-vending
           - code/day-1-platform-landing-zone
           - code/day-2-workload-vending-operations
     steps:
@@ -75,6 +80,34 @@ jobs:
         run: |
           tflint --init --config="$GITHUB_WORKSPACE/.tflint.hcl"
           tflint --chdir="${{ matrix.stack }}" --config="$GITHUB_WORKSPACE/.tflint.hcl" --format=compact
+
+  stacks-validate:
+    name: terraform stacks validate (code/hcp-terraform-stacks/alz)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # The Stacks CLI plugin is downloaded on first use; this job is advisory
+    # until the lock file has been generated and committed (see the Stack README).
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: code/hcp-terraform-stacks/alz
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: terraform stacks fmt / init / validate
+        run: |
+          terraform stacks fmt -check
+          terraform stacks init
+          terraform stacks validate
 
   plan-platform:
     name: plan day-1 platform landing zone

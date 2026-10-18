@@ -1,0 +1,76 @@
+# -----------------------------------------------------------------------------
+# Azure DevOps - PR validation: static analysis + read-only plans.
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox organisation/tenant first.
+#
+# GitHub-hosted repository: the `pr` trigger below is used.
+# Azure Repos: `pr` triggers are ignored - code/azure-devops/bootstrap adds a
+# build-validation branch policy on main that runs this pipeline instead.
+# -----------------------------------------------------------------------------
+name: alz-pr-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+
+pr:
+  branches:
+    include: [main]
+  paths:
+    include: [code, pipelines, .tflint.hcl]
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: alz-iac # AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, TF_STATE_*, *_SERVICE_CONNECTION_ID
+  - name: TFLINT_VERSION
+    value: v0.64.0
+
+stages:
+  - stage: StaticAnalysis
+    displayName: fmt / validate / tflint
+    jobs:
+      - job: static
+        strategy:
+          matrix:
+            day0:
+              stack: code/day-0-bootstrap-oidc
+            day1:
+              stack: code/day-1-platform-landing-zone
+            day2:
+              stack: code/day-2-workload-vending-operations
+        steps:
+          - checkout: self
+            fetchDepth: 1
+          - template: templates/install-terraform.yml
+          - bash: terraform fmt -check -recursive -diff "$(stack)" code/modules
+            displayName: terraform fmt
+          - bash: |
+              set -euo pipefail
+              cd "$(stack)"
+              terraform init -backend=false -input=false
+              terraform validate -no-color
+            displayName: terraform validate (no backend, no credentials)
+          - bash: |
+              set -euo pipefail
+              curl -fsSL "https://github.com/terraform-linters/tflint/releases/download/$(TFLINT_VERSION)/tflint_linux_amd64.zip" -o /tmp/tflint.zip
+              unzip -o -q /tmp/tflint.zip -d "$(Agent.TempDirectory)"
+              "$(Agent.TempDirectory)/tflint" --init --config="$(Build.SourcesDirectory)/.tflint.hcl"
+              "$(Agent.TempDirectory)/tflint" --chdir="$(stack)" --config="$(Build.SourcesDirectory)/.tflint.hcl" --format=compact
+            displayName: tflint
+
+  - template: templates/terraform-stack.yml
+    parameters:
+      name: platform
+      stackPath: code/day-1-platform-landing-zone
+      stateContainer: tfstate-platform
+      stateKey: day-1-platform-landing-zone.tfstate
+      dependsOn: [StaticAnalysis]
+
+  - template: templates/terraform-stack.yml
+    parameters:
+      name: workloads
+      stackPath: code/day-2-workload-vending-operations
+      stateContainer: tfstate-workloads
+      stateKey: day-2-workload-vending-operations.tfstate
+      dependsOn: [StaticAnalysis]
