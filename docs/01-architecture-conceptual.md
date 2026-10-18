@@ -6,6 +6,16 @@
 
 ---
 
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [📚 Documentation Index](../README.md#documentation-index) | [➡️ Next: 02. IaC Provider Matrix](02-iac-provider-matrix.md)
+
+> 🎥 **Multimedia Sessions & Video Guides**:
+> - 📽️ [**The Cloud Metropolis: Azure Landing Zones Architecture Blueprint**](https://www.youtube.com/watch?v=u9rLpmpUf2Y) (`8:30`, 🇬🇧 English CC 20+) — *City planning analogy for enterprise cloud scale, multi-subscription isolation, and zoning governance.*
+> - 📽️ [**Azure Landing Zones 2026: Next-Gen Enterprise Architecture Masterclass**](https://www.youtube.com/watch?v=LE568gOjCkY) (`8:03`, 🇬🇧 English CC 20+) — *Deep dive into the 2026 Microsoft CAF framework, platform vs. workload landing zones, and scalable foundations.*
+> - 📽️ [**Azure Management Groups & Governance: Core Engine Architecture**](https://www.youtube.com/watch?v=xh84QXkuYm8) (`8:41`, 🇬🇧 English CC 20+) — *Architectural engine breakdown: Platform (Identity, Management, Connectivity, Security) vs. Workload Landing Zones.*
+> - ⚡ [**Why Azure Landing Zones Split Corp and Online**](https://www.youtube.com/shorts/Uab5Y1nnt08) (`1:24`, 🇬🇧 English CC 20+) — *Architecture short on Corp vs. Online archetypes, routing boundaries, and avoiding dev/test/prod anti-patterns.*
+
+---
+
 ## 1. What a landing zone is in 2026
 
 An **Azure landing zone** is the output of a multi-subscription environment that has been prepared for scale, security, governance, networking and identity *before* workloads arrive. CAF splits it into two layers:

@@ -6,6 +6,13 @@
 
 ---
 
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 04. PaaS Network Security](04-security-private-vs-service.md) | [➡️ Next: 06. WAF & Policy Rollout](06-waf-simplicity-vs-security.md)
+
+> 🎥 **Multimedia Sessions & Video Guides**:
+> - ⚡ [**How Workload Identity Federation Replaces Stored Secrets**](https://www.youtube.com/shorts/0mdEib04nTw) (`1:16`, 🇬🇧 English CC 20+) — *Architecture short on eliminating long-lived client secrets in GitHub Actions pipelines using OpenID Connect (OIDC) and Entra ID.*
+
+---
+
 ## 1. Principles
 
 1. **No static secrets.** Every pipeline authenticates to Azure with **Workload Identity Federation (OIDC)**: a short-lived token from the CI platform is exchanged for an Entra ID access token. There is no client secret or certificate to leak, rotate or expire.

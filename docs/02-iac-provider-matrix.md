@@ -6,6 +6,14 @@
 
 ---
 
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 01. Conceptual Architecture](01-architecture-conceptual.md) | [➡️ Next: 03. Network Topology](03-networking-hubspoke-vs-vwan.md)
+
+> 🎥 **Multimedia Sessions & Video Guides**:
+> - 📽️ [**Retiring the CAF Monolith: Azure Verified Modules (AVM) & ALZ Library**](https://www.youtube.com/watch?v=BNEGxzQgDB8) (`7:59`, 🇬🇧 English CC 20+) — *Technical breakdown on retiring legacy monolithic CAF modules for Azure Verified Modules (AVM) and ALZ Library.*
+> - ⚡ [**Why Azure is Killing the Landing Zone Monolith**](https://www.youtube.com/shorts/7S6HDnZXQhI) (`1:09`, 🇬🇧 English CC 20+) — *Architecture short on why Microsoft archived monolithic CAF modules in favor of composable AVM pattern modules.*
+
+---
+
 ## 1. The layering model
 
 AVM is **not** a provider - it is a library of Terraform (and Bicep) *modules* built on top of providers. A 2026 landing zone uses five building blocks at three layers:

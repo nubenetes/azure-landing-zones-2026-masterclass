@@ -42,6 +42,7 @@ A complete, opinionated reference for deploying an **Azure Landing Zone** the wa
 - [Reference architecture at a glance](#reference-architecture-at-a-glance)
 - [Repository map](#repository-map)
 - [Documentation index](#documentation-index)
+- [🎥 Video Guides, Technical Shorts & Multimedia Sessions (YouTube)](#-video-guides-technical-shorts--multimedia-sessions-youtube)
 - [Quickstart: Day 0, Day 1, Day 2](#quickstart-day-0-day-1-day-2)
 - [Key design decisions](#key-design-decisions)
 - [Version matrix](#version-matrix)
@@ -148,6 +149,121 @@ azure-landing-zones-2026-masterclass/
 | [ADR-005](architecture/decision-matrices/ADR-005-policy-rollout.md) | Policy rollout strategy |
 
 ---
+
+## 🎥 Video Guides, Technical Shorts & Multimedia Sessions (YouTube)
+
+The architectural patterns, provider matrices, network topologies, and zero-secret pipeline configurations of this masterclass are accompanied by a dedicated series of technical video guides and rapid architecture shorts synthesized with **Gemini NotebookLM**.
+
+All sessions are hosted on the official YouTube channel [**@nubenetes**](https://youtube.com/@nubenetes).
+
+> [!NOTE]
+> **Multilingual Technical Content 🌐**:
+> The architectural masterclasses and shorts feature native **English** technical narration with auto-generated subtitles (CC) in over **20 languages** to assist cloud platform teams, enterprise architects, and site reliability engineers worldwide.
+
+### 📊 Technical Multimedia Catalog (10 Sessions)
+
+#### 📽️ Deep-Dive Architectural Video Guides (6 Episodes)
+
+| Format | Title / Episode | Focus / Core Engineering Domain | Language | Duration | Direct YouTube Link |
+| :---: | :--- | :--- | :---: | :---: | :--- |
+| 📽️ **Video Guide** | [**The Cloud Metropolis: Azure Landing Zones Architecture Blueprint**](https://www.youtube.com/watch?v=u9rLpmpUf2Y) | **Conceptual Architecture & City Metaphor**: City planning analogy for enterprise cloud scale, multi-subscription isolation, zoning laws, and platform vs. workload separation | 🇬🇧 English *(CC 20+)* | `8:30` | [▶️ Watch Video](https://www.youtube.com/watch?v=u9rLpmpUf2Y) |
+| 📽️ **Video Guide** | [**Azure Landing Zones 2026: Next-Gen Enterprise Architecture Masterclass**](https://www.youtube.com/watch?v=LE568gOjCkY) | **Microsoft CAF 2026 Blueprint**: Next-gen Cloud Adoption Framework, enterprise-scale landing zone hierarchy, subscription democratization, and governance baseline | 🇬🇧 English *(CC 20+)* | `8:03` | [▶️ Watch Video](https://www.youtube.com/watch?v=LE568gOjCkY) |
+| 📽️ **Video Guide** | [**Azure Management Groups & Governance: Core Engine Architecture**](https://www.youtube.com/watch?v=xh84QXkuYm8) | **Core Engine & Hierarchy**: Management group archetypes (Platform: Identity, Management, Connectivity, Security vs Workloads: Corp, Online), Policy-as-Code, and WAF guardrails | 🇬🇧 English *(CC 20+)* | `8:41` | [▶️ Watch Video](https://www.youtube.com/watch?v=xh84QXkuYm8) |
+| 📽️ **Video Guide** | [**Retiring the CAF Monolith: Azure Verified Modules (AVM) & ALZ Library**](https://www.youtube.com/watch?v=BNEGxzQgDB8) | **Modern IaC Stack**: Archiving legacy monolithic CAF modules, composable Azure Verified Modules (AVM), decoupled ALZ Library, and AzAPI-first provider architecture | 🇬🇧 English *(CC 20+)* | `7:59` | [▶️ Watch Video](https://www.youtube.com/watch?v=BNEGxzQgDB8) |
+| 📽️ **Video Guide** | [**Azure Hub-and-Spoke vs Virtual WAN: 2026 Enterprise Network Architecture**](https://www.youtube.com/watch?v=mUmga-Nz6cc) | **Network Topology & Sizing**: Traditional Hub-and-Spoke vs. Virtual WAN (vWAN), routing intents, virtual network peering, NVA inspection, and hierarchical IPAM addressing | 🇬🇧 English *(CC 20+)* | `8:11` | [▶️ Watch Video](https://www.youtube.com/watch?v=mUmga-Nz6cc) |
+| 📽️ **Video Guide** | [**Azure Private Endpoints vs Service Endpoints: PaaS Network Security Blueprint**](https://www.youtube.com/watch?v=ppqHvYNkII4) | **PaaS Network Security**: Private Endpoints default standard vs Service Endpoints exception, centralized Private DNS Zones, egress filtering, and data exfiltration mitigation | 🇬🇧 English *(CC 20+)* | `8:30` | [▶️ Watch Video](https://www.youtube.com/watch?v=ppqHvYNkII4) |
+
+#### ⚡ Technical Shorts & Architecture Takeaways (4 Episodes)
+
+| Format | Title / Episode | Focus / Core Engineering Domain | Language | Duration | Direct YouTube Link |
+| :---: | :--- | :--- | :---: | :---: | :--- |
+| ⚡ **Short** | [**Why Azure is Killing the Landing Zone Monolith**](https://www.youtube.com/shorts/7S6HDnZXQhI) | **AVM Shift**: Why Microsoft archived CAF monoliths on August 1, 2026 in favor of modular Azure Verified Modules (AVM) | 🇬🇧 English *(CC 20+)* | `1:09` | [▶️ Watch Short](https://www.youtube.com/shorts/7S6HDnZXQhI) |
+| ⚡ **Short** | [**How Workload Identity Federation Replaces Stored Secrets**](https://www.youtube.com/shorts/0mdEib04nTw) | **CI/CD Security**: Eliminating static client secrets in GitHub Actions pipelines using OpenID Connect (OIDC) and Entra ID | 🇬🇧 English *(CC 20+)* | `1:16` | [▶️ Watch Short](https://www.youtube.com/shorts/0mdEib04nTw) |
+| ⚡ **Short** | [**Why Azure Landing Zones Split Corp and Online**](https://www.youtube.com/shorts/Uab5Y1nnt08) | **Hierarchy Design**: Why management groups split Corp vs Online rather than dev/stage/prod environments | 🇬🇧 English *(CC 20+)* | `1:24` | [▶️ Watch Short](https://www.youtube.com/shorts/Uab5Y1nnt08) |
+| ⚡ **Short** | [**Choosing Between Azure Private and Service Endpoints**](https://www.youtube.com/shorts/E1rnKNKWWUg) | **PaaS Decision Rules**: Key decision criteria between Private Endpoints and Service Endpoints for enterprise data boundary defense | 🇬🇧 English *(CC 20+)* | `1:20` | [▶️ Watch Short](https://www.youtube.com/shorts/E1rnKNKWWUg) |
+
+<details>
+<summary>📂 <strong>Detailed Agendas, Transcripts & Engineering Takeaways</strong></summary>
+
+<br/>
+
+### Section A: Deep-Dive Architectural Video Guides (6 Sessions)
+
+#### 1. The Cloud Metropolis: Azure Landing Zones Architecture Blueprint (8:30)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=u9rLpmpUf2Y](https://www.youtube.com/watch?v=u9rLpmpUf2Y)
+- ⏱️ **Duration**: 8:30 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Conceptual Architecture, City Metaphor, Multi-Subscription Governance, Zoning Laws
+- 📝 **Technical Overview**:
+> Conceptual architecture masterclass establishing the city planning metaphor for enterprise Azure environments. Compares cloud infrastructure to an organized metropolis with zoning laws, shared utilities (water, electricity, transit), and residential/commercial districts. Explains why single-subscription designs fail under enterprise scale and how Microsoft CAF management group hierarchies provide clean boundaries between platform utilities and application workloads.
+
+#### 2. Azure Landing Zones 2026: Next-Gen Enterprise Architecture Masterclass (8:03)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=LE568gOjCkY](https://www.youtube.com/watch?v=LE568gOjCkY)
+- ⏱️ **Duration**: 8:03 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Microsoft CAF 2026 Framework, Enterprise Scale, Subscription Democratization
+- 📝 **Technical Overview**:
+> Exhaustive overview of Microsoft's late-2026 Cloud Adoption Framework (CAF) reference architecture. Breaks down the multi-subscription model, subscription vending mechanisms, and the shift from central IT gatekeeping to self-service application teams constrained by automated guardrails. Details how the platform provides security baselines, centralized connectivity, and compliance without slowing down feature delivery.
+
+#### 3. Azure Management Groups & Governance: Core Engine Architecture (8:41)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=xh84QXkuYm8](https://www.youtube.com/watch?v=xh84QXkuYm8)
+- ⏱️ **Duration**: 8:41 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Management Group Archetypes, Platform vs Workloads, Policy-as-Code Lifecycle
+- 📝 **Technical Overview**:
+> Deep dive into the core engine of Azure Landing Zones: the management group hierarchy and Policy-as-Code governance engine. Examines the structural separation of Platform management groups (Identity, Management, Connectivity, and the new Security archetype) from Workload Landing Zones (Corp and Online). Details the phased policy rollout strategy (Audit -> Remediate -> Enforce) aligned with the Well-Architected Framework.
+
+#### 4. Retiring the CAF Monolith: Azure Verified Modules (AVM) & ALZ Library (7:59)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=BNEGxzQgDB8](https://www.youtube.com/watch?v=BNEGxzQgDB8)
+- ⏱️ **Duration**: 7:59 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Infrastructure as Code (IaC), AVM Pattern Modules, ALZ Library, AzAPI Provider
+- 📝 **Technical Overview**:
+> Technical guide on the monumental 2026 shift in Azure Infrastructure as Code: the retirement of the monolithic `terraform-azurerm-caf-enterprise-scale` module (archived August 1, 2026) and the adoption of Microsoft-maintained Azure Verified Modules (AVM). Analyzes how decoupling policy definitions into the versioned ALZ Library processed by the `Azure/alz` provider and leveraging the AzAPI-first provider architecture guarantees day-zero API support and zero-regression upgrades.
+
+#### 5. Azure Hub-and-Spoke vs Virtual WAN: 2026 Enterprise Network Architecture (8:11)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=mUmga-Nz6cc](https://www.youtube.com/watch?v=mUmga-Nz6cc)
+- ⏱️ **Duration**: 8:11 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Network Topology, Hub-and-Spoke, Virtual WAN, Routing Intent, IPAM
+- 📝 **Technical Overview**:
+> In-depth architectural trade-off analysis between customer-managed Hub-and-Spoke virtual networks and Microsoft-managed Azure Virtual WAN (vWAN). Evaluates regional scale tipping points, routing intent policies, NVA firewall clustering, and cross-region transit costs. Details hierarchical IP Address Management (IPAM) allocation rules (/8 enterprise root down to /24 workload subnets) and private DNS zone resolution architecture.
+
+#### 6. Azure Private Endpoints vs Service Endpoints: PaaS Network Security Blueprint (8:30)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=ppqHvYNkII4](https://www.youtube.com/watch?v=ppqHvYNkII4)
+- ⏱️ **Duration**: 8:30 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: PaaS Security, Private Endpoints, Service Endpoints, Private DNS, Data Exfiltration
+- 📝 **Technical Overview**:
+> Masterclass on enterprise PaaS network isolation in Azure. Demonstrates why Private Endpoints are the non-negotiable default for enterprise production environments and examines why Service Endpoints are restricted to audited exceptions. Covers centralized Private DNS Zones in the Connectivity subscription, virtual network link automation, split-horizon DNS, and defending against data exfiltration attacks while complying with Azure's 2026 default outbound access deprecation.
+
+---
+
+### Section B: Technical Shorts & Architecture Takeaways (4 Sessions)
+
+#### 7. Why Azure is Killing the Landing Zone Monolith (1:09)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/7S6HDnZXQhI](https://www.youtube.com/shorts/7S6HDnZXQhI)
+- ⏱️ **Duration**: 1:09 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Azure Verified Modules (AVM), Modular IaC, ALZ Library
+- 📝 **Technical Overview**:
+> Rapid architectural short breaking down why Microsoft archived legacy monolithic landing zone modules on August 1, 2026. Explains the transition to composable Azure Verified Modules (AVM pattern modules) and the versioned ALZ Library, allowing teams to deploy only what they need without deploying an all-or-nothing monolith.
+
+#### 8. How Workload Identity Federation Replaces Stored Secrets (1:16)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/0mdEib04nTw](https://www.youtube.com/shorts/0mdEib04nTw)
+- ⏱️ **Duration**: 1:16 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: CI/CD Security, GitHub Actions, Workload Identity Federation (OIDC), Zero Secrets
+- 📝 **Technical Overview**:
+> Essential security takeaway showing how Workload Identity Federation (OIDC) eradicates long-lived static client secrets and certificates from GitHub Actions pipelines. Explains the short-lived token exchange with Microsoft Entra ID and least-privilege role assignment architectures.
+
+#### 9. Why Azure Landing Zones Split Corp and Online (1:24)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/Uab5Y1nnt08](https://www.youtube.com/shorts/Uab5Y1nnt08)
+- ⏱️ **Duration**: 1:24 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Management Group Archetypes, Corp vs Online, Network Routing Boundaries
+- 📝 **Technical Overview**:
+> Core architectural principle explaining why management group hierarchies must never be divided by environment (dev, stage, prod). Details how splitting workloads by connectivity archetype (Corp with private corporate network transit vs. Online with public egress/inbound endpoints) prevents redundant policy sprawl and secures hybrid perimeters.
+
+#### 10. Choosing Between Azure Private and Service Endpoints (1:20)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/E1rnKNKWWUg](https://www.youtube.com/shorts/E1rnKNKWWUg)
+- ⏱️ **Duration**: 1:20 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: PaaS Access Decision Rules, Private Endpoints, Service Endpoints, Data Perimeter
+- 📝 **Technical Overview**:
+> Concise engineering decision framework for selecting between Azure Private Endpoints and Service Endpoints. Explains private IP assignment, bidirectional routing control, data exfiltration protection, and why Private Endpoints are the enterprise production baseline in 2026.
+
+</details>
 
 ## Quickstart: Day 0, Day 1, Day 2
 

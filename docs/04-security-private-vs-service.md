@@ -6,6 +6,14 @@
 
 ---
 
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 03. Network Topology](03-networking-hubspoke-vs-vwan.md) | [➡️ Next: 05. CI/CD & Pipeline Security](05-cicd-oidc-security.md)
+
+> 🎥 **Multimedia Sessions & Video Guides**:
+> - 📽️ [**Azure Private Endpoints vs Service Endpoints: PaaS Network Security Blueprint**](https://www.youtube.com/watch?v=ppqHvYNkII4) (`8:30`, 🇬🇧 English CC 20+) — *PaaS isolation masterclass: Private Endpoints default standard vs Service Endpoints exceptions, DNS, and egress control.*
+> - ⚡ [**Choosing Between Azure Private and Service Endpoints**](https://www.youtube.com/shorts/E1rnKNKWWUg) (`1:20`, 🇬🇧 English CC 20+) — *Architecture short on key decision criteria between Private Endpoints and Service Endpoints for data perimeter defense.*
+
+---
+
 ## 1. Verdict
 
 > [!IMPORTANT]

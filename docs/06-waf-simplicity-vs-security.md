@@ -6,6 +6,13 @@
 
 ---
 
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 05. CI/CD & Pipeline Security](05-cicd-oidc-security.md) | [📚 Documentation Index](../README.md#documentation-index)
+
+> 🎥 **Multimedia Sessions & Video Guides**:
+> - 📽️ [**Azure Management Groups & Governance: Core Engine Architecture**](https://www.youtube.com/watch?v=xh84QXkuYm8) (`8:41`, 🇬🇧 English CC 20+) — *Management group hierarchy, Policy-as-Code lifecycle (Audit -> Remediate -> Enforce), and Well-Architected Framework guardrails.*
+
+---
+
 ## 1. Simplicity vs security - the honest trade-offs
 
 Every guardrail has a cost in complexity, money or developer friction. The table records where this reference deliberately leans and how to dial it back.

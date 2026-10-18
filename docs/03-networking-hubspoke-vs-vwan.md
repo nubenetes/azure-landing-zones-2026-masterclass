@@ -6,6 +6,13 @@
 
 ---
 
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 02. IaC Provider Matrix](02-iac-provider-matrix.md) | [➡️ Next: 04. PaaS Network Security](04-security-private-vs-service.md)
+
+> 🎥 **Multimedia Sessions & Video Guides**:
+> - 📽️ [**Azure Hub-and-Spoke vs Virtual WAN: 2026 Enterprise Network Architecture**](https://www.youtube.com/watch?v=mUmga-Nz6cc) (`8:11`, 🇬🇧 English CC 20+) — *In-depth trade-off analysis: customer-managed Hub-and-Spoke vs. Microsoft-managed vWAN, routing intents, and IPAM.*
+
+---
+
 ## 1. The two supported topologies
 
 Both are first-class in the ALZ accelerator and in this repository; you switch with one variable:
