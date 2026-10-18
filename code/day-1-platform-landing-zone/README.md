@@ -6,7 +6,7 @@
 
 | Module | Version | Deploys |
 |---|---|---|
-| `Azure/avm-res-resources-resourcegroup/azurerm` | 0.2.2 | Connectivity resource groups (hub per region, DNS, DDoS) |
+| `Azure/avm-res-resources-resourcegroup/azurerm` | 0.4.0 | Connectivity resource groups (hub per region, DNS, DDoS) |
 | `Azure/avm-ptn-alz-management/azurerm` | 0.9.0 | Log Analytics (Entra-only), AMA user-assigned identity, DCRs (VM Insights, Change Tracking, Defender for SQL), optional Sentinel |
 | `Azure/avm-ptn-alz-connectivity-hub-and-spoke-vnet/azurerm` | 0.17.7 | Hub VNets, Azure Firewall + policy (DNS proxy), gateways, Bastion, Private DNS Resolver, DNS Security Policy, Private Link DNS zones, DDoS plan |
 | `Azure/avm-ptn-alz-connectivity-virtual-wan/azurerm` | 0.18.0 | vWAN, secured virtual hubs, sidecar VNets, resolver, Bastion, zones |

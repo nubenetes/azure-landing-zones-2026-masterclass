@@ -33,8 +33,11 @@ module "connectivity_resource_groups" {
   enable_telemetry = var.enable_telemetry
   tags             = var.tags
 
+  # v0.4.0+ is AzAPI-based: the Connectivity subscription context must be
+  # passed through azapi (passing azurerm would silently fall back to the
+  # default azapi provider, i.e. the Management subscription).
   providers = {
-    azurerm = azurerm.connectivity
+    azapi = azapi.connectivity
   }
 }
 
