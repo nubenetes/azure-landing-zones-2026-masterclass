@@ -20,7 +20,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.81" # AzureRM v5 is intentionally NOT used (ALZ AVM modules require v4).
+      version = "~> 5.10" # AzureRM v5 is intentionally NOT used (ALZ AVM modules require v4).
     }
     azuread = {
       source  = "hashicorp/azuread"
