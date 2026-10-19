@@ -2,6 +2,9 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
+<details>
+<summary><strong>📊 Diagram: Hub-and-Spoke Topology (customer-managed)</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TB
     internet(("Internet"))
@@ -37,6 +40,8 @@ flowchart TB
     pdr2 --- zones
     ddos -. protects .- hubw
 ```
+
+</details>
 
 **How to read this diagram:**
 

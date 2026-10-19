@@ -2,12 +2,17 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
+<details>
+<summary><strong>📊 Diagram: Policy Rollout Lifecycle</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     A["AUDIT<br/>Deny: DoNotEnforce / Audit<br/>DINE: DoNotEnforce / AuditIfNotExists"] -->|"PR: phase = remediate"| R["REMEDIATE<br/>Deny: still Audit<br/>DINE: DeployIfNotExists<br/>+ remediation tasks"]
     R -->|"PR: phase = enforce"| E["ENFORCE<br/>Deny: Deny<br/>DINE: DeployIfNotExists"]
     E -->|"regression: PR back to audit<br/>(or targeted exemption)"| A
 ```
+
+</details>
 
 **How to read this diagram:**
 

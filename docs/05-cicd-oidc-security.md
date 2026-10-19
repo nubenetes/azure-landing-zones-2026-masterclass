@@ -46,6 +46,9 @@ Both are supported by the official ALZ accelerator and both can run this reposit
 
 ## 3. OIDC trust model implemented in Day 0
 
+<details>
+<summary><strong>📊 Diagram: 3. OIDC trust model implemented in Day 0</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -60,6 +63,8 @@ sequenceDiagram
     Entra-->>GH: access token (short-lived)
     GH->>ARM: terraform apply with bearer token
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -110,6 +115,9 @@ Effect: the pipeline can assign `Contributor`, `Network Contributor`, `Log Analy
 
 ## 4. Pipeline anatomy
 
+<details>
+<summary><strong>📊 Diagram: 4. Pipeline anatomy</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph PR["GitHub Actions - pull request (terraform-plan.yml)"]
@@ -127,6 +135,8 @@ flowchart LR
     end
     PR --> MAIN
 ```
+
+</details>
 
 **How to read this diagram:**
 

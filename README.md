@@ -99,7 +99,13 @@ A complete, opinionated reference for deploying an **Azure Landing Zone** the wa
 
 The architecture is described from the outside in: first the end-to-end picture, then the governance hierarchy, the platform resources, the two network topologies and their address plan, the trust model, how changes are delivered, how workloads are vended, how policy is rolled out, how the estate is observed, and finally where non-production work lives. Every diagram uses the values of the example `*.tfvars` files (two regions `westeurope` / `northeurope`, hub-and-spoke, `10.0.0.0/8`), so names and addresses match what a plan would show.
 
+> [!TIP]
+> Every diagram in this repository is **collapsed by default** so GitHub does not render dozens of Mermaid diagrams at once. Click a **📊 Diagram** line to expand it; the explanation below each diagram is always visible.
+
 ### 2.1 End-to-end overview
+
+<details>
+<summary><strong>📊 Diagram: 2.1 End-to-end overview</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -142,6 +148,8 @@ flowchart LR
     applyapp -- "Day 2: subscription vending + guardrails" --> lz
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Left - one codebase:** all logic lives in two provider-less modules. Two thin root modules (backend + authentication) and one Terraform Stack consume them, so no logic is duplicated per platform.
@@ -151,6 +159,9 @@ flowchart LR
 - **No secrets anywhere:** every arrow into Entra ID is a workload identity federation (OIDC) token exchange.
 
 ### 2.2 Management group hierarchy, archetypes and subscription placement
+
+<details>
+<summary><strong>📊 Diagram: 2.2 Management group hierarchy, archetypes and subscription placement</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TB
@@ -189,6 +200,8 @@ flowchart TB
     class sIdn,sMgmt,sConn,sSec,sCorp,sOnl,sSbx,sDec sub
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Boxes are management groups, rounded dashed boxes are subscriptions.** Blue = platform landing zone (platform team), green = Workload Landing Zones, grey = special-purpose groups. The tree is defined in [`alz_2026_masterclass.alz_architecture_definition.yaml`](code/modules/platform-landing-zone/lib/architecture_definitions/alz_2026_masterclass.alz_architecture_definition.yaml); each box names its **archetype** and representative **policy assignments** from the ALZ Library `2026.10.0` plus this repository's overrides.
@@ -200,6 +213,9 @@ flowchart TB
 - **The security MG** is the 2026 ALZ addition for SOC tooling (Sentinel workspace, Defender exports, threat intelligence); its subscription is optional.
 
 ### 2.3 Platform landing zone (Day 1): what is deployed in each platform subscription
+
+<details>
+<summary><strong>📊 Diagram: 2.3 Platform landing zone (Day 1): what is deployed in each platform subscription</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TB
@@ -239,6 +255,8 @@ flowchart TB
     g4 -. "placement" .-> other
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Four AVM modules, one root module:** `avm-ptn-alz` (governance), `avm-ptn-alz-management` (logging), one connectivity pattern module (hub-and-spoke shown; `avm-ptn-alz-connectivity-virtual-wan 0.18.0` when `connectivity_type = "virtual_wan"`) and `avm-res-resources-resourcegroup 0.4.0` for the connectivity resource groups.
@@ -249,6 +267,9 @@ flowchart TB
 - **Feature toggles** (`connectivity_features`) switch every optional component on or off - the canary deployment turns off DDoS, Bastion and gateways to stay cheap.
 
 ### 2.4 Network topology A: customer-managed hub-and-spoke (default)
+
+<details>
+<summary><strong>📊 Diagram: 2.4 Network topology A: customer-managed hub-and-spoke (default)</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TB
@@ -290,6 +311,8 @@ flowchart TB
     sbx -. "peering denied" .-x fww
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **One hub per region, one `/12` per region:** the hub VNet is a `/22` at the start of the region's hub `/16`; spokes take `/24`s from the archetype + environment `/16` (corp-prod `10.2.0.0/16`, corp-nonprod `10.3.0.0/16`, online-prod `10.4.0.0/16` ...). Subnet addresses come straight from `hub_vnet_layout` in [`locals.tf`](code/modules/platform-landing-zone/locals.tf).
@@ -301,6 +324,9 @@ flowchart TB
 - **Sandboxes** are never peered (crossed line): they have their own explicit egress and still use a unique range from `10.15.0.0/16`.
 
 ### 2.5 Network topology B: Azure Virtual WAN (toggle)
+
+<details>
+<summary><strong>📊 Diagram: 2.5 Network topology B: Azure Virtual WAN (toggle)</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TB
@@ -333,6 +359,8 @@ flowchart TB
     fw1 --> inet
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Same address plan, different hub:** with `connectivity_type = "virtual_wan"` each region's hub `/16` holds a `/23` virtual hub and a `/24` **sidecar VNet** (`vwan_layout` in `locals.tf`). Spoke `/24`s are identical to hub-and-spoke, so switching topology does not re-address workloads.
@@ -342,6 +370,9 @@ flowchart TB
 - **Gateways are hub features:** ExpressRoute and VPN gateways are deployed inside the virtual hub in scale units rather than in a `GatewaySubnet`.
 
 ### 2.6 IP address management (IPAM)
+
+<details>
+<summary><strong>📊 Diagram: 2.6 IP address management (IPAM)</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -367,6 +398,8 @@ flowchart LR
     sp --> sn3["snet-integration 10.2.0.192/27"]
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Four levels, all computed:** `/8` organisation -> `/12` per region (`cidrsubnet(/8, 4, region.index)`) -> `/16` per archetype + environment (`cidrsubnet(/12, 4, block_index)`) -> `/24` per workload (`cidrsubnet(/16, 8, spoke_index)`). Day 1 publishes the result as the `ipam_plan` output; Day 2 only adds a `spoke_index`.
@@ -387,6 +420,9 @@ flowchart LR
 | Admin -> VM | Azure Bastion in the hub -> VM private IP over peering | Bastion + NSG (management ports from the internet are denied by policy) |
 | Sandbox -> internet | sandbox's own NAT Gateway or public IP | Nothing central - isolated by policy |
 
+<details>
+<summary><strong>📊 Diagram: 2.7 Traffic flows and DNS resolution</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -405,6 +441,8 @@ sequenceDiagram
     VM->>PE: HTTPS to 10.2.0.132 (stays in the spoke VNet)
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Steps 1-2 - one DNS entry point per region:** every vended spoke gets the regional firewall IP as its DNS server (`dns_server_ip_addresses` output), and the firewall's DNS proxy forwards to the resolver inbound endpoint. The firewall therefore sees every name lookup, which FQDN-based network rules need.
@@ -415,6 +453,9 @@ sequenceDiagram
 - **Exception path:** `private_dns_zone_links = true` on a vending entry links zones to that spoke directly (documented exception in [`dns.tf`](code/modules/workload-vending/dns.tf)).
 
 ### 2.8 Identity, OIDC trust and Terraform state
+
+<details>
+<summary><strong>📊 Diagram: 2.8 Identity, OIDC trust and Terraform state</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -458,6 +499,8 @@ flowchart LR
     r4 -.-> c1 & c2
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Two identities, many issuers:** Day 0 creates exactly one *plan* and one *apply* app registration. Each delivery platform you enable adds **federated identity credentials (FICs)** - an `(issuer, subject)` pair - to them; Azure DevOps FICs are added by `day-0-cicd-azure-devops` because the service-connection subject is only known once the connection exists.
@@ -467,6 +510,9 @@ flowchart LR
 - **No secrets anywhere:** there is no client secret or certificate on either app registration; tokens are short-lived and minted per job.
 
 ### 2.9 Delivery: the lifecycle of a change
+
+<details>
+<summary><strong>📊 Diagram: 2.9 Delivery: the lifecycle of a change</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 sequenceDiagram
@@ -494,6 +540,8 @@ sequenceDiagram
     DP->>Az: apply exactly the saved plan (state lock)
 ```
 
+</details>
+
 | Step | GitHub Actions | Azure DevOps Pipelines | HCP Terraform / TFE workspaces | Terraform Stacks |
 |---|---|---|---|---|
 | 3 - static checks | `terraform-plan.yml` (reusable stack workflow) | `alz-pr-validation.yml` | VCS speculative plan | `terraform stacks validate` in CI |
@@ -512,6 +560,9 @@ sequenceDiagram
 - **Full flows per platform:** [`architecture/diagrams/delivery-platforms.md`](architecture/diagrams/delivery-platforms.md); comparison and decision guide: [docs/07](docs/07-delivery-platforms.md) and [ADR-006](architecture/decision-matrices/ADR-006-delivery-platform.md).
 
 ### 2.10 Deployment stages and the platform contract
+
+<details>
+<summary><strong>📊 Diagram: 2.10 Deployment stages and the platform contract</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -534,6 +585,8 @@ flowchart LR
     d1 --- contract
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Day 0 is the only CLI step:** it creates the trust anchor (state + identities) with an operator's elevated, temporary rights; everything after it runs through the chosen delivery platform with the Day 0 identities.
@@ -543,6 +596,9 @@ flowchart LR
 - **Stacks replace the two root modules, not the modules:** the Stack wires the same two modules as components and adds the `canary` deployment.
 
 ### 2.11 Subscription vending: what one entry creates
+
+<details>
+<summary><strong>📊 Diagram: 2.11 Subscription vending: what one entry creates</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TB
@@ -564,6 +620,8 @@ flowchart TB
     sub --> out
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **One map entry is the whole request:** `avm-ptn-alz-sub-vending 0.3.4` turns it into a subscription and everything around it in a single plan; the only number the team chooses is `spoke_index`.
@@ -573,6 +631,9 @@ flowchart TB
 - **Guardrails from minute one:** the subscription lands in a management group that already carries the ALZ policies and the `Wlz-Guardrails-2026` initiative (section [2.12](#212-policy-as-code-lifecycle)). The sequence of the request itself (PR, review, approval) is in [`subscription-vending-flow.md`](architecture/diagrams/subscription-vending-flow.md).
 
 ### 2.12 Policy-as-Code lifecycle
+
+<details>
+<summary><strong>📊 Diagram: 2.12 Policy-as-Code lifecycle</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -599,6 +660,8 @@ flowchart LR
     wlz -.-> phase
 ```
 
+</details>
+
 | Phase-controlled ALZ assignments | Deny (enforced only in `enforce`) | DeployIfNotExists (enforced from `remediate`) |
 |---|---|---|
 | `landingzones` | `Deny-IP-forwarding`, `Deny-MgmtPorts-Internet`, `Deny-Subnet-Without-Nsg`, `Deny-Storage-http`, `Deny-Priv-Esc-AKS`, `Deny-Privileged-AKS` | `Deploy-VM-Backup`, `Deploy-SQL-TDE`, `Deploy-SQL-Threat`, `Deploy-AzSqlDb-Auditing` |
@@ -614,6 +677,9 @@ flowchart LR
 - Runbook and trade-offs per WAF pillar: [docs/06](docs/06-waf-simplicity-vs-security.md); timeline diagram: [`policy-lifecycle.md`](architecture/diagrams/policy-lifecycle.md).
 
 ### 2.13 Management, monitoring and security operations
+
+<details>
+<summary><strong>📊 Diagram: 2.13 Management, monitoring and security operations</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -653,6 +719,8 @@ flowchart LR
     plans --> contact
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **One workspace for the platform:** activity logs and resource diagnostics of every subscription under `alz` are sent to the central workspace by policy, so new subscriptions are covered without any pipeline change.
@@ -663,6 +731,9 @@ flowchart LR
 
 ### 2.14 Non-production: sandboxes, canary and corp-nonprod
 
+<details>
+<summary><strong>📊 Diagram: 2.14 Non-production: sandboxes, canary and corp-nonprod</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     q{"What is the non-production need?"}
@@ -671,6 +742,8 @@ flowchart LR
     q -- "dev / test of a workload needing<br/>on-premises or shared services" --> np["corp-nonprod landing zone<br/>MG corp · shared hub · 10.3.0.0/16"]
     sbx -- "expired" --> dec["decommissioned = true<br/>MG decommissioned -> removal"]
 ```
+
+</details>
 
 **How to read this diagram:**
 

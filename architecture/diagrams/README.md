@@ -2,7 +2,7 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
-All diagrams are authored as **Mermaid** (rendered natively by GitHub), each followed by bullet points explaining how to read it; topology and hierarchy diagrams also have an **ASCII** fallback for terminals, wikis and code reviews.
+All diagrams are authored as **Mermaid** (rendered natively by GitHub), collapsed by default inside a `<details>` block (click **📊 Diagram** to expand - this avoids GitHub rendering every diagram at once), each followed by bullet points explaining how to read it; topology and hierarchy diagrams also have an **ASCII** fallback for terminals, wikis and code reviews.
 
 | Diagram | Shows |
 |---|---|

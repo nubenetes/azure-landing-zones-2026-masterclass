@@ -53,6 +53,9 @@ The eight CAF design areas map onto this repository as follows:
 
 ## 3. Management group hierarchy
 
+<details>
+<summary><strong>📊 Diagram: 3. Management group hierarchy</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TD
     TRG["Tenant Root Group"]
@@ -78,6 +81,8 @@ flowchart TD
     class LZ,CORP,ONL workload
     class SBX,DEC special
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -136,6 +141,9 @@ Three levers, in order of preference:
 
 ## 4. Subscription model
 
+<details>
+<summary><strong>📊 Diagram: 4. Subscription model</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph Platform
@@ -154,6 +162,8 @@ flowchart LR
     G1 -- peering / vHub connection --> C
     P1 & P2 & G1 & SB -. diagnostics .-> M
 ```
+
+</details>
 
 **How to read this diagram:**
 

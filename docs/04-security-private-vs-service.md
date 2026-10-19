@@ -31,6 +31,9 @@ This repository enforces the verdict with three controls:
 
 ## 2. How each mechanism works
 
+<details>
+<summary><strong>📊 Diagram: 2. How each mechanism works</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph spokeA["Spoke VNet - Private Endpoint"]
@@ -44,6 +47,8 @@ flowchart LR
     app2 -- "optimised backbone route<br/>to the PUBLIC endpoint" --> st2[("Storage account<br/>public endpoint ENABLED<br/>+ VNet rule")]
     app2 -. "also reachable: ANY storage account<br/>in ANY tenant (exfiltration path)" .-> st3[("Unknown storage account")]
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -81,6 +86,9 @@ flowchart LR
 
 ## 4. Decision flow
 
+<details>
+<summary><strong>📊 Diagram: 4. Decision flow</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TD
     A["PaaS access needed"] --> B{"Production or<br/>regulated data?"}
@@ -93,6 +101,8 @@ flowchart TD
     E -- no --> PE
     E -- yes --> SE["Service Endpoint + Service Endpoint Policy<br/>(time-boxed exception)"]
 ```
+
+</details>
 
 **How to read this diagram:**
 

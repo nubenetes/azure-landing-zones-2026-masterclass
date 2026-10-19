@@ -23,6 +23,9 @@ connectivity_type = "hub_and_spoke_vnet" # or "virtual_wan"
 
 ### 1.1 Customer-managed hub-and-spoke
 
+<details>
+<summary><strong>📊 Diagram: 1.1 Customer-managed hub-and-spoke</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     onprem["On-premises / branches"]
@@ -52,6 +55,8 @@ flowchart LR
     pdr1 & pdr2 --- dns
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - Each **region** owns a `/12`; the hub VNet takes the first `/22` of it and spokes get `/24` ranges from the archetype blocks.
@@ -61,6 +66,9 @@ flowchart LR
 You own: route tables, firewall placement, peering, gateway transit, BGP propagation. Microsoft owns: the individual managed services.
 
 ### 1.2 Microsoft-managed Azure Virtual WAN
+
+<details>
+<summary><strong>📊 Diagram: 1.2 Microsoft-managed Azure Virtual WAN</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -82,6 +90,8 @@ flowchart LR
     side1 -- "VNet connection" --> vh1
     onprem <--> er1
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -112,6 +122,9 @@ Routing intent sends all internet and private traffic through the secured-hub fi
 
 ### Tipping point
 
+<details>
+<summary><strong>📊 Diagram: Tipping point</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TD
     A{"3+ regions?"} -- yes --> V["Virtual WAN"]
@@ -123,6 +136,8 @@ flowchart TD
     D -- yes --> H["Hub-and-spoke"]
     D -- no --> H2["Hub-and-spoke (lower base cost)<br/>re-evaluate yearly"]
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -193,6 +208,9 @@ All of this is computed in [`locals.tf`](../code/modules/platform-landing-zone/l
 
 ### 4.1 Name resolution path (hub-and-spoke)
 
+<details>
+<summary><strong>📊 Diagram: 4.1 Name resolution path (hub-and-spoke)</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 sequenceDiagram
     participant VM as Workload (spoke)
@@ -210,6 +228,8 @@ sequenceDiagram
         PUB-->>VM: public IP (blocked by Deny-Public-Endpoints in corp)
     end
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -254,6 +274,9 @@ Key properties:
 
 ### 5.2 Sandbox isolation in a hub-and-spoke topology
 
+<details>
+<summary><strong>📊 Diagram: 5.2 Sandbox isolation in a hub-and-spoke topology</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     onprem["On-premises"]
@@ -281,6 +304,8 @@ flowchart LR
     s3 -. "VPN / ExpressRoute gateways denied" .-x onprem
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Top half - production connectivity:** workload spokes in `corp` (production *and* non-production) peer to the single production hub, which is the only path to on-premises and the internet for them.
@@ -307,6 +332,9 @@ flowchart LR
 
 ### 5.4 Sandbox lifecycle
 
+<details>
+<summary><strong>📊 Diagram: 5.4 Sandbox lifecycle</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 stateDiagram-v2
     [*] --> Requested: PR adds a sandbox entry<br/>(budget + expires_on)
@@ -320,6 +348,8 @@ stateDiagram-v2
     Cancelled --> [*]
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Requested -> Active:** a sandbox exists only after a reviewed pull request with a budget and an expiry date; vending creates the subscription in the `sandbox` management group.
@@ -332,6 +362,9 @@ stateDiagram-v2
 ### 5.5 Can the hub be replicated inside a sandbox?
 
 Three different things are often meant by "a hub in the sandbox". They differ greatly in feasibility and cost:
+
+<details>
+<summary><strong>📊 Diagram: 5.5 Can the hub be replicated inside a sandbox?</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TB
@@ -350,6 +383,8 @@ flowchart TB
         c0 -.- c1
     end
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -382,6 +417,9 @@ flowchart TB
 
 ### 5.7 Testing platform changes: the canary environment
 
+<details>
+<summary><strong>📊 Diagram: 5.7 Testing platform changes: the canary environment</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TB
     trg["Tenant Root Group"]
@@ -403,6 +441,8 @@ flowchart TB
     ph -.-> law
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Two hierarchies in one tenant:** CAF's testing approach duplicates the production management group tree under the Tenant Root Group with a `canary` prefix or suffix, because management group IDs must be unique per tenant. Here it is the `alz_2026_masterclass_canary` architecture with `management_group_id_prefix = "canary-"`.
@@ -415,6 +455,9 @@ flowchart TB
 > CAF notes the canary hierarchy is optional and not a common pattern. The cheaper alternative it describes is testing platform resources in sandbox subscriptions inside the production hierarchy - accepting that RBAC and policy inheritance from the management group tree is **not** tested that way.
 
 ### 5.8 Non-production workloads: shared hub or separate hub?
+
+<details>
+<summary><strong>📊 Diagram: 5.8 Non-production workloads: shared hub or separate hub?</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -432,6 +475,8 @@ flowchart LR
     end
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Option 1 (this repository's default):** production and non-production workloads are separate **subscriptions** with separate address blocks (`corp-prod` vs `corp-nonprod`), behind the same hub. Isolation comes from firewall rules (default deny between the two blocks), NSGs, RBAC and policy - not from a second hub.
@@ -439,6 +484,9 @@ flowchart LR
 - **Neither option is a sandbox:** both connect to shared services and on-premises, so the workloads inside them are governed by the `corp` / `online` archetypes, not the `sandbox` one.
 
 ### 5.9 Decision guide
+
+<details>
+<summary><strong>📊 Diagram: 5.9 Decision guide</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart TD
@@ -452,6 +500,8 @@ flowchart TD
     q2 -- no --> D["corp-nonprod landing zone<br/>on the shared hub"]
     q2 -- yes --> E["Separate non-production hub"]
 ```
+
+</details>
 
 **How to read this diagram:**
 

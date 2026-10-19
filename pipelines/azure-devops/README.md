@@ -12,6 +12,9 @@ YAML pipelines that run the same root modules as the GitHub Actions workflows, a
 | `templates/terraform-stack.yml` | - | Plan stage (`sc-alz-plan`, `-lock=false`) + optional deployment-job apply stage (`sc-alz-apply`) |
 | `templates/install-terraform.yml` | - | Pinned Terraform with SHA256 verification (no Marketplace extension) |
 
+<details>
+<summary><strong>📊 Diagram: Azure DevOps Pipelines</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph plan["Plan stage - sc-alz-plan (read-only)"]
@@ -22,6 +25,8 @@ flowchart LR
     end
     plan --> apply
 ```
+
+</details>
 
 **How to read this diagram:**
 
