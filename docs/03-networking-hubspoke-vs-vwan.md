@@ -52,6 +52,12 @@ flowchart LR
     pdr1 & pdr2 --- dns
 ```
 
+**How to read this diagram:**
+
+- Each **region** owns a `/12`; the hub VNet takes the first `/22` of it and spokes get `/24` ranges from the archetype blocks.
+- Spokes **peer** to their regional hub and route `0.0.0.0/0` to the hub firewall; hubs are joined by global peering.
+- On-premises connects through the primary hub gateway; both regional resolvers use the same central `privatelink.*` zones.
+
 You own: route tables, firewall placement, peering, gateway transit, BGP propagation. Microsoft owns: the individual managed services.
 
 ### 1.2 Microsoft-managed Azure Virtual WAN
@@ -76,6 +82,12 @@ flowchart LR
     side1 -- "VNet connection" --> vh1
     onprem <--> er1
 ```
+
+**How to read this diagram:**
+
+- One Virtual WAN with a **secured hub per region**; routing intent sends internet and private traffic through the hub firewall.
+- Hub-to-hub transit is **managed by Microsoft**; spokes and the sidecar VNet attach through VNet connections.
+- Branches, SD-WAN and point-to-site users connect directly to the hub gateways.
 
 Routing intent sends all internet and private traffic through the secured-hub firewall; you do not author UDRs. Services that cannot live inside a virtual hub (Private DNS Resolver, Bastion) live in a **sidecar VNet** connected to the hub.
 
@@ -111,6 +123,12 @@ flowchart TD
     D -- yes --> H["Hub-and-spoke"]
     D -- no --> H2["Hub-and-spoke (lower base cost)<br/>re-evaluate yearly"]
 ```
+
+**How to read this diagram:**
+
+- Answer the questions **top-down**; any `yes` in the first three questions leads to Virtual WAN.
+- The tipping point is **3+ regions, more than ~50 spokes, or heavy branch / SD-WAN transit**.
+- Below it, hub-and-spoke wins on cost and routing control; re-evaluate yearly because the address plan works for both.
 
 > [!NOTE]
 > **Tipping point: 3+ regions or more than ~50 spoke VNets.** Below it, hub-and-spoke is usually cheaper and more flexible. Above it, vWAN's managed transit removes most of the routing toil. The IPAM below is identical for both, so the decision is reversible in planning terms.
@@ -192,6 +210,12 @@ sequenceDiagram
         PUB-->>VM: public IP (blocked by Deny-Public-Endpoints in corp)
     end
 ```
+
+**How to read this diagram:**
+
+- A workload in a spoke asks the **hub firewall** (its configured DNS server) to resolve a PaaS name.
+- The firewall forwards to the **Private DNS Resolver** inbound endpoint, which can see the central `privatelink.*` zones.
+- If a Private Endpoint record exists, the **private IP** is returned; otherwise public resolution applies, and Corp policies deny public endpoints.
 
 Key properties:
 

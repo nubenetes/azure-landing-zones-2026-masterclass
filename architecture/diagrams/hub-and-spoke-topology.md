@@ -38,6 +38,14 @@ flowchart TB
     ddos -. protects .- hubw
 ```
 
+**How to read this diagram:**
+
+- The **Connectivity subscription** holds one hub VNet per region (Azure Firewall with DNS proxy, gateways, Bastion, Private DNS Resolver) plus the shared Private Link DNS zones and the DDoS plan.
+- **Spokes** (workload VNets in Corp / Online) are peered only to their regional hub and send all traffic (`0.0.0.0/0`) to the hub firewall through a route table.
+- The two hubs are joined by **global peering**, so a spoke in one region reaches a spoke in the other through both firewalls.
+- **Internet egress** leaves only through the firewalls; **on-premises** connects through the gateways in the primary hub.
+- **Name resolution**: spokes use the firewall as DNS server, which forwards to the resolver linked to the central `privatelink.*` zones.
+
 ## ASCII
 
 ```text

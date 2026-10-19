@@ -52,6 +52,12 @@ stateDiagram-v2
     Enforce --> [*]
 ```
 
+**How to read this diagram:**
+
+- New controls and brownfield tenants **start in Audit**.
+- **Remediate** turns on DeployIfNotExists / Modify and fixes existing resources; **Enforce** turns on Deny.
+- The arrow back from Enforce to Audit is the rollback path for a regression or a new library version; every transition is a pull request.
+
 | Phase | Deny policies | DeployIfNotExists / Modify | Remediation tasks | Exit criteria |
 |---|---|---|---|---|
 | **Audit** | `DoNotEnforce` (Day 1) / effect `Audit` (Day 2) | `DoNotEnforce` (Day 1) / effect `AuditIfNotExists` (Day 2) | None | Compliance dashboard reviewed; owners of non-compliant resources identified; exemptions created as code |

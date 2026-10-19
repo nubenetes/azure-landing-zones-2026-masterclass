@@ -25,6 +25,13 @@ flowchart TD
     SBX -.- s7(["sub: data-science-sandbox"])
 ```
 
+**How to read this diagram:**
+
+- **Solid arrows** are parent -> child management groups; each box names the ALZ **archetype** (the set of policy and role assignments) applied at that level.
+- **Rounded boxes on dotted lines** are subscriptions placed in that management group: platform subscriptions under Platform, example workload subscriptions under Corp / Online, an isolated subscription under Sandbox.
+- Policies are **inherited downwards**: anything assigned at `alz` (Defender, diagnostics, data residency) also applies to every platform and workload subscription.
+- `landingzones` is displayed as *Workload Landing Zones*; its archetype adds the Day 2 `Wlz-Guardrails-2026` initiative to every workload.
+
 ## ASCII
 
 ```text

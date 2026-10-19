@@ -61,6 +61,12 @@ sequenceDiagram
     GH->>ARM: terraform apply with bearer token
 ```
 
+**How to read this diagram:**
+
+- Steps 1-2: the GitHub job requests an **OIDC token** whose subject encodes the context (here the protected `production` environment).
+- Steps 3-4: Entra ID accepts the token only if issuer, subject and audience match a **federated credential** of the requested app, then issues a short-lived access token.
+- Step 5: Terraform uses that token; there is **no stored secret** at any point.
+
 GitHub Actions view below; the equivalent subjects for Azure DevOps, HCP Terraform / TFE workspaces and Terraform Stacks are listed in [docs/07](07-delivery-platforms.md#federated-identity-credentials-entra-id-trusts-exactly-these-subjects).
 
 | Identity | Federated subjects (exact match) | Azure RBAC | State access |
@@ -106,21 +112,28 @@ Effect: the pipeline can assign `Contributor`, `Network Contributor`, `Log Analy
 
 ```mermaid
 flowchart LR
-    subgraph PR["Pull request (terraform-plan.yml)"]
+    subgraph PR["GitHub Actions - pull request (terraform-plan.yml)"]
         fmt["terraform fmt -check"] --> val["init -backend=false + validate"] --> lint["tflint (terraform + azurerm rulesets)"]
         lint --> p1["plan day-1 (plan identity, -lock=false)"]
         lint --> p2["plan day-2 (plan identity, -lock=false)"]
         p1 & p2 --> c["plan posted as PR comment"]
     end
-    subgraph MAIN["Push to main (terraform-apply.yml)"]
+    subgraph MAIN["GitHub Actions - push to main (terraform-apply.yml)"]
         mp1["plan day-1"] --> gate1{{"environment: production<br/>required reviewers"}} --> a1["apply saved plan"]
         a1 --> mp2["plan day-2"] --> gate2{{"environment: production"}} --> a2["apply saved plan"]
     end
-    subgraph SCHED["Weekdays 05:17 UTC (terraform-drift-detection.yml)"]
+    subgraph SCHED["GitHub Actions - weekdays 05:17 UTC (terraform-drift-detection.yml)"]
         d1["plan day-1"] & d2["plan day-2"] --> issue["open / update / close 'drift' issues"]
     end
     PR --> MAIN
 ```
+
+**How to read this diagram:**
+
+- This is the **GitHub Actions** implementation; Azure DevOps, HCP Terraform / TFE and Stacks equivalents are in [delivery-platforms.md](../architecture/diagrams/delivery-platforms.md).
+- **Pull request**: static analysis, then read-only plans posted as a PR comment.
+- **Push to main**: Day 1 plan -> environment approval -> apply, then the same for Day 2.
+- **Schedule**: read-only plans open or close `drift` issues.
 
 | File | Purpose |
 |---|---|

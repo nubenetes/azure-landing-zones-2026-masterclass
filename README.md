@@ -77,31 +77,53 @@ A complete, opinionated reference for deploying an **Azure Landing Zone** the wa
 ## Reference architecture at a glance
 
 ```mermaid
-flowchart TB
-    subgraph tenant["Microsoft Entra ID tenant"]
+flowchart LR
+    subgraph repo["Git repository (single source of truth)"]
         direction TB
-        root["Tenant Root Group"] --> alz["alz<br/>Intermediate root"]
-        alz --> platform["Platform"]
-        alz --> lz["Workload Landing Zones"]
-        alz --> sandbox["Sandbox"]
-        alz --> decom["Decommissioned"]
-        platform --> identity["Identity"]
-        platform --> management["Management"]
-        platform --> connectivity["Connectivity"]
-        platform --> security["Security"]
-        lz --> corp["Corp"]
-        lz --> online["Online"]
+        mods["code/modules/*<br/>platform-landing-zone · workload-vending<br/>(no providers, no backend)"]
+        roots["Root modules<br/>day-1-platform-landing-zone<br/>day-2-workload-vending-operations"]
+        stackcfg["Terraform Stack<br/>hcp-terraform-stacks/alz"]
+        mods --> roots
+        mods --> stackcfg
     end
 
-    subgraph pipeline["GitHub Actions (OIDC, no secrets)"]
-        pr["PR: fmt / validate / tflint / plan<br/>read-only identity"]
-        main["main: plan -> approval -> apply<br/>privileged identity (environment-bound)"]
-        drift["schedule: drift detection"]
+    subgraph delivery["Delivery platforms - pick ONE per hierarchy"]
+        direction TB
+        gha["GitHub Actions<br/>OIDC · environment approval"]
+        ado["Azure DevOps Pipelines<br/>WIF service connections · checks"]
+        hcp["HCP Terraform workspaces<br/>dynamic credentials · confirm apply"]
+        tfe["Terraform Enterprise workspaces<br/>(self-managed, same model)"]
+        stk["Terraform Stacks<br/>canary -> production deployments"]
     end
 
-    pipeline -- "Day 1: avm-ptn-alz + management + connectivity" --> alz
-    pipeline -- "Day 2: subscription vending + guardrails" --> lz
+    subgraph entra["Microsoft Entra ID (Day 0)"]
+        direction TB
+        planapp["plan identity<br/>read-only"]
+        applyapp["apply identity<br/>ABAC-limited Owner"]
+    end
+
+    subgraph tenant["Azure tenant"]
+        direction TB
+        alz["alz - intermediate root"] --> platform["Platform<br/>identity · management · connectivity · security"]
+        alz --> lz["Workload Landing Zones<br/>corp · online"]
+        alz --> sbx["Sandbox · Decommissioned"]
+    end
+
+    roots --> gha & ado & hcp & tfe
+    stackcfg --> stk
+    gha & ado & hcp & tfe -- "plan (PR / drift)" --> planapp
+    gha & ado & hcp & tfe & stk -- "apply (after approval)" --> applyapp
+    applyapp -- "Day 1: MGs, policy, management, hub / vWAN" --> alz
+    applyapp -- "Day 2: subscription vending + guardrails" --> lz
 ```
+
+**How to read this diagram:**
+
+- **Left - one codebase:** all logic lives in two provider-less modules. Two thin root modules (backend + authentication) and one Terraform Stack consume them, so no logic is duplicated per platform.
+- **Centre - five interchangeable delivery platforms:** GitHub Actions, Azure DevOps, HCP Terraform workspaces and Terraform Enterprise workspaces run the root modules; Terraform Stacks runs the Stack. Only **one** platform may own a given management group hierarchy.
+- **Entra ID - the same two identities everywhere:** created once in Day 0. Plans (pull requests, drift detection) use the read-only identity; applies use the privileged identity, reachable only after a human approval (or a Stacks auto-approve rule for the canary). Stacks use the apply identity for plan and apply of each deployment.
+- **Right - what gets deployed:** Day 1 builds the management group hierarchy, policy, management resources and connectivity (hub-and-spoke or Virtual WAN); Day 2 vends subscriptions into the Workload Landing Zones and assigns the workload guardrails.
+- **No secrets anywhere:** every arrow into Entra ID is a workload identity federation (OIDC) token exchange.
 
 Detailed diagrams: [`architecture/diagrams/`](architecture/diagrams/README.md).
 
