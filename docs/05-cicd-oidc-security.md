@@ -9,7 +9,9 @@
 > 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 04. PaaS Network Security](04-security-private-vs-service.md) | [➡️ Next: 06. WAF & Policy Rollout](06-waf-simplicity-vs-security.md)
 
 > 🎥 **Multimedia Sessions & Video Guides**:
+> - 📽️ [**Day 0 to Day 2: Zero-Secret CI/CD Pipelines with GitHub Actions & OIDC**](https://www.youtube.com/watch?v=IcH7LalL5cc) (`5:52`, 🇬🇧 English CC 20+) — *Deep dive into zero-secret pipelines, Workload Identity Federation, ABAC-conditioned Owner roles, and plan vs. apply boundaries.*
 > - ⚡ [**How Workload Identity Federation Replaces Stored Secrets**](https://www.youtube.com/shorts/0mdEib04nTw) (`1:16`, 🇬🇧 English CC 20+) — *Architecture short on eliminating long-lived client secrets in GitHub Actions pipelines using OpenID Connect (OIDC) and Entra ID.*
+> - ⚡ [**How OIDC Eradicates Pipeline Secrets**](https://www.youtube.com/shorts/-iBnp37YS3k) (`1:18`, 🇬🇧 English CC 20+) — *Architecture short on short-lived cryptographic JWT token exchange with Entra ID to contain repository compromise blast radiuses.*
 
 ---
 

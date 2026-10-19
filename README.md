@@ -60,9 +60,9 @@ A complete, opinionated reference for deploying an **Azure Landing Zone** the wa
 - [3. Repository map](#3-repository-map)
 - [4. Documentation index](#4-documentation-index)
 - [5. 🎥 Video Guides, Technical Shorts & Multimedia Sessions (YouTube)](#5--video-guides-technical-shorts--multimedia-sessions-youtube)
-  - [5.1 📊 Technical Multimedia Catalog (10 Sessions)](#51--technical-multimedia-catalog-10-sessions)
-  - [5.2 Section A: Deep-Dive Architectural Video Guides (6 Sessions)](#52-section-a-deep-dive-architectural-video-guides-6-sessions)
-  - [5.3 Section B: Technical Shorts & Architecture Takeaways (4 Sessions)](#53-section-b-technical-shorts--architecture-takeaways-4-sessions)
+  - [5.1 📊 Technical Multimedia Catalog (20 Sessions)](#51--technical-multimedia-catalog-20-sessions)
+  - [5.2 Section A: Deep-Dive Architectural Video Guides (9 Sessions)](#52-section-a-deep-dive-architectural-video-guides-9-sessions)
+  - [5.3 Section B: Technical Shorts & Architecture Takeaways (11 Sessions)](#53-section-b-technical-shorts--architecture-takeaways-11-sessions)
 - [6. Quickstart: Day 0, Day 1, Day 2](#6-quickstart-day-0-day-1-day-2)
   - [6.1 Prerequisites](#61-prerequisites)
   - [6.2 Day 0 - Bootstrap trust (local, once)](#62-day-0---bootstrap-trust-local-once)
@@ -814,7 +814,7 @@ azure-landing-zones-2026-masterclass/
 
 ## 5. 🎥 Video Guides, Technical Shorts & Multimedia Sessions (YouTube)
 
-The architectural patterns, provider matrices, network topologies, and zero-secret pipeline configurations of this masterclass are accompanied by a dedicated series of technical video guides and rapid architecture shorts synthesized with **Gemini NotebookLM**.
+The architectural patterns, provider matrices, network topologies, zero-secret pipelines, delivery platforms, and subscription vending mechanisms of this masterclass are accompanied by a dedicated series of technical video guides and rapid architecture shorts synthesized with **Gemini NotebookLM**.
 
 All sessions are hosted on the official YouTube channel [**@nubenetes**](https://youtube.com/@nubenetes).
 
@@ -822,9 +822,9 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 > **Multilingual Technical Content 🌐**:
 > The architectural masterclasses and shorts feature native **English** technical narration with auto-generated subtitles (CC) in over **20 languages** to assist cloud platform teams, enterprise architects, and site reliability engineers worldwide.
 
-### 5.1 📊 Technical Multimedia Catalog (10 Sessions)
+### 5.1 📊 Technical Multimedia Catalog (20 Sessions)
 
-#### 5.1.1 📽️ Deep-Dive Architectural Video Guides (6 Episodes)
+#### 5.1.1 📽️ Deep-Dive Architectural Video Guides (9 Episodes)
 
 | Format | Title / Episode | Focus / Core Engineering Domain | Language | Duration | Direct YouTube Link |
 | :---: | :--- | :--- | :---: | :---: | :--- |
@@ -834,8 +834,11 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 | 📽️ **Video Guide** | [**Retiring the CAF Monolith: Azure Verified Modules (AVM) & ALZ Library**](https://www.youtube.com/watch?v=BNEGxzQgDB8) | **Modern IaC Stack**: Archiving legacy monolithic CAF modules, composable Azure Verified Modules (AVM), decoupled ALZ Library, and AzAPI-first provider architecture | 🇬🇧 English *(CC 20+)* | `7:59` | [▶️ Watch Video](https://www.youtube.com/watch?v=BNEGxzQgDB8) |
 | 📽️ **Video Guide** | [**Azure Hub-and-Spoke vs Virtual WAN: 2026 Enterprise Network Architecture**](https://www.youtube.com/watch?v=mUmga-Nz6cc) | **Network Topology & Sizing**: Traditional Hub-and-Spoke vs. Virtual WAN (vWAN), routing intents, virtual network peering, NVA inspection, and hierarchical IPAM addressing | 🇬🇧 English *(CC 20+)* | `8:11` | [▶️ Watch Video](https://www.youtube.com/watch?v=mUmga-Nz6cc) |
 | 📽️ **Video Guide** | [**Azure Private Endpoints vs Service Endpoints: PaaS Network Security Blueprint**](https://www.youtube.com/watch?v=ppqHvYNkII4) | **PaaS Network Security**: Private Endpoints default standard vs Service Endpoints exception, centralized Private DNS Zones, egress filtering, and data exfiltration mitigation | 🇬🇧 English *(CC 20+)* | `8:30` | [▶️ Watch Video](https://www.youtube.com/watch?v=ppqHvYNkII4) |
+| 📽️ **Video Guide** | [**Azure Landing Zones 2026: Enterprise Architecture Mental Model & Deep Dive**](https://www.youtube.com/watch?v=nVpDkEKyBr8) | **Mental Model & Operational Synthesis**: Deconstructing monolithic blast radiuses, establishing day-1 workload agility, subscription vending engines, and zero-drift governance | 🇬🇧 English *(CC 20+)* | `10:40` | [▶️ Watch Video](https://www.youtube.com/watch?v=nVpDkEKyBr8) |
+| 📽️ **Video Guide** | [**Day 0 to Day 2: Zero-Secret CI/CD Pipelines with GitHub Actions & OIDC**](https://www.youtube.com/watch?v=IcH7LalL5cc) | **Pipeline Security Deep Dive**: Workload Identity Federation (OIDC), read-only plan vs environment-gated apply identities, ABAC Owner scoping, and ephemeral Entra ID tokens | 🇬🇧 English *(CC 20+)* | `5:52` | [▶️ Watch Video](https://www.youtube.com/watch?v=IcH7LalL5cc) |
+| 📽️ **Video Guide** | [**ALZ 2026 Masterclass: Modular Architecture & AVM Rebuild**](https://www.youtube.com/watch?v=HjLte2SGCk0) | **Modular Architecture & Migration Roadmap**: Managing the retirement deadlines (August 2026 CAF monolith, 2026/2027 Blueprints & Bicep classic), AVM patterns, and AzAPI schema enforcement | 🇬🇧 English *(CC 20+)* | `6:49` | [▶️ Watch Video](https://www.youtube.com/watch?v=HjLte2SGCk0) |
 
-#### 5.1.2 ⚡ Technical Shorts & Architecture Takeaways (4 Episodes)
+#### 5.1.2 ⚡ Technical Shorts & Architecture Takeaways (11 Episodes)
 
 | Format | Title / Episode | Focus / Core Engineering Domain | Language | Duration | Direct YouTube Link |
 | :---: | :--- | :--- | :---: | :---: | :--- |
@@ -843,13 +846,20 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 | ⚡ **Short** | [**How Workload Identity Federation Replaces Stored Secrets**](https://www.youtube.com/shorts/0mdEib04nTw) | **CI/CD Security**: Eliminating static client secrets in GitHub Actions pipelines using OpenID Connect (OIDC) and Entra ID | 🇬🇧 English *(CC 20+)* | `1:16` | [▶️ Watch Short](https://www.youtube.com/shorts/0mdEib04nTw) |
 | ⚡ **Short** | [**Why Azure Landing Zones Split Corp and Online**](https://www.youtube.com/shorts/Uab5Y1nnt08) | **Hierarchy Design**: Why management groups split Corp vs Online rather than dev/stage/prod environments | 🇬🇧 English *(CC 20+)* | `1:24` | [▶️ Watch Short](https://www.youtube.com/shorts/Uab5Y1nnt08) |
 | ⚡ **Short** | [**Choosing Between Azure Private and Service Endpoints**](https://www.youtube.com/shorts/E1rnKNKWWUg) | **PaaS Decision Rules**: Key decision criteria between Private Endpoints and Service Endpoints for enterprise data boundary defense | 🇬🇧 English *(CC 20+)* | `1:20` | [▶️ Watch Short](https://www.youtube.com/shorts/E1rnKNKWWUg) |
+| ⚡ **Short** | [**How OIDC Eradicates Pipeline Secrets**](https://www.youtube.com/shorts/-iBnp37YS3k) | **Zero-Secret Pipelines**: Eradicating repository passwords and long-lived credentials with short-lived JWT exchange | 🇬🇧 English *(CC 20+)* | `1:18` | [▶️ Watch Short](https://www.youtube.com/shorts/-iBnp37YS3k) |
+| ⚡ **Short** | [**How Azure Private Endpoints Secure PaaS**](https://www.youtube.com/shorts/XDOoQBp12dk) | **PaaS Perimeter**: Private RFC 1918 IPs in subnets and navigating the 2026 default outbound access retirement | 🇬🇧 English *(CC 20+)* | `1:19` | [▶️ Watch Short](https://www.youtube.com/shorts/XDOoQBp12dk) |
+| ⚡ **Short** | [**Why Azure Networks Switch to vWAN**](https://www.youtube.com/shorts/DmKLtsW8O8Y) | **Global Transit**: Automated mesh routing and crossing the regional tipping point beyond 50 spoke VNets | 🇬🇧 English *(CC 20+)* | `1:28` | [▶️ Watch Short](https://www.youtube.com/shorts/DmKLtsW8O8Y) |
+| ⚡ **Short** | [**How Phased Policy as Code Works**](https://www.youtube.com/shorts/bh9-IuX7Qb0) | **Policy-as-Code Lifecycle**: Preventing brownfield production outages through Audit -> Remediate -> Enforce stages | 🇬🇧 English *(CC 20+)* | `1:15` | [▶️ Watch Short](https://www.youtube.com/shorts/bh9-IuX7Qb0) |
+| ⚡ **Short** | [**How Subscription Vending Automates Azure**](https://www.youtube.com/shorts/GVoFBsgFtms) | **Subscription Vending**: Eliminating IT approval tickets and delivering pre-governed workload environments via GitOps | 🇬🇧 English *(CC 20+)* | `1:19` | [▶️ Watch Short](https://www.youtube.com/shorts/GVoFBsgFtms) |
+| ⚡ **Short** | [**Why Azure Separates Corp and Online**](https://www.youtube.com/shorts/n2lvZtLn8Ag) | **Network Segmentation**: Establishing clean hybrid corporate transit boundaries versus public internet ingress | 🇬🇧 English *(CC 20+)* | `1:21` | [▶️ Watch Short](https://www.youtube.com/shorts/n2lvZtLn8Ag) |
+| ⚡ **Short** | [**Why Microsoft Killed the Azure Landing Zone Monolith**](https://www.youtube.com/shorts/bB2fs8A28RI) | **Modular Shift**: Escaping monolithic state file bottlenecks and adopting single-purpose AVM building blocks | 🇬🇧 English *(CC 20+)* | `1:26` | [▶️ Watch Short](https://www.youtube.com/shorts/bB2fs8A28RI) |
 
 <details>
 <summary>📂 <strong>Detailed Agendas, Transcripts & Engineering Takeaways</strong></summary>
 
 <br/>
 
-### 5.2 Section A: Deep-Dive Architectural Video Guides (6 Sessions)
+### 5.2 Section A: Deep-Dive Architectural Video Guides (9 Sessions)
 
 #### 5.2.1 The Cloud Metropolis: Azure Landing Zones Architecture Blueprint (8:30)
 - 🔗 **Direct URL**: [https://www.youtube.com/watch?v=u9rLpmpUf2Y](https://www.youtube.com/watch?v=u9rLpmpUf2Y)
@@ -893,9 +903,30 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 - 📝 **Technical Overview**:
 > Masterclass on enterprise PaaS network isolation in Azure. Demonstrates why Private Endpoints are the non-negotiable default for enterprise production environments and examines why Service Endpoints are restricted to audited exceptions. Covers centralized Private DNS Zones in the Connectivity subscription, virtual network link automation, split-horizon DNS, and defending against data exfiltration attacks while complying with Azure's 2026 default outbound access deprecation.
 
+#### 5.2.7 Azure Landing Zones 2026: Enterprise Architecture Mental Model & Deep Dive (10:40)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=nVpDkEKyBr8](https://www.youtube.com/watch?v=nVpDkEKyBr8)
+- ⏱️ **Duration**: 10:40 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Operational Architecture, Subscription Vending, Blast Radius Isolation, Day-2 Governance
+- 📝 **Technical Overview**:
+> End-to-end architectural synthesis transforming the dense 2026 Azure Landing Zones specification into an actionable operational model. Analyzes how moving away from monolithic deployments eradicates terrifying blast radiuses, how central utilities in platform subscriptions unblock development, and how automated subscription vending provisions fully wired, compliant workload environments from day one.
+
+#### 5.2.8 Day 0 to Day 2: Zero-Secret CI/CD Pipelines with GitHub Actions & OIDC (5:52)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=IcH7LalL5cc](https://www.youtube.com/watch?v=IcH7LalL5cc)
+- ⏱️ **Duration**: 5:52 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: CI/CD Architecture, Workload Identity Federation, OIDC, ABAC Conditions, Zero Secrets
+- 📝 **Technical Overview**:
+> Architectural deep dive into designing enterprise-grade, zero-secret CI/CD pipelines for Azure infrastructure. Details the five foundational pillars of pipeline security: eliminating static credentials via Workload Identity Federation (OIDC), strict separation of read-only plan identities from environment-bound apply identities, ABAC role restrictions on elevated permissions, and automated token lifecycle management.
+
+#### 5.2.9 ALZ 2026 Masterclass: Modular Architecture & AVM Rebuild (6:49)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=HjLte2SGCk0](https://www.youtube.com/watch?v=HjLte2SGCk0)
+- ⏱️ **Duration**: 6:49 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: IaC Modernization, AVM Modules, ALZ Library, Retirement Milestones, AzAPI
+- 📝 **Technical Overview**:
+> Comprehensive roadmap on navigating the 2026 deprecation deadlines across the Azure infrastructure ecosystem. Details the retirement timeline for legacy CAF modules, ALZ-Bicep classic, and Azure Blueprints, while demonstrating how to construct resilient, modular platforms using Microsoft Azure Verified Modules (AVM), the versioned ALZ Library, and schema-validated AzAPI providers.
+
 ---
 
-### 5.3 Section B: Technical Shorts & Architecture Takeaways (4 Sessions)
+### 5.3 Section B: Technical Shorts & Architecture Takeaways (11 Sessions)
 
 #### 5.3.1 Why Azure is Killing the Landing Zone Monolith (1:09)
 - 🔗 **Direct URL**: [https://www.youtube.com/shorts/7S6HDnZXQhI](https://www.youtube.com/shorts/7S6HDnZXQhI)
@@ -924,6 +955,55 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 - 🏷️ **Domain**: PaaS Access Decision Rules, Private Endpoints, Service Endpoints, Data Perimeter
 - 📝 **Technical Overview**:
 > Concise engineering decision framework for selecting between Azure Private Endpoints and Service Endpoints. Explains private IP assignment, bidirectional routing control, data exfiltration protection, and why Private Endpoints are the enterprise production baseline in 2026.
+
+#### 5.3.5 How OIDC Eradicates Pipeline Secrets (1:18)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/-iBnp37YS3k](https://www.youtube.com/shorts/-iBnp37YS3k)
+- ⏱️ **Duration**: 1:18 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Zero-Secret Pipelines, OIDC Token Exchange, Blast Radius Containment
+- 📝 **Technical Overview**:
+> Architecture short explaining how Workload Identity Federation grants deployment pipelines cloud access without storing a single password or secret. Explains how cryptographic JWT verification and subject-bound claims contain repository blast radius.
+
+#### 5.3.6 How Azure Private Endpoints Secure PaaS (1:19)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/XDOoQBp12dk](https://www.youtube.com/shorts/XDOoQBp12dk)
+- ⏱️ **Duration**: 1:19 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: PaaS Network Isolation, RFC 1918 Private IPs, Default Outbound Access
+- 📝 **Technical Overview**:
+> Security short detailing how Azure Private Endpoints fundamentally safeguard cloud components by assigning private RFC 1918 IPs inside subnets, especially as Azure retires default outbound access in 2026.
+
+#### 5.3.7 Why Azure Networks Switch to vWAN (1:28)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/DmKLtsW8O8Y](https://www.youtube.com/shorts/DmKLtsW8O8Y)
+- ⏱️ **Duration**: 1:28 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Network Topology, Azure Virtual WAN, Automated Mesh Routing
+- 📝 **Technical Overview**:
+> Networking takeaway exploring the transition to Azure Virtual WAN (vWAN). Evaluates automated full-mesh routing, routing intent policies, and managing global multi-region network fabrics beyond 50 spoke VNets.
+
+#### 5.3.8 How Phased Policy as Code Works (1:15)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/bh9-IuX7Qb0](https://www.youtube.com/shorts/bh9-IuX7Qb0)
+- ⏱️ **Duration**: 1:15 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Policy as Code, Phased Enforcement, Well-Architected Framework
+- 📝 **Technical Overview**:
+> Governance short outlining why immediate strict policy enforcement causes brownfield production outages. Details the 3-stage Policy-as-Code promotion model: Audit -> Remediate -> Enforce.
+
+#### 5.3.9 How Subscription Vending Automates Azure (1:19)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/GVoFBsgFtms](https://www.youtube.com/shorts/GVoFBsgFtms)
+- ⏱️ **Duration**: 1:19 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Subscription Vending, Platform Engineering, Automated Provisioning
+- 📝 **Technical Overview**:
+> Platform automation short showing how subscription vending eliminates operational ticket queues by delivering pre-configured, pre-peered, and policy-governed subscriptions directly through GitOps.
+
+#### 5.3.10 Why Azure Separates Corp and Online (1:21)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/n2lvZtLn8Ag](https://www.youtube.com/shorts/n2lvZtLn8Ag)
+- ⏱️ **Duration**: 1:21 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Management Group Archetypes, Corp vs Online, Network Boundaries
+- 📝 **Technical Overview**:
+> Architecture short explaining the perils of organizing management groups by environment lifecycles (dev/stage/prod) and why separating by network archetype (Corp vs. Online) prevents duplicated security policies.
+
+#### 5.3.11 Why Microsoft Killed the Azure Landing Zone Monolith (1:26)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/bB2fs8A28RI](https://www.youtube.com/shorts/bB2fs8A28RI)
+- ⏱️ **Duration**: 1:26 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: IaC Architecture, Monolith Retirement, Composable AVM Modules
+- 📝 **Technical Overview**:
+> Concise breakdown explaining why Microsoft archived legacy monolithic modules in 2026. Demonstrates how modular Azure Verified Modules (AVM) allow independent module updates and blast radius isolation.
 
 </details>
 

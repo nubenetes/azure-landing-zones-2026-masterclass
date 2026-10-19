@@ -11,6 +11,7 @@
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Azure Private Endpoints vs Service Endpoints: PaaS Network Security Blueprint**](https://www.youtube.com/watch?v=ppqHvYNkII4) (`8:30`, 🇬🇧 English CC 20+) — *PaaS isolation masterclass: Private Endpoints default standard vs Service Endpoints exceptions, DNS, and egress control.*
 > - ⚡ [**Choosing Between Azure Private and Service Endpoints**](https://www.youtube.com/shorts/E1rnKNKWWUg) (`1:20`, 🇬🇧 English CC 20+) — *Architecture short on key decision criteria between Private Endpoints and Service Endpoints for data perimeter defense.*
+> - ⚡ [**How Azure Private Endpoints Secure PaaS**](https://www.youtube.com/shorts/XDOoQBp12dk) (`1:19`, 🇬🇧 English CC 20+) — *Architecture short on assigning private RFC 1918 IPs and preparing for Azure's 2026 default outbound access retirement.*
 
 ---
 

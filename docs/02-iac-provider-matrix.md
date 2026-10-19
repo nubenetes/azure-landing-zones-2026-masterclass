@@ -10,7 +10,9 @@
 
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Retiring the CAF Monolith: Azure Verified Modules (AVM) & ALZ Library**](https://www.youtube.com/watch?v=BNEGxzQgDB8) (`7:59`, 🇬🇧 English CC 20+) — *Technical breakdown on retiring legacy monolithic CAF modules for Azure Verified Modules (AVM) and ALZ Library.*
+> - 📽️ [**ALZ 2026 Masterclass: Modular Architecture & AVM Rebuild**](https://www.youtube.com/watch?v=HjLte2SGCk0) (`6:49`, 🇬🇧 English CC 20+) — *Navigating 2026/2027 deprecation milestones (CAF monolith, Blueprints, Bicep classic) and building with AVM and AzAPI.*
 > - ⚡ [**Why Azure is Killing the Landing Zone Monolith**](https://www.youtube.com/shorts/7S6HDnZXQhI) (`1:09`, 🇬🇧 English CC 20+) — *Architecture short on why Microsoft archived monolithic CAF modules in favor of composable AVM pattern modules.*
+> - ⚡ [**Why Microsoft Killed the Azure Landing Zone Monolith**](https://www.youtube.com/shorts/bB2fs8A28RI) (`1:26`, 🇬🇧 English CC 20+) — *Architecture short on escaping monolithic state file bottlenecks and adopting single-purpose AVM building blocks.*
 
 ---
 

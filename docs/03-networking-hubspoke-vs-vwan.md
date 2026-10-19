@@ -10,6 +10,7 @@
 
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Azure Hub-and-Spoke vs Virtual WAN: 2026 Enterprise Network Architecture**](https://www.youtube.com/watch?v=mUmga-Nz6cc) (`8:11`, 🇬🇧 English CC 20+) — *In-depth trade-off analysis: customer-managed Hub-and-Spoke vs. Microsoft-managed vWAN, routing intents, and IPAM.*
+> - ⚡ [**Why Azure Networks Switch to vWAN**](https://www.youtube.com/shorts/DmKLtsW8O8Y) (`1:28`, 🇬🇧 English CC 20+) — *Architecture short on automated full-mesh routing and managing multi-region transit beyond the 50-spoke tipping point.*
 
 ---
 
