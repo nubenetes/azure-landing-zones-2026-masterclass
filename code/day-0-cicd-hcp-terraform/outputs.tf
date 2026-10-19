@@ -14,5 +14,5 @@ output "workspace_ids" {
 
 output "stack_id" {
   description = "Stack ID (delivery_model = stacks | both)."
-  value       = one(tfe_stack.alz[*].id)
+  value       = one(concat(tfe_stack.alz_github_app[*].id, tfe_stack.alz_oauth[*].id))
 }

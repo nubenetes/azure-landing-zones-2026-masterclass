@@ -162,8 +162,11 @@ resource "tfe_run_trigger" "platform_to_workloads" {
 #------------------------------------------------------------------------------
 # Terraform Stack (HCP Terraform; Terraform Enterprise 2.0+)
 #------------------------------------------------------------------------------
-resource "tfe_stack" "alz" {
-  count = local.stacks_enabled ? 1 : 0
+# The Stack's vcs_repo is a single nested block and the provider rejects
+# github_app_installation_id and oauth_token_id together (even when one is
+# unknown at plan time), so each VCS authentication mode gets its own resource.
+resource "tfe_stack" "alz_github_app" {
+  count = local.stacks_enabled && var.vcs.github_app_installation_id != null ? 1 : 0
 
   name                = "alz"
   description         = "ALZ platform + workloads as one Stack: canary and production deployments. Generated reference - untested."
@@ -172,23 +175,26 @@ resource "tfe_stack" "alz" {
   working_directory   = "code/hcp-terraform-stacks/alz"
   speculative_enabled = true
 
-  # Exactly one VCS authentication attribute may be present: the provider
-  # rejects both, even when one of them would be null.
-  dynamic "vcs_repo" {
-    for_each = var.vcs.github_app_installation_id != null ? [var.vcs] : []
-    content {
-      identifier                 = vcs_repo.value.identifier
-      branch                     = vcs_repo.value.branch
-      github_app_installation_id = vcs_repo.value.github_app_installation_id
-    }
+  vcs_repo {
+    identifier                 = var.vcs.identifier
+    branch                     = var.vcs.branch
+    github_app_installation_id = var.vcs.github_app_installation_id
   }
+}
 
-  dynamic "vcs_repo" {
-    for_each = var.vcs.oauth_token_id != null ? [var.vcs] : []
-    content {
-      identifier     = vcs_repo.value.identifier
-      branch         = vcs_repo.value.branch
-      oauth_token_id = vcs_repo.value.oauth_token_id
-    }
+resource "tfe_stack" "alz_oauth" {
+  count = local.stacks_enabled && var.vcs.oauth_token_id != null ? 1 : 0
+
+  name                = "alz"
+  description         = "ALZ platform + workloads as one Stack: canary and production deployments. Generated reference - untested."
+  project_id          = tfe_project.alz.id
+  agent_pool_id       = var.agent_pool_id
+  working_directory   = "code/hcp-terraform-stacks/alz"
+  speculative_enabled = true
+
+  vcs_repo {
+    identifier     = var.vcs.identifier
+    branch         = var.vcs.branch
+    oauth_token_id = var.vcs.oauth_token_id
   }
 }

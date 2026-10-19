@@ -38,6 +38,7 @@ component "platform" {
     modtm                = provider.modtm.this
     random               = provider.random.this
     time                 = provider.time.this
+    terraform            = provider.terraform.this
   }
 }
 
@@ -74,5 +75,6 @@ component "workloads" {
     modtm                = provider.modtm.this
     random               = provider.random.this
     time                 = provider.time.this
+    terraform            = provider.terraform.this
   }
 }

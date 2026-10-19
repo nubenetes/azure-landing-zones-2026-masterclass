@@ -4,8 +4,9 @@
 # Every provider instance authenticates with the deployment's identity token
 # (workload identity federation) - no ARM_* variables, no secrets.
 # Stacks require every provider used anywhere in a component's module tree
-# to be configured here and passed explicitly (random, time and modtm are
-# used inside the Azure Verified Modules).
+# to be configured here and passed explicitly (random, time, modtm and the
+# built-in "terraform" provider - terraform_data - are used inside the Azure
+# Verified Modules).
 # -----------------------------------------------------------------------------
 
 required_providers {
@@ -32,6 +33,9 @@ required_providers {
   time = {
     source  = "hashicorp/time"
     version = "~> 0.9"
+  }
+  terraform = {
+    source = "terraform.io/builtin/terraform"
   }
 }
 
@@ -107,5 +111,9 @@ provider "random" "this" {
 }
 
 provider "time" "this" {
+  config {}
+}
+
+provider "terraform" "this" {
   config {}
 }
