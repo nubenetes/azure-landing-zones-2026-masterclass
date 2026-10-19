@@ -165,6 +165,8 @@ variable "workload_landing_zones" {
     budget_contact_emails    = list(string)
     github_repository        = optional(string)
     private_dns_zone_links   = optional(bool, false)
+    expires_on               = optional(string) # YYYY-MM-DD, mandatory for sandboxes
+    decommissioned           = optional(bool, false) # true = move to the decommissioned MG (Enforce-ALZ-Decomm) before removal
     tags                     = optional(map(string), {})
   }))
   description = "Subscription vending order form for this deployment."

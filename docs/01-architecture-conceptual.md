@@ -6,7 +6,7 @@
 
 ---
 
-> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [📚 Documentation Index](../README.md#documentation-index) | [➡️ Next: 02. IaC Provider Matrix](02-iac-provider-matrix.md)
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [📚 Documentation Index](../README.md#4-documentation-index) | [➡️ Next: 02. IaC Provider Matrix](02-iac-provider-matrix.md)
 
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**The Cloud Metropolis: Azure Landing Zones Architecture Blueprint**](https://www.youtube.com/watch?v=u9rLpmpUf2Y) (`8:30`, 🇬🇧 English CC 20+) — *City planning analogy for enterprise cloud scale, multi-subscription isolation, and zoning governance.*

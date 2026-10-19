@@ -27,7 +27,7 @@ locals {
   # Role -> management group ID (identity mapping for platforms that predate
   # the management_group_ids output; prefixed IDs for canary hierarchies).
   mg_id_by_role = coalesce(local.platform.management_group_ids, {
-    for role in ["alz", "landingzones", "corp", "online", "sandbox"] : role => role
+    for role in ["alz", "landingzones", "corp", "online", "sandbox", "decommissioned"] : role => role
   })
 
   hub_and_spoke = local.platform.connectivity_type == "hub_and_spoke_vnet"
@@ -36,6 +36,10 @@ locals {
   lz = {
     for k, v in var.workload_landing_zones : k => {
       location = local.platform.ipam_plan[v.region_key].location
+
+      # Management group placement: the archetype MG, or the decommissioned MG
+      # (deny-all-new-resources) while the subscription waits for cancellation.
+      mg_role = v.decommissioned ? "decommissioned" : v.archetype
 
       # IPAM: /16 per archetype+environment, /24 per workload spoke
       ipam_block = v.archetype == "sandbox" ? "sandbox" : "${v.archetype}-${v.environment}"
@@ -63,7 +67,10 @@ locals {
         archetype      = v.archetype
         landing_zone   = k
         workload_owner = v.owner_group_object_id
-      })
+        },
+        # Read by the sandbox expiry automation (docs/03 section 5).
+        v.expires_on == null ? {} : { expires_on = v.expires_on }
+      )
     }
   }
 
@@ -85,9 +92,9 @@ locals {
 check "workload_landing_zone_contract" {
   assert {
     condition = alltrue([
-      for lz in values(var.workload_landing_zones) : contains(keys(local.platform.management_group_resource_ids), local.mg_id_by_role[lz.archetype])
+      for lz in values(local.lz) : contains(keys(local.platform.management_group_resource_ids), local.mg_id_by_role[lz.mg_role])
     ])
-    error_message = "Every workload archetype must map to an existing management group created by Day 1 (corp, online, sandbox)."
+    error_message = "Every workload archetype must map to an existing management group created by Day 1 (corp, online, sandbox, decommissioned)."
   }
 
   assert {
@@ -120,10 +127,12 @@ module "workload_landing_zone" {
   subscription_billing_scope = each.value.existing_subscription_id == null ? var.subscription_billing_scope : null
   subscription_workload      = each.value.environment == "prod" ? "Production" : "DevTest"
   subscription_id            = each.value.existing_subscription_id
-  subscription_tags          = local.lz[each.key].tags
+  # The lifecycle tag goes on the subscription only: resources inside a
+  # decommissioned subscription are not updated (Enforce-ALZ-Decomm denies writes).
+  subscription_tags = merge(local.lz[each.key].tags, each.value.decommissioned ? { lifecycle_state = "decommissioned" } : {})
 
   subscription_management_group_association_enabled = true
-  subscription_management_group_id                  = local.mg_id_by_role[each.value.archetype]
+  subscription_management_group_id                  = local.mg_id_by_role[local.lz[each.key].mg_role]
 
   subscription_register_resource_providers_enabled = true
 

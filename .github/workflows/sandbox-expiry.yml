@@ -1,0 +1,96 @@
+# -----------------------------------------------------------------------------
+# Sandbox expiry report (Day 2 operations).
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox repository/tenant first.
+#
+# CAF: every sandbox has an expiration date; when it passes, the subscription
+# moves to the Decommissioned management group and is cancelled. Vending tags
+# sandbox subscriptions with `archetype = sandbox` and `expires_on`. This
+# workflow queries Azure Resource Graph with the read-only plan identity and
+# opens (or updates) one issue listing expired and soon-to-expire sandboxes.
+# Decommissioning itself stays two reviewed pull requests: set
+# `decommissioned = true` (moves the subscription to the decommissioned MG),
+# then remove the entry from workloads.auto.tfvars after the grace period.
+# -----------------------------------------------------------------------------
+name: sandbox-expiry
+
+on:
+  schedule:
+    - cron: "43 6 * * 1" # Mondays 06:43 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    name: report expired sandboxes
+    # Skipped until Day 0 has created the OIDC identities and repository variables.
+    if: ${{ vars.AZURE_PLAN_CLIENT_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+    steps:
+      - name: Azure login (OIDC, read-only identity)
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_PLAN_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Query Azure Resource Graph
+        id: query
+        run: |
+          set -euo pipefail
+          az extension add --name resource-graph --only-show-errors
+          query="resourcecontainers
+            | where type =~ 'microsoft.resources/subscriptions'
+            | where tostring(tags['archetype']) =~ 'sandbox'
+            | extend expiresOn = todatetime(tostring(tags['expires_on']))
+            | extend daysLeft = datetime_diff('day', expiresOn, now())
+            | where isnull(expiresOn) or daysLeft <= 14
+            | project name, subscriptionId, expiresOn, daysLeft,
+                      landingZone = tostring(tags['landing_zone']),
+                      owner = tostring(tags['workload_owner']),
+                      state = iff(tostring(tags['lifecycle_state']) == '', 'active', tostring(tags['lifecycle_state']))
+            | order by daysLeft asc"
+          az graph query -q "$query" --first 1000 -o json > sandboxes.json
+          echo "count=$(jq '.data | length' sandboxes.json)" >> "$GITHUB_OUTPUT"
+          jq -r '.data[] | "| \(.landingZone) | \(.subscriptionId) | \(.state) | \(.expiresOn // "MISSING") | \(.daysLeft // "-") |"' sandboxes.json > rows.md
+          cat rows.md
+
+      - name: Open / update / close the expiry issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          COUNT: ${{ steps.query.outputs.count }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { owner, repo } = context.repo;
+            const title = 'Sandbox subscriptions expired or expiring within 14 days';
+            const open = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: 'open', labels: 'sandbox-expiry' });
+            const existing = open.find(i => i.title === title);
+            if (process.env.COUNT === '0') {
+              if (existing) {
+                await github.rest.issues.update({ owner, repo, issue_number: existing.number, state: 'closed' });
+              }
+              return;
+            }
+            const rows = fs.readFileSync('rows.md', 'utf8');
+            const body = [
+              'Sandboxes past (negative days) or close to their `expires_on` date, or missing it:',
+              '',
+              '| Landing zone | Subscription | State | expires_on | Days left |',
+              '|---|---|---|---|---|',
+              rows,
+              'Next step (docs/03 section 5): extend `expires_on` in a PR with budget-owner approval, or decommission it: set `decommissioned = true` (moves the subscription to the decommissioned management group), then remove the entry from `workloads.auto.tfvars` after the grace period.',
+            ].join('\n');
+            if (existing) {
+              await github.rest.issues.update({ owner, repo, issue_number: existing.number, body });
+            } else {
+              await github.rest.issues.create({ owner, repo, title, body, labels: ['sandbox-expiry'] });
+            }
