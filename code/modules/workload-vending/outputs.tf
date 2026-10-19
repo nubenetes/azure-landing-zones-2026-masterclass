@@ -8,7 +8,7 @@ output "workload_landing_zones" {
   value = {
     for k, m in module.workload_landing_zone : k => {
       subscription_id    = m.subscription_id
-      management_group   = var.workload_landing_zones[k].archetype
+      management_group   = local.lz[k].mg_role
       location           = local.lz[k].location
       spoke_cidr         = local.lz[k].spoke_cidr
       subnets            = local.subnet_layout[k]

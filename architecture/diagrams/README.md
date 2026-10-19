@@ -14,3 +14,8 @@ All diagrams are authored as **Mermaid** (rendered natively by GitHub), each fol
 | [deployment-stages.md](deployment-stages.md) | Day 0 / Day 1 / Day 2 (or Stack) dependencies and state layout |
 | [subscription-vending-flow.md](subscription-vending-flow.md) | How a workload team requests and receives a Workload Landing Zone |
 | [policy-lifecycle.md](policy-lifecycle.md) | Audit -> Remediate -> Enforce rollout |
+
+More diagrams live next to the text they illustrate:
+
+- [README section 2](../../README.md#2-reference-architecture-at-a-glance) - 14 subsections: end-to-end view, MG hierarchy with policies, Day 1 resources, both topologies with addresses, IPAM, DNS flow, OIDC trust and state, change lifecycle per platform, platform contract, vending, policy lifecycle, monitoring, non-production.
+- [docs/03 section 5](../../docs/03-networking-hubspoke-vs-vwan.md#5-sandboxes-canary-and-non-production-environments-in-hub-and-spoke) - sandbox isolation, sandbox lifecycle, "hub in a sandbox" options, canary topology, shared vs separate non-production hub, decision guide.

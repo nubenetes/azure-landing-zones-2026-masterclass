@@ -6,7 +6,7 @@
 
 ---
 
-> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 05. CI/CD & Pipeline Security](05-cicd-oidc-security.md) | [📚 Documentation Index](../README.md#documentation-index)
+> 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 05. CI/CD & Pipeline Security](05-cicd-oidc-security.md) | [📚 Documentation Index](../README.md#4-documentation-index)
 
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Azure Management Groups & Governance: Core Engine Architecture**](https://www.youtube.com/watch?v=xh84QXkuYm8) (`8:41`, 🇬🇧 English CC 20+) — *Management group hierarchy, Policy-as-Code lifecycle (Audit -> Remediate -> Enforce), and Well-Architected Framework guardrails.*

@@ -57,6 +57,8 @@ variable "workload_landing_zones" {
     budget_contact_emails    = list(string)
     github_repository        = optional(string)      # "org/repo" of the workload's own IaC (gets an OIDC identity)
     private_dns_zone_links   = optional(bool, false) # see dns.tf - exception path only
+    expires_on               = optional(string)      # YYYY-MM-DD, mandatory for sandboxes
+    decommissioned           = optional(bool, false) # true = move to the decommissioned MG (Enforce-ALZ-Decomm) before removal
     tags                     = optional(map(string), {})
   }))
   description = "One entry per workload landing zone (one subscription per workload per environment)."
@@ -75,6 +77,14 @@ variable "workload_landing_zones" {
   validation {
     condition     = alltrue([for lz in values(var.workload_landing_zones) : lz.spoke_index >= 0 && lz.spoke_index <= 255])
     error_message = "spoke_index must be between 0 and 255 (a /24 inside the archetype's /16)."
+  }
+
+  validation {
+    condition = alltrue([
+      for lz in values(var.workload_landing_zones) :
+      lz.archetype != "sandbox" || (lz.expires_on != null && can(regex("^\\d{4}-\\d{2}-\\d{2}$", lz.expires_on)))
+    ])
+    error_message = "Sandbox landing zones must set expires_on (YYYY-MM-DD): CAF requires every sandbox to have an expiration date."
   }
 
   validation {

@@ -84,6 +84,7 @@ workload_landing_zones = {
     cost_center              = "cc-research-3003"
     budget_amount            = 500
     budget_contact_emails    = ["research-leads@example.com"]
+    expires_on               = "2027-01-31" # mandatory for sandboxes
   }
 }
 

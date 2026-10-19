@@ -238,6 +238,241 @@ Key properties:
 
 ---
 
+## 5. Sandboxes, canary and non-production environments in hub-and-spoke
+
+> [!IMPORTANT]
+> **There is no "sandbox hub".** Sandboxes are never attached to the connectivity hub: each sandbox is its own isolated subscription, and there can be as many as needed. Testing *platform* changes (hub, firewall, policy) is the job of the **canary** environment, and non-production workloads that need hybrid connectivity are **`corp` non-production landing zones** on the shared hub - not sandboxes.
+
+### 5.1 The four kinds of "non-production" and where each lives
+
+| Need | What it is | Management group | Connected to the production hub? | Typical lifetime |
+|---|---|---|---|---|
+| Free experimentation (new services, PoCs, training) | **Sandbox** subscription | `sandbox` | **No** - isolated by policy | Days to weeks (`expires_on`) |
+| Experiment with network patterns (firewall rules, UDRs, a hub design) | **Mini-hub inside one sandbox** subscription | `sandbox` | **No** | Days |
+| Test platform changes (ALZ Library bumps, policy, RBAC, hub configuration) with real inheritance | **Canary** management group hierarchy + reduced hub | `canary-*` (parallel hierarchy) | **No** (own reduced hub) | Long-lived, applied before every production change |
+| Develop / test a workload that needs on-premises or shared services | **Non-production workload landing zone** | `corp` (or `online`) | **Yes** - shared hub, `corp-nonprod` address block | Lifetime of the workload |
+
+### 5.2 Sandbox isolation in a hub-and-spoke topology
+
+```mermaid
+flowchart LR
+    onprem["On-premises"]
+    subgraph conn["Connectivity subscription"]
+        hub["Production hub VNet<br/>Azure Firewall · gateways · DNS resolver"]
+    end
+    subgraph corp["corp MG"]
+        sp1["payments-prod spoke"]
+        sp2["payments-nonprod spoke"]
+    end
+    subgraph sbx["sandbox MG"]
+        s1["sandbox A subscription<br/>VNet 10.15.0.0/24"]
+        s2["sandbox B subscription<br/>VNet 10.15.1.0/24"]
+        s3["sandbox C subscription<br/>(no VNet)"]
+    end
+    inet(("Internet"))
+    onprem <--> hub
+    sp1 <-- peering --> hub
+    sp2 <-- peering --> hub
+    hub --> inet
+    s1 -- "own egress (NAT Gateway / public IP)" --> inet
+    s2 -- "own egress" --> inet
+    s1 -. "peering to hub denied" .-x hub
+    s2 -. "cross-subscription peering denied" .-x s1
+    s3 -. "VPN / ExpressRoute gateways denied" .-x onprem
+```
+
+**How to read this diagram:**
+
+- **Top half - production connectivity:** workload spokes in `corp` (production *and* non-production) peer to the single production hub, which is the only path to on-premises and the internet for them.
+- **Bottom half - sandboxes:** each sandbox is a separate subscription in the `sandbox` management group. Lines ending in **x** are paths that Azure Policy denies: peering to the hub, peering between sandboxes, and any gateway towards on-premises.
+- **Egress:** sandboxes reach the internet directly through their own explicit egress (NAT Gateway or a public IP), because they do not go through the hub firewall. New VNets use private subnets by default, so without such egress a sandbox VM has no outbound internet at all.
+- **Addressing:** sandboxes still get ranges from the reserved sandbox `/16` (`10.15.0.0/16` in the primary region), so an experiment can later be promoted to a real landing zone without re-addressing.
+- **Count:** there is no limit of one sandbox per hub - the address plan allows 256 `/24` sandboxes per region, and a sandbox without a VNet consumes no address space.
+
+### 5.3 How the isolation is enforced
+
+| Control | Source | Effect in every sandbox subscription |
+|---|---|---|
+| `Enforce-ALZ-Sandbox` -> *Deny VNet peering cross subscription* | ALZ Library (`sandbox` archetype) | A sandbox VNet cannot peer with the hub, with workload spokes or with another sandbox. Peering **inside** the same subscription is allowed. |
+| `Enforce-ALZ-Sandbox` -> *Not allowed resource types* | ALZ Library | Denies ExpressRoute circuits/ports/gateways, VPN gateways, VPN sites, point-to-site gateways, Virtual WANs and virtual hubs - no hybrid connectivity can be built. |
+| Inherited root policies (`alz`) | ALZ Library | Defender for Cloud plans, activity-log and diagnostic settings to the central Log Analytics workspace, classic resources denied, data residency (if `allowed_locations` is set). |
+| Vending: `archetype = "sandbox"` | `code/modules/workload-vending` | No hub peering, no firewall route table, no DNS servers pointing at the hub; subscription placed in the `sandbox` MG. |
+| Vending: `budget_amount` | `code/modules/workload-vending` | Monthly budget with 80 % actual and 100 % forecast alerts. |
+| Vending: `expires_on` (mandatory for sandboxes) | `code/modules/workload-vending` | Validation rejects a sandbox without an expiry date; the date is written as the `expires_on` tag on the subscription and its resources. |
+| Vending: `decommissioned = true` | `code/modules/workload-vending` | Moves the subscription to the `decommissioned` management group (`Enforce-ALZ-Decomm`) and tags it `lifecycle_state = decommissioned`, before the entry is finally removed. |
+| `sandbox-expiry` workflow | `.github/workflows/sandbox-expiry.yml` | Weekly Azure Resource Graph query: opens or updates one issue listing sandboxes expired, expiring within 14 days or missing `expires_on`. |
+
+> [!NOTE]
+> CAF also recommends assigning a default budget with the `Deploy-Budget` policy at the sandbox management group (a safety net for subscriptions not created by vending) and removing the sandbox users' Owner role when a sandbox is cancelled. This repository grants the workload group **Contributor** rather than Owner; give sandbox users Owner only if experiments need to manage RBAC.
+
+### 5.4 Sandbox lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Requested: PR adds a sandbox entry<br/>(budget + expires_on)
+    Requested --> Active: approved and vended
+    Active --> Active: budget alert (80 % actual / 100 % forecast)
+    Active --> Extended: PR moves expires_on<br/>(budget owner approves)
+    Extended --> Active
+    Active --> Expired: expires_on passed<br/>(sandbox-expiry issue)
+    Expired --> Decommissioned: PR sets decommissioned = true<br/>(subscription moves to the decommissioned MG)
+    Decommissioned --> Cancelled: PR removes the entry<br/>(resources and RBAC destroyed, subscription cancelled)
+    Cancelled --> [*]
+```
+
+**How to read this diagram:**
+
+- **Requested -> Active:** a sandbox exists only after a reviewed pull request with a budget and an expiry date; vending creates the subscription in the `sandbox` management group.
+- **Active:** budget alerts are warnings only - CAF is explicit that an alert does not stop spending, so the owner must act or the platform team decommissions it.
+- **Extended:** the only way to keep a sandbox longer is another pull request changing `expires_on`, approved by whoever owns the budget.
+- **Expired -> Decommissioned:** the weekly `sandbox-expiry` issue triggers a PR that sets `decommissioned = true` on the entry. Vending moves the subscription to the `decommissioned` management group (where `Enforce-ALZ-Decomm` denies creating or updating resources) and tags the subscription `lifecycle_state = decommissioned`; nothing is deleted yet, so the owner can still export data.
+- **Decommissioned -> Cancelled:** after the agreed grace period a second PR removes the entry. Terraform destroys the spoke, RBAC assignments, budget and identities; for subscriptions created by vending the alias is removed and the subscription cancelled. Azure keeps a cancelled subscription recoverable for a limited period before deleting it - check the current retention window in the Azure documentation.
+- **Two PRs, not one:** separating "freeze" from "delete" gives a reversible step and an audit trail; reverting the first PR returns the sandbox to `Active`.
+
+### 5.5 Can the hub be replicated inside a sandbox?
+
+Three different things are often meant by "a hub in the sandbox". They differ greatly in feasibility and cost:
+
+```mermaid
+flowchart TB
+    subgraph A["Option A - isolated sandbox (CAF default)"]
+        a1["workload VNet"] --> a2["NAT Gateway"] --> a3(("Internet"))
+    end
+    subgraph B["Option B - mini-hub inside ONE sandbox subscription"]
+        b0["hub VNet<br/>Azure Firewall Basic"]
+        b1["spoke VNet 1"] <-- "peering (same subscription: allowed)" --> b0
+        b2["spoke VNet 2"] <-- "peering (same subscription: allowed)" --> b0
+        b0 --> b3(("Internet"))
+    end
+    subgraph C["Option C - copy of the production hub per sandbox"]
+        c0["hub VNet<br/>Firewall Premium · Bastion · DNS resolver<br/>DDoS · VPN / ExpressRoute gateways"]
+        c1["gateways -> DENIED by Enforce-ALZ-Sandbox"]
+        c0 -.- c1
+    end
+```
+
+**How to read this diagram:**
+
+- **Option A** is what CAF and this repository implement: one VNet (or none), explicit egress, nothing shared. Cost is only what the experiment deploys.
+- **Option B** is possible because the sandbox policy denies peering *across* subscriptions, not *within* one, and it does not block Azure Firewall. Use it to try routing, firewall rules or a hub design - it is still isolated from the real hub and on-premises.
+- **Option C** cannot be a faithful copy: the gateways that make a hub a hub are denied by policy, and the fixed cost of the remaining components is multiplied by every sandbox. It also tests nothing that matters for the platform, because a sandbox does not inherit the production management group hierarchy.
+
+### 5.6 Indicative cost comparison
+
+> [!CAUTION]
+> Indicative pay-as-you-go list prices (USD, US regions, 2026) for **fixed** components only - data processing, logs and workloads are extra. Always confirm with the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/).
+
+| Component | Hourly | ~Monthly (730 h) |
+|---|---|---|
+| Azure Firewall Basic / Standard / Premium | 0.395 / 1.25 / 1.75 USD | ~288 / ~912 / ~1,278 USD (+0.065 / 0.016 / 0.016 USD per GB) |
+| DDoS Network Protection plan (up to 100 public IPs, shareable across subscriptions in the tenant) | - | ~2,900-3,000 USD |
+| Azure Bastion Basic / Standard (Developer SKU: free, limited regions and features) | ~0.19 / ~0.29 USD | ~140 / ~210 USD |
+| VPN or ExpressRoute virtual network gateway | SKU-dependent | from ~140 USD to over 1,000 USD |
+| Azure DNS Private Resolver (per endpoint) | - | ~180 USD |
+| NAT Gateway | ~0.045 USD | ~33 USD (+~0.045 USD per GB) |
+
+| Scenario | Fixed cost per region per month (order of magnitude) | Verdict |
+|---|---|---|
+| Production hub (Firewall Premium, Bastion Standard, gateways, 2 resolver endpoints) | ~2,500-3,000 USD + one DDoS plan (~3,000 USD) for the whole tenant | Required once per region |
+| **A** - isolated sandbox with NAT Gateway | ~33 USD | **Recommended default** |
+| **B** - mini-hub in one sandbox (Firewall Basic + NAT) | ~320 USD while it exists | Short-lived network experiments only |
+| **C** - full hub copy per sandbox | ~2,500 USD **per sandbox** (x10 sandboxes = ~25,000 USD) | **Not recommended** (and gateways are denied) |
+| Canary with reduced hub (Firewall Basic, 1 resolver endpoint, no DDoS / gateways / Bastion) | ~470 USD (less if torn down between change windows) | Recommended when platform changes need real inheritance |
+| Separate non-production hub | Same as a production hub, per region | Only when regulation requires prod / non-prod network segregation |
+
+### 5.7 Testing platform changes: the canary environment
+
+```mermaid
+flowchart TB
+    trg["Tenant Root Group"]
+    trg --> alz["alz (production hierarchy)"]
+    trg --> calz["canary-alz (canary hierarchy)<br/>same archetypes, canary- IDs"]
+    subgraph prodnet["Production connectivity"]
+        ph["hub VNets (2 regions)<br/>Firewall Premium · gateways · DDoS"]
+    end
+    subgraph cannet["Canary connectivity subscription"]
+        ch["reduced hub (1 region)<br/>Firewall Basic · resolver · no gateways / DDoS"]
+        cs["canary probe workload spoke"]
+        cs <--> ch
+    end
+    alz --- ph
+    calz --- ch
+    ch -. "never connected" .-x ph
+    law[("Central Log Analytics<br/>(production workspace)")]
+    ch -. "activity / diagnostic logs" .-> law
+    ph -.-> law
+```
+
+**How to read this diagram:**
+
+- **Two hierarchies in one tenant:** CAF's testing approach duplicates the production management group tree under the Tenant Root Group with a `canary` prefix or suffix, because management group IDs must be unique per tenant. Here it is the `alz_2026_masterclass_canary` architecture with `management_group_id_prefix = "canary-"`.
+- **Same archetypes, real inheritance:** unlike a sandbox, the canary inherits policy and RBAC exactly like production, so a library bump or a policy phase change is proven before it reaches `alz`.
+- **Reduced hub:** CAF does not mandate a canary hub; this repository gives the canary its own small hub (one region, Firewall Basic, no gateways, no DDoS) so connectivity changes can also be tested. It is never connected to the production hub or on-premises, so it may reuse production address ranges.
+- **Shared observability:** canary logs still go to the production Log Analytics workspace, as CAF recommends.
+- **How it runs:** as the `canary` deployment of the Terraform Stack (auto-approved when nothing is destroyed), or with any other delivery platform by deploying the platform root module a second time with the canary architecture, prefix and its own subscriptions.
+
+> [!TIP]
+> CAF notes the canary hierarchy is optional and not a common pattern. The cheaper alternative it describes is testing platform resources in sandbox subscriptions inside the production hierarchy - accepting that RBAC and policy inheritance from the management group tree is **not** tested that way.
+
+### 5.8 Non-production workloads: shared hub or separate hub?
+
+```mermaid
+flowchart LR
+    subgraph shared["Option 1 - shared hub (default)"]
+        h1["production hub<br/>Azure Firewall"]
+        p1["corp-prod spokes<br/>10.2.0.0/16"] <--> h1
+        n1["corp-nonprod spokes<br/>10.3.0.0/16"] <--> h1
+    end
+    subgraph separate["Option 2 - separate non-production hub"]
+        h2["production hub"]
+        h3["non-production hub"]
+        p2["prod spokes"] <--> h2
+        n2["non-prod spokes"] <--> h3
+        h2 <-. "optional, firewalled" .-> h3
+    end
+```
+
+**How to read this diagram:**
+
+- **Option 1 (this repository's default):** production and non-production workloads are separate **subscriptions** with separate address blocks (`corp-prod` vs `corp-nonprod`), behind the same hub. Isolation comes from firewall rules (default deny between the two blocks), NSGs, RBAC and policy - not from a second hub.
+- **Option 2:** a second hub per region for non-production gives hard network segregation and an independent change window for hub updates, at the price of doubling the hub's fixed cost and operations. Choose it only when a regulation or risk assessment requires it.
+- **Neither option is a sandbox:** both connect to shared services and on-premises, so the workloads inside them are governed by the `corp` / `online` archetypes, not the `sandbox` one.
+
+### 5.9 Decision guide
+
+```mermaid
+flowchart TD
+    q0{"What do you need to do?"}
+    q0 -- "try a service / PoC / training" --> A["Sandbox subscription<br/>(Option A)"]
+    q0 -- "experiment with routing or firewall rules" --> B["Mini-hub inside one sandbox<br/>(Option B, temporary)"]
+    q0 -- "validate an ALZ Library bump, policy or hub change" --> q1{"Must RBAC and policy<br/>inheritance be tested?"}
+    q1 -- yes --> C["Canary hierarchy + reduced hub"]
+    q1 -- no --> A2["Sandbox inside the production hierarchy<br/>(CAF alternative)"]
+    q0 -- "build / test a workload that needs on-prem or shared services" --> q2{"Regulation requires network<br/>segregation of non-production?"}
+    q2 -- no --> D["corp-nonprod landing zone<br/>on the shared hub"]
+    q2 -- yes --> E["Separate non-production hub"]
+```
+
+**How to read this diagram:**
+
+- Start from the **intent**, not from the word "sandbox": most confusion comes from using the same word for experiments, platform testing and non-production workloads.
+- Only the first two branches are sandboxes; the third is the canary (or CAF's sandbox-based alternative); the fourth is a regular workload landing zone.
+- Every leaf maps to something this repository already implements: the `sandbox` archetype, the canary architecture definition and Stack deployment, and the `corp-nonprod` address block.
+
+### 5.10 Frequently asked questions
+
+| Question | Answer |
+|---|---|
+| Can there be only one sandbox per hub? | Sandboxes are not related to the hub at all. Create one subscription per person, team or experiment; CAF leaves the granularity to you. |
+| Can a sandbox reach on-premises or the production hub? | No. Cross-subscription peering and all gateway types are denied by `Enforce-ALZ-Sandbox`. If that is needed, it is not a sandbox - use a `corp-nonprod` landing zone. |
+| How does a sandbox reach the internet? | Through its own explicit egress (NAT Gateway, a VM public IP or a load balancer outbound rule). The sandbox owner adds it; it is not routed through the hub firewall. |
+| Is Defender / logging still applied? | Yes, through policies inherited from `alz`: Defender plans, activity logs and diagnostics to the central workspace. |
+| Why do sandboxes get unique IP ranges if they are isolated? | So a successful experiment can be promoted to a real landing zone without re-addressing, and to avoid conflicts if a peering is ever approved as an exception. |
+| Can a sandbox be extended? | Yes, with a pull request that changes `expires_on`, approved by the budget owner. |
+| Does the canary need its own hub? | CAF does not require it. A reduced hub is worth it only if hub or connectivity changes must be tested; it costs a fraction of a production hub and can be torn down between change windows. |
+
+---
+
 ## References
 
 - ALZ Terraform scenarios (hub-and-spoke vs vWAN, single/multi region): <https://azure.github.io/Azure-Landing-Zones/accelerator/starter-terraform/scenarios/>
@@ -245,3 +480,8 @@ Key properties:
 - Default outbound access: <https://learn.microsoft.com/azure/virtual-network/ip-services/default-outbound-access>
 - Virtual WAN pricing concepts: <https://learn.microsoft.com/azure/virtual-wan/pricing-concepts>
 - Azure Private Link pricing: <https://azure.microsoft.com/pricing/details/private-link/>
+- CAF - Landing zone sandbox environments: <https://learn.microsoft.com/azure/cloud-adoption-framework/ready/considerations/sandbox-environments>
+- CAF - Testing approach for Azure landing zones (canary): <https://learn.microsoft.com/azure/cloud-adoption-framework/ready/enterprise-scale/testing-approach>
+- CAF - Manage application development environments: <https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/design-area/management-application-environments>
+- Azure Firewall pricing: <https://azure.microsoft.com/pricing/details/azure-firewall/>
+- Azure DDoS Protection tier comparison: <https://learn.microsoft.com/azure/ddos-protection/ddos-protection-sku-comparison>
