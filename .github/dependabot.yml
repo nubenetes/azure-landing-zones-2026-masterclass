@@ -13,6 +13,10 @@ updates:
   - package-ecosystem: terraform
     directories:
       - /code/day-0-bootstrap-oidc
+      - /code/day-0-cicd-azure-devops
+      - /code/day-0-cicd-hcp-terraform
+      - /code/modules/platform-landing-zone
+      - /code/modules/workload-vending
       - /code/day-1-platform-landing-zone
       - /code/day-2-workload-vending-operations
     schedule:

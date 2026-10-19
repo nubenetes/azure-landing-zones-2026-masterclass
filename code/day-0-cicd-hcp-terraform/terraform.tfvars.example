@@ -1,0 +1,23 @@
+# Day 0 (optional) - HCP Terraform / Terraform Enterprise: example values.
+# export TFE_TOKEN=<short-lived team token>   # never commit it
+
+hostname     = "app.terraform.io" # Terraform Enterprise: "tfe.example.com"
+organization = "nubenetes"
+project_name = "azure-landing-zones"
+
+delivery_model = "workspaces" # or "stacks"
+
+vcs = {
+  identifier                 = "nubenetes/azure-landing-zones-2026-masterclass"
+  branch                     = "main"
+  github_app_installation_id = "ghain-XXXXXXXXXXXXXXXX"
+}
+
+# From `terraform output` in code/day-0-bootstrap-oidc
+tenant_id                  = "00000000-0000-0000-0000-000000000000"
+management_subscription_id = "11111111-1111-1111-1111-111111111111"
+plan_client_id             = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+apply_client_id            = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+
+terraform_version          = "~> 1.16.0"
+health_assessments_enabled = true

@@ -53,9 +53,17 @@ output "backend_hcl" {
   EOT
 }
 
+output "federated_credentials" {
+  description = "Every OIDC subject trusted by the plan and apply identities (audit view)."
+  value = {
+    plan  = { for k, v in local.plan_credentials : k => "${v.issuer} | ${v.subject}" }
+    apply = { for k, v in local.apply_credentials : k => "${v.issuer} | ${v.subject}" }
+  }
+}
+
 output "github_configuration_commands" {
   description = "GitHub CLI commands that configure the repository variables and the protected environment consumed by the workflows."
-  value       = <<-EOT
+  value       = !var.github_enabled ? "GitHub Actions disabled (github_enabled = false)." : <<-EOT
     # Repository-level variables (identifiers only - no secrets are required with OIDC)
     gh variable set AZURE_TENANT_ID          --repo ${var.github_organization}/${var.github_repository} --body "${var.tenant_id}"
     gh variable set AZURE_SUBSCRIPTION_ID    --repo ${var.github_organization}/${var.github_repository} --body "${var.bootstrap_subscription_id}"

@@ -1,0 +1,48 @@
+# -----------------------------------------------------------------------------
+# Azure DevOps - main-branch deployment: plan -> approval -> apply, Day 1
+# then Day 2 (Day 2 consumes Day 1 outputs through remote state).
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox organisation/tenant first.
+#
+# Gates live in Azure DevOps, not in YAML (they cannot be bypassed by editing
+# this file): environment approvals + exclusive lock, and a branch-control
+# check (refs/heads/main) on the apply service connection.
+# -----------------------------------------------------------------------------
+name: alz-apply-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  batch: true # never interleave applies
+  branches:
+    include: [main]
+  paths:
+    include: [code/day-1-platform-landing-zone, code/day-2-workload-vending-operations, code/modules]
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: alz-iac
+
+stages:
+  - template: templates/terraform-stack.yml
+    parameters:
+      name: platform
+      stackPath: code/day-1-platform-landing-zone
+      stateContainer: tfstate-platform
+      stateKey: day-1-platform-landing-zone.tfstate
+      apply: true
+
+  - template: templates/terraform-stack.yml
+    parameters:
+      name: workloads
+      stackPath: code/day-2-workload-vending-operations
+      stateContainer: tfstate-workloads
+      stateKey: day-2-workload-vending-operations.tfstate
+      apply: true
+      # Run after the platform apply stage (or after its plan when there was
+      # nothing to apply - the apply stage is then skipped, not failed).
+      dependsOn: [Plan_platform, Apply_platform]
+      condition: and(not(failed()), not(canceled()), in(dependencies.Apply_platform.result, 'Succeeded', 'Skipped'))

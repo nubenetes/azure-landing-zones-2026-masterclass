@@ -25,7 +25,7 @@ This repository enforces the verdict with three controls:
 |---|---|---|---|
 | `Deny-Public-Endpoints` | `corp` | Denies public network access on PaaS services | ALZ Library |
 | `Deploy-Private-DNS-Zones` | `corp` | DINE: Private Endpoint A-records land in central zones | ALZ Library |
-| `Deny-Subnet-Service-Endpoints` (in `Wlz-Guardrails-2026`) | `landingzones` | Audit -> Deny service endpoints not on the approved list | [`policies/deny-subnet-service-endpoints.json`](../code/day-2-workload-vending-operations/policies/deny-subnet-service-endpoints.json) |
+| `Deny-Subnet-Service-Endpoints` (in `Wlz-Guardrails-2026`) | `landingzones` | Audit -> Deny service endpoints not on the approved list | [`policies/deny-subnet-service-endpoints.json`](../code/modules/workload-vending/policies/deny-subnet-service-endpoints.json) |
 
 ---
 
@@ -96,11 +96,11 @@ Legitimate exception examples: a non-production sandbox writing logs to a storag
 
 | Item | File |
 |---|---|
-| Spoke subnet dedicated to Private Endpoints (`/26`, NSG + UDR applied) | [`day-2 .../main.tf`](../code/day-2-workload-vending-operations/main.tf) (`snet-private-endpoints`) |
-| Central `privatelink.*` zones, resolver, firewall DNS proxy | [`day-1 .../main.tf`](../code/day-1-platform-landing-zone/main.tf) (`private_dns_zones`, `private_dns_resolver`) |
-| Policy defaults pointing DINE at the central zones | [`day-1 .../locals.tf`](../code/day-1-platform-landing-zone/locals.tf) (`private_dns_zone_*`) |
-| Exception path: direct zone links with `NxDomainRedirect` fallback | [`day-2 .../dns.tf`](../code/day-2-workload-vending-operations/dns.tf) |
-| Service Endpoint deny + approved list | [`policies/deny-subnet-service-endpoints.json`](../code/day-2-workload-vending-operations/policies/deny-subnet-service-endpoints.json), `allowed_service_endpoints` |
+| Spoke subnet dedicated to Private Endpoints (`/26`, NSG + UDR applied) | [`modules/workload-vending/main.tf`](../code/modules/workload-vending/main.tf) (`snet-private-endpoints`) |
+| Central `privatelink.*` zones, resolver, firewall DNS proxy | [`modules/platform-landing-zone/main.tf`](../code/modules/platform-landing-zone/main.tf) (`private_dns_zones`, `private_dns_resolver`) |
+| Policy defaults pointing DINE at the central zones | [`modules/platform-landing-zone/locals.tf`](../code/modules/platform-landing-zone/locals.tf) (`private_dns_zone_*`) |
+| Exception path: direct zone links with `NxDomainRedirect` fallback | [`modules/workload-vending/dns.tf`](../code/modules/workload-vending/dns.tf) |
+| Service Endpoint deny + approved list | [`policies/deny-subnet-service-endpoints.json`](../code/modules/workload-vending/policies/deny-subnet-service-endpoints.json), `allowed_service_endpoints` |
 
 ### Private Endpoint checklist for workload teams
 

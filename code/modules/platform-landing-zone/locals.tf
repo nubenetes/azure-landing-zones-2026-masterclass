@@ -1,5 +1,5 @@
 ###############################################################################
-# Day 1 - Platform Landing Zone: derived values
+# Module: platform-landing-zone - derived values
 #
 # IMPORTANT (ALZ pattern module constraint): values passed into avm-ptn-alz
 # must be KNOWN AT PLAN TIME. Resource IDs are therefore composed from inputs
@@ -13,6 +13,17 @@ locals {
   #----------------------------------------------------------------------------
   primary_region_key = one([for k, r in var.regions : k if r.is_primary])
   primary_location   = var.regions[local.primary_region_key].location
+
+  #----------------------------------------------------------------------------
+  # Management group IDs by role. The prefix lets a second, isolated hierarchy
+  # (e.g. the "canary" Terraform Stacks deployment) live in the same tenant:
+  # MG IDs are tenant-unique, so the canary architecture definition uses the
+  # same tree with "canary-" IDs (lib/architecture_definitions/*canary*).
+  #----------------------------------------------------------------------------
+  management_group_ids = {
+    for role in ["alz", "platform", "identity", "management", "connectivity", "security", "landingzones", "corp", "online", "sandbox", "decommissioned"] :
+    role => "${var.management_group_id_prefix}${role}"
+  }
 
   hub_and_spoke_enabled = var.connectivity_type == "hub_and_spoke_vnet"
   virtual_wan_enabled   = var.connectivity_type == "virtual_wan"
@@ -249,7 +260,7 @@ locals {
 
   # Final shape expected by avm-ptn-alz: { <mg_id> = { policy_assignments = { <name> = {...} } } }
   policy_assignments_to_modify = {
-    for mg in distinct([for m in local.all_modifications : m.mg]) : mg => {
+    for mg in distinct([for m in local.all_modifications : m.mg]) : local.management_group_ids[mg] => {
       policy_assignments = {
         for m in local.all_modifications : m.name => {
           enforcement_mode = m.enforcement_mode
@@ -265,12 +276,12 @@ locals {
   #----------------------------------------------------------------------------
   subscription_placement = merge(
     {
-      management   = { subscription_id = var.platform_subscription_ids.management, management_group_name = "management" }
-      connectivity = { subscription_id = var.platform_subscription_ids.connectivity, management_group_name = "connectivity" }
-      identity     = { subscription_id = var.platform_subscription_ids.identity, management_group_name = "identity" }
+      management   = { subscription_id = var.platform_subscription_ids.management, management_group_name = local.management_group_ids.management }
+      connectivity = { subscription_id = var.platform_subscription_ids.connectivity, management_group_name = local.management_group_ids.connectivity }
+      identity     = { subscription_id = var.platform_subscription_ids.identity, management_group_name = local.management_group_ids.identity }
     },
     var.platform_subscription_ids.security == null ? {} : {
-      security = { subscription_id = var.platform_subscription_ids.security, management_group_name = "security" }
+      security = { subscription_id = var.platform_subscription_ids.security, management_group_name = local.management_group_ids.security }
     }
   )
 
@@ -280,7 +291,7 @@ locals {
   # pipeline from ever granting Owner, RBAC Administrator or UAA.
   management_group_role_assignments = var.platform_operators_group_object_id == null ? {} : {
     platform_operators = {
-      management_group_name      = "platform"
+      management_group_name      = local.management_group_ids.platform
       role_definition_id_or_name = "Contributor"
       principal_id               = var.platform_operators_group_object_id
       principal_type             = "Group"

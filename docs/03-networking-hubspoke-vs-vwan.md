@@ -164,7 +164,7 @@ flowchart TD
 | Resolver inbound subnet | `10.0.0.160/28` | Bastion subnet (sidecar) | `10.0.2.64/26` |
 | `AzureFirewallManagementSubnet` | `10.0.0.192/26` | | |
 
-All of this is computed in [`locals.tf`](../code/day-1-platform-landing-zone/locals.tf) and exported as the `ipam_plan` output that Day 2 consumes - **no spreadsheet, no manual allocation, no overlap**. Uniqueness of `(region, archetype, environment, spoke_index)` is enforced by a variable validation in Day 2.
+All of this is computed in [`locals.tf`](../code/modules/platform-landing-zone/locals.tf) and exported as the `ipam_plan` output that Day 2 consumes - **no spreadsheet, no manual allocation, no overlap**. Uniqueness of `(region, archetype, environment, spoke_index)` is enforced by a variable validation in Day 2.
 
 > [!TIP]
 > If you already run **Azure Virtual Network Manager IPAM pools**, the Day 2 vending module also accepts `ipam_pools` instead of `address_space`; keep the same block structure as the pool hierarchy.

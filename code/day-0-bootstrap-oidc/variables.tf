@@ -48,6 +48,44 @@ variable "name_prefix" {
   }
 }
 
+#------------------------------------------------------------------------------
+# Delivery platforms (one or several can be enabled side by side)
+#------------------------------------------------------------------------------
+
+variable "github_enabled" {
+  type        = bool
+  description = "Trust GitHub Actions OIDC tokens (plan: pull_request + default branch; apply: protected environment)."
+  default     = true
+}
+
+variable "hcp_terraform" {
+  type = object({
+    hostname     = optional(string, "app.terraform.io") # Terraform Enterprise: your TFE hostname
+    organization = string
+    project      = optional(string, "azure-landing-zones")
+    workspaces   = optional(list(string), ["alz-platform", "alz-workloads"])
+    stack = optional(object({
+      name        = optional(string, "alz")
+      deployments = optional(list(string), ["sandbox", "production"])
+    }))
+  })
+  description = <<-EOT
+    Trust HCP Terraform (SaaS) or Terraform Enterprise (self-managed) workload identity tokens.
+    Workspaces get run-phase-specific credentials (plan -> plan identity, apply -> apply identity).
+    Set `stack` to also trust Terraform Stacks deployments. Leave null to disable.
+    Azure DevOps credentials are created by code/azure-devops/bootstrap instead.
+  EOT
+  default     = null
+
+  validation {
+    condition = var.hcp_terraform == null ? true : alltrue([
+      for dep in try(var.hcp_terraform.stack.deployments, []) :
+      length("organization:${var.hcp_terraform.organization}:project:${var.hcp_terraform.project}:stack:${var.hcp_terraform.stack.name}:deployment:${dep}:operation:apply") <= 127
+    ])
+    error_message = "HCP Terraform Stacks subjects are limited to 127 characters - shorten the organization, project, stack or deployment names."
+  }
+}
+
 variable "github_organization" {
   type        = string
   description = "GitHub organization that owns the IaC repository."

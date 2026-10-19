@@ -1,5 +1,6 @@
 ###############################################################################
-# Day 1 - Platform Landing Zone: input variables
+# Day 1 - Platform Landing Zone: input variables (mirror of the module's
+# variables - keep in sync with ../modules/platform-landing-zone/variables.tf)
 ###############################################################################
 
 #------------------------------------------------------------------------------
@@ -42,6 +43,21 @@ variable "architecture_name" {
   type        = string
   description = "Name of the architecture definition in ./lib/architecture_definitions to deploy."
   default     = "alz_2026_masterclass"
+}
+
+variable "management_group_id_prefix" {
+  type        = string
+  description = <<-EOT
+    Prefix applied to every management group ID. Keep "" for the production hierarchy. Use
+    "canary-" together with architecture_name = "alz_2026_masterclass_canary" for an isolated
+    canary hierarchy in the same tenant (CAF-recommended way to test platform changes).
+  EOT
+  default     = ""
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{0,12}$", var.management_group_id_prefix))
+    error_message = "management_group_id_prefix must be 0-12 lowercase letters, digits or hyphens."
+  }
 }
 
 #------------------------------------------------------------------------------
@@ -198,4 +214,27 @@ variable "tags" {
     generated_by = "claude-opus-5.5"
     tested       = "false"
   }
+}
+
+#------------------------------------------------------------------------------
+# HCP Terraform / Terraform Enterprise dynamic provider credentials
+#------------------------------------------------------------------------------
+
+variable "tfc_azure_dynamic_credentials" {
+  type = object({
+    default = object({
+      client_id_file_path  = string
+      oidc_token_file_path = string
+    })
+    aliases = map(object({
+      client_id_file_path  = string
+      oidc_token_file_path = string
+    }))
+  })
+  description = <<-EOT
+    Populated automatically by HCP Terraform / Terraform Enterprise when the workspace sets
+    TFC_AZURE_PROVIDER_AUTH=true (plus TFC_AZURE_PLAN_CLIENT_ID / TFC_AZURE_APPLY_CLIENT_ID).
+    Leave unset for GitHub Actions, Azure DevOps and local runs.
+  EOT
+  default     = null
 }

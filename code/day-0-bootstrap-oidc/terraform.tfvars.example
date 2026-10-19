@@ -8,6 +8,21 @@ root_parent_management_group_id = "00000000-0000-0000-0000-000000000000" # Tenan
 location    = "westeurope"
 name_prefix = "nbn"
 
+# Delivery platforms - enable any combination (docs/07).
+github_enabled = true
+
+# HCP Terraform (SaaS) or Terraform Enterprise (self-managed). Remove to disable.
+hcp_terraform = {
+  hostname     = "app.terraform.io" # e.g. "tfe.example.com" for Terraform Enterprise
+  organization = "nubenetes"
+  project      = "azure-landing-zones"
+  workspaces   = ["alz-platform", "alz-workloads"]
+  stack = {
+    name        = "alz"
+    deployments = ["sandbox", "production"]
+  }
+}
+
 github_organization      = "nubenetes"
 github_repository        = "azure-landing-zones-2026-masterclass"
 github_default_branch    = "main"

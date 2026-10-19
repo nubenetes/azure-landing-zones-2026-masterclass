@@ -1,5 +1,5 @@
 ###############################################################################
-# Day 2 - Continuous governance: workload guardrails initiative
+# Module: workload-vending - workload guardrails initiative (Policy-as-Code)
 #
 # Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
 # live environment. Validate in a sandbox tenant before any real use.
@@ -17,7 +17,11 @@
 ###############################################################################
 
 locals {
-  mg_ids = local.platform.management_group_resource_ids
+  # Resource IDs of the two scopes this module governs.
+  mg_scope = {
+    root         = local.platform.management_group_resource_ids[local.mg_id_by_role["alz"]]
+    landingzones = local.platform.management_group_resource_ids[local.mg_id_by_role["landingzones"]]
+  }
 
   policy_files = {
     diag_keyvault          = "${path.module}/policies/deploy-diagnostics-keyvault-log-analytics.json"
@@ -52,7 +56,7 @@ resource "azurerm_policy_definition" "custom" {
   mode                = each.value.properties.mode
   display_name        = each.value.properties.displayName
   description         = each.value.properties.description
-  management_group_id = local.mg_ids["alz"]
+  management_group_id = local.mg_scope.root
   metadata            = jsonencode(each.value.properties.metadata)
   parameters          = jsonencode(each.value.properties.parameters)
   policy_rule         = jsonencode(each.value.properties.policyRule)
@@ -66,7 +70,7 @@ resource "azurerm_management_group_policy_set_definition" "workload_guardrails" 
   policy_type         = "Custom"
   display_name        = "Workload Landing Zone guardrails (2026 masterclass)"
   description         = "Diagnostics to Log Analytics, Defender for Storage V2 and the Private-Endpoints-by-default network rule. Generated with Claude Opus 5.5 - untested reference."
-  management_group_id = local.mg_ids["alz"]
+  management_group_id = local.mg_scope.root
 
   metadata = jsonencode({
     version  = "1.0.0"
@@ -143,7 +147,7 @@ resource "azurerm_management_group_policy_assignment" "workload_guardrails" {
   name                 = "Wlz-Guardrails-2026" # <= 24 characters
   display_name         = "Workload Landing Zone guardrails (2026)"
   description          = "Phase: ${var.policy_enforcement_phase}. Managed by Day 2 IaC."
-  management_group_id  = local.mg_ids["landingzones"]
+  management_group_id  = local.mg_scope.landingzones
   policy_definition_id = azurerm_management_group_policy_set_definition.workload_guardrails.id
   location             = local.platform.primary_location
   enforce              = true # the phase is expressed through effects, not enforcement mode
@@ -170,7 +174,7 @@ resource "azurerm_management_group_policy_assignment" "workload_guardrails" {
 resource "azurerm_role_assignment" "guardrails_identity_mg" {
   for_each = local.policy_identity_roles
 
-  scope                = local.mg_ids["landingzones"]
+  scope                = local.mg_scope.landingzones
   role_definition_name = each.value
   principal_id         = azurerm_management_group_policy_assignment.workload_guardrails.identity[0].principal_id
   principal_type       = "ServicePrincipal"
@@ -194,7 +198,7 @@ resource "azurerm_management_group_policy_remediation" "workload_guardrails" {
   for_each = local.remediate ? toset(local.dine_reference_ids) : toset([])
 
   name                           = "remediate-${replace(each.value, "_", "-")}"
-  management_group_id            = local.mg_ids["landingzones"]
+  management_group_id            = local.mg_scope.landingzones
   policy_assignment_id           = azurerm_management_group_policy_assignment.workload_guardrails.id
   policy_definition_reference_id = each.value
   failure_percentage             = 0.1 # stop if more than 10% of deployments fail

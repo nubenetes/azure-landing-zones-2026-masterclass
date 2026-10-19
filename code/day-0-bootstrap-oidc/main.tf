@@ -34,24 +34,71 @@ locals {
 
   root_parent_mg_scope = "/providers/Microsoft.Management/managementGroups/${var.root_parent_management_group_id}"
 
-  # GitHub OIDC
+  #----------------------------------------------------------------------------
+  # Workload Identity Federation - one map entry per trusted token subject.
+  # Every delivery platform gets the SAME two identities (plan / apply);
+  # only the issuer and subject differ.
+  #----------------------------------------------------------------------------
+  oidc_audience = ["api://AzureADTokenExchange"]
+
+  # GitHub Actions
   github_issuer  = "https://token.actions.githubusercontent.com"
-  github_aud     = ["api://AzureADTokenExchange"]
   subject_prefix = "repo:${var.github_organization}/${var.github_repository}"
 
-  # Subjects trusted by the read-only PLAN identity:
-  #   - any pull request targeting the repository
-  #   - the protected default branch (pre-apply plans & drift detection)
-  plan_subjects = {
-    pull-request   = "${local.subject_prefix}:pull_request"
-    default-branch = "${local.subject_prefix}:ref:refs/heads/${var.github_default_branch}"
-  }
+  github_plan_credentials = var.github_enabled ? {
+    # any pull request targeting the repository
+    "github-pull-request" = { issuer = local.github_issuer, subject = "${local.subject_prefix}:pull_request", platform = "GitHub Actions" }
+    # the protected default branch (pre-apply plans & drift detection)
+    "github-default-branch" = { issuer = local.github_issuer, subject = "${local.subject_prefix}:ref:refs/heads/${var.github_default_branch}", platform = "GitHub Actions" }
+  } : {}
 
-  # Subjects trusted by the privileged APPLY identity:
-  #   - ONLY jobs bound to the protected GitHub Environment.
-  apply_subjects = {
-    protected-environment = "${local.subject_prefix}:environment:${var.github_apply_environment}"
-  }
+  github_apply_credentials = var.github_enabled ? {
+    # ONLY jobs bound to the protected GitHub Environment
+    "github-protected-environment" = { issuer = local.github_issuer, subject = "${local.subject_prefix}:environment:${var.github_apply_environment}", platform = "GitHub Actions" }
+  } : {}
+
+  # HCP Terraform / Terraform Enterprise - workspaces (run_phase-specific
+  # subjects keep plan and apply on different identities)
+  hcp_issuer = var.hcp_terraform == null ? null : "https://${var.hcp_terraform.hostname}"
+  hcp_subject_prefix = var.hcp_terraform == null ? null : (
+    "organization:${var.hcp_terraform.organization}:project:${var.hcp_terraform.project}"
+  )
+
+  hcp_workspace_credentials = var.hcp_terraform == null ? {} : merge([
+    for ws in var.hcp_terraform.workspaces : {
+      for phase in ["plan", "apply"] : "hcp-${ws}-${phase}" => {
+        phase    = phase
+        issuer   = local.hcp_issuer
+        subject  = "${local.hcp_subject_prefix}:workspace:${ws}:run_phase:${phase}"
+        platform = "HCP Terraform / TFE workspace"
+      }
+    }
+  ]...)
+
+  # HCP Terraform / Terraform Enterprise - Terraform Stacks. A Stack provider
+  # configuration has a single client_id for both operations, so plan AND
+  # apply subjects of each deployment trust the APPLY identity; approvals in
+  # HCP Terraform (no auto-approve for production) gate the apply.
+  hcp_stack_credentials = try(var.hcp_terraform.stack, null) == null ? {} : merge([
+    for dep in var.hcp_terraform.stack.deployments : {
+      for op in ["plan", "apply"] : "hcp-stack-${var.hcp_terraform.stack.name}-${dep}-${op}" => {
+        issuer   = local.hcp_issuer
+        subject  = "${local.hcp_subject_prefix}:stack:${var.hcp_terraform.stack.name}:deployment:${dep}:operation:${op}"
+        platform = "Terraform Stacks"
+      }
+    }
+  ]...)
+
+  plan_credentials = merge(
+    local.github_plan_credentials,
+    { for k, v in local.hcp_workspace_credentials : k => { issuer = v.issuer, subject = v.subject, platform = v.platform } if v.phase == "plan" },
+  )
+
+  apply_credentials = merge(
+    local.github_apply_credentials,
+    { for k, v in local.hcp_workspace_credentials : k => { issuer = v.issuer, subject = v.subject, platform = v.platform } if v.phase == "apply" },
+    local.hcp_stack_credentials,
+  )
 }
 
 ###############################################################################
@@ -274,26 +321,30 @@ resource "azuread_service_principal" "apply" {
 # Federated Identity Credentials (Workload Identity Federation)
 ###############################################################################
 
+# Azure DevOps service connections add their own credentials to these apps
+# from code/azure-devops/bootstrap (their issuer/subject are only known after
+# the service connections exist).
+
 resource "azuread_application_federated_identity_credential" "plan" {
-  for_each = local.plan_subjects
+  for_each = local.plan_credentials
 
   application_id = azuread_application_registration.plan.id
-  display_name   = "github-${var.github_repository}-${each.key}"
-  description    = "GitHub Actions OIDC trust (${each.key}) for read-only plans."
-  audiences      = local.github_aud
-  issuer         = local.github_issuer
-  subject        = each.value
+  display_name   = each.key
+  description    = "${each.value.platform} OIDC trust for read-only plans."
+  audiences      = local.oidc_audience
+  issuer         = each.value.issuer
+  subject        = each.value.subject
 }
 
 resource "azuread_application_federated_identity_credential" "apply" {
-  for_each = local.apply_subjects
+  for_each = local.apply_credentials
 
   application_id = azuread_application_registration.apply.id
-  display_name   = "github-${var.github_repository}-${each.key}"
-  description    = "GitHub Actions OIDC trust (${each.key}) for gated applies."
-  audiences      = local.github_aud
-  issuer         = local.github_issuer
-  subject        = each.value
+  display_name   = each.key
+  description    = "${each.value.platform} OIDC trust for gated applies."
+  audiences      = local.oidc_audience
+  issuer         = each.value.issuer
+  subject        = each.value.subject
 }
 
 ###############################################################################

@@ -14,14 +14,19 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Real variable files stay local unless they contain identifiers only.
-# Commit terraform.tfvars for Day 1 / Day 2 deliberately (no secrets!).
-code/day-0-bootstrap-oidc/terraform.tfvars
+# Day 1 / Day 2 values are committed as *.auto.tfvars (identifiers only - no
+# secrets!): every delivery platform loads them, Terraform Enterprise ignores
+# terraform.tfvars. Bootstrap stages keep their values local.
+code/day-0-*/terraform.tfvars
+code/day-0-*/*.auto.tfvars
 *.auto.tfvars.json
 backend.hcl
 
 # ALZ provider library cache
 .alzlib
+
+# Terraform Stacks: commit .terraform.lock.hcl, ignore local caches
+code/hcp-terraform-stacks/**/.terraform/
 
 # Editors / OS
 .vscode/

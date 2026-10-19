@@ -24,8 +24,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Skipped (not failed) until Day 0 has created the OIDC identities and the
+  # repository variables - see code/day-0-bootstrap-oidc.
   platform:
     name: drift - day-1 platform
+    if: ${{ vars.AZURE_PLAN_CLIENT_ID != '' }}
     permissions:
       contents: read
       id-token: write
@@ -38,6 +41,7 @@ jobs:
 
   workloads:
     name: drift - day-2 workloads
+    if: ${{ vars.AZURE_PLAN_CLIENT_ID != '' }}
     permissions:
       contents: read
       id-token: write
@@ -51,7 +55,7 @@ jobs:
   report:
     name: open / update drift issues
     needs: [platform, workloads]
-    if: always()
+    if: ${{ always() && vars.AZURE_PLAN_CLIENT_ID != '' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write

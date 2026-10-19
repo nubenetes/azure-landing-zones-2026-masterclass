@@ -1,0 +1,70 @@
+# -----------------------------------------------------------------------------
+# Azure DevOps - scheduled drift detection (read-only identity).
+#
+# Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
+# live environment. Validate in a sandbox organisation/tenant first.
+#
+# A plan with changes fails the run with a warning summary, which notifies the
+# pipeline subscribers; wire it to a Boards work item or Teams channel via a
+# service hook if desired.
+# -----------------------------------------------------------------------------
+name: alz-drift-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+pr: none
+
+schedules:
+  - cron: "17 5 * * 1-5" # weekdays 05:17 UTC
+    displayName: Weekday drift detection
+    branches:
+      include: [main]
+    always: true
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: alz-iac
+
+stages:
+  - template: templates/terraform-stack.yml
+    parameters:
+      name: platform
+      stackPath: code/day-1-platform-landing-zone
+      stateContainer: tfstate-platform
+      stateKey: day-1-platform-landing-zone.tfstate
+
+  - template: templates/terraform-stack.yml
+    parameters:
+      name: workloads
+      stackPath: code/day-2-workload-vending-operations
+      stateContainer: tfstate-workloads
+      stateKey: day-2-workload-vending-operations.tfstate
+
+  - stage: Report
+    displayName: Report drift
+    dependsOn: [Plan_platform, Plan_workloads]
+    condition: always()
+    variables:
+      platformChanges: $[ stageDependencies.Plan_platform.plan.outputs['tf.hasChanges'] ]
+      platformSummary: $[ stageDependencies.Plan_platform.plan.outputs['tf.summary'] ]
+      workloadsChanges: $[ stageDependencies.Plan_workloads.plan.outputs['tf.hasChanges'] ]
+      workloadsSummary: $[ stageDependencies.Plan_workloads.plan.outputs['tf.summary'] ]
+    jobs:
+      - job: report
+        steps:
+          - checkout: none
+          - bash: |
+              drift=0
+              if [ "$(platformChanges)" = "true" ]; then
+                echo "##vso[task.logissue type=warning]Drift in day-1 platform: $(platformSummary)"; drift=1
+              fi
+              if [ "$(workloadsChanges)" = "true" ]; then
+                echo "##vso[task.logissue type=warning]Drift in day-2 workloads: $(workloadsSummary)"; drift=1
+              fi
+              if [ "$drift" -eq 1 ]; then
+                echo "Live Azure estate differs from main - codify the change in a PR or let the next apply revert it."
+                exit 1
+              fi
+              echo "No drift detected."
+            displayName: Evaluate plans

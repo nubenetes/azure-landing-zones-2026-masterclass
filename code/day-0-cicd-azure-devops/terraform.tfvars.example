@@ -1,0 +1,33 @@
+# Day 0 (optional) - Azure DevOps delivery: example values (identifiers only).
+
+organization_url = "https://dev.azure.com/nubenetes"
+project_name     = "azure-landing-zones"
+
+tenant_id                         = "00000000-0000-0000-0000-000000000000"
+root_parent_management_group_id   = "00000000-0000-0000-0000-000000000000"
+root_parent_management_group_name = "Tenant Root Group"
+
+# From `terraform output` in code/day-0-bootstrap-oidc
+plan_client_id             = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+apply_client_id            = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+bootstrap_subscription_id  = "11111111-1111-1111-1111-111111111111"
+state_resource_group_name  = "rg-nbn-iac-state-westeurope"
+state_storage_account_name = "stnbntfstatea1b2c3"
+
+# Pipelines read their YAML from the GitHub repository through a GitHub
+# service connection (create it once in Project settings > Service connections).
+repository = {
+  type                  = "GitHub"
+  id                    = "nubenetes/azure-landing-zones-2026-masterclass"
+  branch                = "refs/heads/main"
+  service_connection_id = "cccccccc-cccc-cccc-cccc-cccccccccccc"
+}
+
+# Azure Repos alternative:
+# repository = {
+#   type   = "TfsGit"
+#   id     = "azure-landing-zones-2026-masterclass"
+#   branch = "refs/heads/main"
+# }
+
+approver_ids = ["dddddddd-dddd-dddd-dddd-dddddddddddd"] # platform team group

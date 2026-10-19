@@ -1,0 +1,22 @@
+# -----------------------------------------------------------------------------
+# Step template: install a pinned Terraform version with checksum verification
+# (no Marketplace extension required).
+# Generated with Claude Opus 5.5 - untested architectural reference.
+# -----------------------------------------------------------------------------
+parameters:
+  - name: version
+    type: string
+    default: "1.16.6"
+
+steps:
+  - bash: |
+      set -euo pipefail
+      v="${{ parameters.version }}"
+      base="https://releases.hashicorp.com/terraform/${v}"
+      cd "$(Agent.TempDirectory)"
+      curl -fsSLO "${base}/terraform_${v}_linux_amd64.zip"
+      curl -fsSLO "${base}/terraform_${v}_SHA256SUMS"
+      grep "terraform_${v}_linux_amd64.zip" "terraform_${v}_SHA256SUMS" | sha256sum -c -
+      unzip -o -q "terraform_${v}_linux_amd64.zip" -d "$(Agent.TempDirectory)/terraform"
+      echo "##vso[task.prependpath]$(Agent.TempDirectory)/terraform"
+    displayName: Install Terraform ${{ parameters.version }}

@@ -1,5 +1,5 @@
 ###############################################################################
-# Day 1 - Platform Landing Zone: Terraform & provider requirements
+# Day 1 - Platform Landing Zone (root): Terraform & provider requirements
 #
 # Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
 # live environment. Validate in a sandbox tenant before any real use.
@@ -29,7 +29,9 @@ terraform {
     }
   }
 
-  # Partial configuration - values are injected at `terraform init` time:
+  # Partial configuration - values are injected at `terraform init` time by
+  # GitHub Actions / Azure DevOps. HCP Terraform and Terraform Enterprise
+  # override this block with their own state backend during remote runs.
   #   terraform init \
   #     -backend-config=../backend.hcl \
   #     -backend-config="container_name=tfstate-platform" \

@@ -16,6 +16,7 @@ on:
     paths:
       - "code/day-1-platform-landing-zone/**"
       - "code/day-2-workload-vending-operations/**"
+      - "code/modules/**"
   workflow_dispatch:
 
 permissions:
@@ -26,8 +27,11 @@ concurrency:
   cancel-in-progress: false # never interrupt an in-flight apply
 
 jobs:
+  # Skipped (not failed) until Day 0 has created the OIDC identities and the
+  # repository variables - see code/day-0-bootstrap-oidc.
   platform:
     name: day-1 platform landing zone
+    if: ${{ vars.AZURE_PLAN_CLIENT_ID != '' }}
     permissions:
       contents: read
       id-token: write
