@@ -66,8 +66,19 @@ jobs:
       - name: terraform validate (no backend, no credentials)
         working-directory: ${{ matrix.stack }}
         run: |
-          terraform init -backend=false -input=false
-          terraform validate -no-color
+          set -o pipefail
+          terraform init -backend=false -input=false -no-color 2>&1 | tee init.log || {
+            sed 's/^/::error title=terraform init::/' init.log | grep -v '::error title=terraform init::$' | head -40
+            exit 1
+          }
+          # Diagnostics are re-emitted as workflow annotations so they are
+          # visible on the PR without opening the raw job log.
+          if ! terraform validate -json > validate.json; then
+            jq -r '.diagnostics[] | "::\(if .severity == "error" then "error" else "warning" end) title=terraform validate::\(.summary) \(.range.filename // ""):\(.range.start.line // "") \(.detail // "" | gsub("\n"; " "))"' validate.json
+            exit 1
+          fi
+          jq -r '.diagnostics[] | "::warning title=terraform validate::\(.summary) \(.range.filename // ""):\(.range.start.line // "")"' validate.json
+          echo "valid: $(jq -r .valid validate.json)"
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337 # v6.3.2
@@ -105,13 +116,25 @@ jobs:
 
       - name: terraform stacks fmt / init / validate
         run: |
-          terraform stacks fmt -check
-          terraform stacks init
-          terraform stacks validate
+          run() {
+            if ! "$@" > out.log 2>&1; then
+              cat out.log
+              grep -v '^\s*$' out.log | head -40 | sed "s/^/::error title=$*::/"
+              exit 1
+            fi
+            cat out.log
+          }
+          run terraform stacks fmt -check
+          run terraform stacks init
+          run terraform stacks validate
 
+  # Plans need the Day 0 OIDC identities. Until Day 0 has been applied and the
+  # repository variables exist (e.g. in this untested reference repository),
+  # the plan jobs are skipped instead of failing on a missing client ID.
   plan-platform:
     name: plan day-1 platform landing zone
     needs: static-analysis
+    if: ${{ vars.AZURE_PLAN_CLIENT_ID != '' }}
     permissions:
       contents: read
       id-token: write
@@ -126,6 +149,7 @@ jobs:
   plan-workloads:
     name: plan day-2 workload vending & operations
     needs: static-analysis
+    if: ${{ vars.AZURE_PLAN_CLIENT_ID != '' }}
     permissions:
       contents: read
       id-token: write
