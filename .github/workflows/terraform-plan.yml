@@ -48,6 +48,9 @@ jobs:
           - code/modules/workload-vending
           - code/day-1-platform-landing-zone
           - code/day-2-workload-vending-operations
+    # Shared modules (code/modules/*) declare provider configuration_aliases,
+    # which `terraform validate` cannot resolve without a caller: they are
+    # validated through the day-1 / day-2 root modules and get fmt + tflint here.
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -64,6 +67,7 @@ jobs:
         run: terraform fmt -check -recursive -diff "${{ matrix.stack }}"
 
       - name: terraform validate (no backend, no credentials)
+        if: ${{ !startsWith(matrix.stack, 'code/modules/') }}
         working-directory: ${{ matrix.stack }}
         run: |
           set -o pipefail
@@ -119,7 +123,8 @@ jobs:
           run() {
             if ! "$@" > out.log 2>&1; then
               cat out.log
-              grep -v '^\s*$' out.log | head -40 | sed "s/^/::error title=$*::/"
+              # strip ANSI colours and box-drawing characters for readable annotations
+              sed -e 's/\x1b\[[0-9;]*m//g' -e 's/^[│╷╵ ]*//' out.log | grep -v '^\s*$' | head -60 | sed "s/^/::error title=$*::/"
               exit 1
             fi
             cat out.log

@@ -99,11 +99,24 @@ resource "tfe_workspace" "this" {
   queue_all_runs      = false
   tag_names           = ["alz", "platform-team", each.key]
 
-  vcs_repo {
-    identifier                 = var.vcs.identifier
-    branch                     = var.vcs.branch
-    github_app_installation_id = var.vcs.github_app_installation_id
-    oauth_token_id             = var.vcs.oauth_token_id
+  # Exactly one VCS authentication attribute may be present: the provider
+  # rejects both, even when one of them would be null.
+  dynamic "vcs_repo" {
+    for_each = var.vcs.github_app_installation_id != null ? [var.vcs] : []
+    content {
+      identifier                 = vcs_repo.value.identifier
+      branch                     = vcs_repo.value.branch
+      github_app_installation_id = vcs_repo.value.github_app_installation_id
+    }
+  }
+
+  dynamic "vcs_repo" {
+    for_each = var.vcs.oauth_token_id != null ? [var.vcs] : []
+    content {
+      identifier     = vcs_repo.value.identifier
+      branch         = vcs_repo.value.branch
+      oauth_token_id = vcs_repo.value.oauth_token_id
+    }
   }
 }
 
@@ -159,10 +172,23 @@ resource "tfe_stack" "alz" {
   working_directory   = "code/hcp-terraform-stacks/alz"
   speculative_enabled = true
 
-  vcs_repo {
-    identifier                 = var.vcs.identifier
-    branch                     = var.vcs.branch
-    github_app_installation_id = var.vcs.github_app_installation_id
-    oauth_token_id             = var.vcs.oauth_token_id
+  # Exactly one VCS authentication attribute may be present: the provider
+  # rejects both, even when one of them would be null.
+  dynamic "vcs_repo" {
+    for_each = var.vcs.github_app_installation_id != null ? [var.vcs] : []
+    content {
+      identifier                 = vcs_repo.value.identifier
+      branch                     = vcs_repo.value.branch
+      github_app_installation_id = vcs_repo.value.github_app_installation_id
+    }
+  }
+
+  dynamic "vcs_repo" {
+    for_each = var.vcs.oauth_token_id != null ? [var.vcs] : []
+    content {
+      identifier     = vcs_repo.value.identifier
+      branch         = vcs_repo.value.branch
+      oauth_token_id = vcs_repo.value.oauth_token_id
+    }
   }
 }
