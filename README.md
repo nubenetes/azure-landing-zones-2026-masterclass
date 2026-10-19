@@ -382,8 +382,8 @@ No Azure tenant was ever touched. The following **offline, static** checks were 
 |---|---|---|
 | HCL formatting | `tofu fmt -check -recursive` | Pass |
 | Validity of all root modules and modules (real provider schemas, AVM modules resolved at the pinned versions): Day 0, Day 1, Day 2, Azure DevOps bootstrap, both modules | `tofu validate` with AzureRM 4.81.0, AzureAD 3.10.0, AzAPI 2.13.0, ALZ 0.22.0, AzureDevOps 1.16.0 | Pass |
-| HCP Terraform / TFE bootstrap | `tofu validate` against a schema stub built from the `hashicorp/tfe` 0.82 docs (binary unavailable offline) | Pass (schema from docs) |
-| Terraform Stack configuration | HCL parser only (`terraform stacks validate` unavailable offline) | Syntax OK - **run `terraform stacks validate`** |
+| HCP Terraform / TFE bootstrap | `terraform validate` in CI with the real `hashicorp/tfe` provider | Pass |
+| Terraform Stack configuration | `terraform stacks fmt` / `init` / `validate` in CI (Terraform 1.16.6) | Pass |
 | Lint | TFLint 0.64 (terraform + azurerm rulesets) | Pass |
 | Day 1 / Day 0 locals (IPAM, policy defaults, rollout phase, OIDC subjects) evaluated with the example values | `tofu console` | Expected values |
 | GitHub workflows | `actionlint`, `yamllint` | Pass |

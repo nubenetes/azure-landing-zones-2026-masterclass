@@ -3,7 +3,7 @@
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../../README.md).
 
 > [!WARNING]
-> This Stack configuration has **not** been validated with `terraform stacks validate` (the Stacks CLI was not available in the generation environment) and has never been deployed. The modules it uses are the same ones validated for the root-module delivery paths.
+> This Stack passes `terraform stacks fmt`, `init` and `validate` in CI (job `terraform stacks validate`), but it has **never been deployed**.
 
 One Stack, two components, two deployments:
 

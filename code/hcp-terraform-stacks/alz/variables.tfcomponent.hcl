@@ -2,7 +2,7 @@
 # Terraform Stack "alz" - variables
 #
 # Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
-# live environment and NOT validated with the Stacks CLI. Validate with
+# live environment (passes `terraform stacks validate` in CI only). Validate with
 # `terraform stacks validate` and a canary deployment first.
 #
 # Stack variables require `type` and do not support `validation`; the

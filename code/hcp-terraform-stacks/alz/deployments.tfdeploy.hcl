@@ -2,7 +2,7 @@
 # Terraform Stack "alz" - deployments
 #
 # Generated with Claude Opus 5.5 - architectural reference, NOT tested in a
-# live environment and NOT validated with the Stacks CLI.
+# live environment (passes `terraform stacks validate` in CI only).
 #
 #   canary      isolated "canary-" management group hierarchy in the same
 #               tenant, own platform subscriptions, cheap SKUs, FULL policy

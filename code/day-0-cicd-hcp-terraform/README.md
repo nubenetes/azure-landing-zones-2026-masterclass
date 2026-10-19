@@ -24,5 +24,5 @@ cp terraform.tfvars.example terraform.tfvars
 terraform init && terraform apply
 ```
 
-> [!WARNING]
-> `validate` for this stage ran against a schema stub derived from the `hashicorp/tfe` 0.82 documentation (the provider binary was unavailable offline). Run `terraform validate` with the real provider before use.
+> [!NOTE]
+> The Stack is defined twice (`alz_github_app` / `alz_oauth`) because the `tfe` provider rejects `github_app_installation_id` and `oauth_token_id` in the same `vcs_repo` block; only the one matching `var.vcs` is created.

@@ -118,7 +118,7 @@ flowchart TD
 Status in 2026: Terraform Stacks became **generally available on HCP Terraform** (announced at HashiConf, September 2025; CLI 1.13+), and **Terraform Enterprise 2.0** (April 2026) introduced Stacks for RUM-based licences, with Kubernetes/OpenShift fixes in 2.0.1 and proxy fixes in 2.0.6. Deployment groups and auto-approve checks are HCP Terraform **Premium** features.
 
 > [!WARNING]
-> The Stack configuration was syntax-checked with an HCL parser only; `terraform stacks validate` could not run in the generation environment. Run it (and commit the generated `.terraform.lock.hcl`) before connecting the Stack.
+> The Stack passes `terraform stacks validate` in CI but has never been deployed. Generate and commit `.terraform.lock.hcl` (`terraform stacks providers-lock`) before connecting it.
 
 ---
 

@@ -100,9 +100,8 @@ jobs:
     name: terraform stacks validate (code/hcp-terraform-stacks/alz)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # The Stacks CLI plugin is downloaded on first use; this job is advisory
-    # until the lock file has been generated and committed (see the Stack README).
-    continue-on-error: true
+    # The Stacks CLI plugin and providers are downloaded on first use; commit
+    # the generated .terraform.lock.hcl to pin them (see the Stack README).
     defaults:
       run:
         working-directory: code/hcp-terraform-stacks/alz
