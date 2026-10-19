@@ -27,6 +27,14 @@ flowchart TB
     branches <--> er1
 ```
 
+**How to read this diagram:**
+
+- A single **Virtual WAN** contains one Microsoft-managed **secured virtual hub** per region, each with an Azure Firewall and routing intent for internet and private traffic.
+- Hubs are connected by **managed transit**: no hub-to-hub peering or route tables to maintain.
+- **Spokes** attach to their regional hub through a VNet connection; routing intent forces their traffic through the hub firewall without UDRs.
+- Services that cannot live inside a virtual hub (Private DNS Resolver, Bastion) sit in a **sidecar VNet** connected to the hub.
+- **Branches, SD-WAN and on-premises** terminate on the hub gateways (ExpressRoute, site-to-site, point-to-site).
+
 ## ASCII
 
 ```text

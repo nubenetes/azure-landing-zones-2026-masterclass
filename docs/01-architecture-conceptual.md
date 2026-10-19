@@ -79,6 +79,13 @@ flowchart TD
     class SBX,DEC special
 ```
 
+**How to read this diagram:**
+
+- **Blue** boxes are the platform landing zone (owned by the platform team), **green** boxes the Workload Landing Zones, **grey** boxes the special-purpose groups.
+- `alz` (intermediate root) is created under the Tenant Root Group so that tenant-wide guardrails apply to everything below it without touching the root itself.
+- Workloads are separated by **connectivity / exposure model** (Corp = private, hub-connected; Online = internet-facing), not by department or environment.
+- Sandbox is outside the workload tree so experiments never inherit hybrid connectivity; Decommissioned parks subscriptions before cancellation.
+
 ### 3.1 Why each management group exists
 
 | MG | Archetype (ALZ Library) | Purpose | Representative assignments |
@@ -147,6 +154,13 @@ flowchart LR
     G1 -- peering / vHub connection --> C
     P1 & P2 & G1 & SB -. diagnostics .-> M
 ```
+
+**How to read this diagram:**
+
+- The left group shows the **platform subscriptions** and what each hosts (Management also hosts the IaC state from Day 0).
+- **Solid arrows**: workload spokes connect to the Connectivity subscription (hub peering or Virtual WAN connection).
+- **Dotted arrows**: every subscription, including the sandbox, sends diagnostics to the central Log Analytics workspace in Management.
+- The sandbox has **no network path** to the hub: it is isolated by design.
 
 Rules of thumb:
 

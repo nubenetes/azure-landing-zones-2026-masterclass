@@ -31,6 +31,12 @@ flowchart TB
     stack --> st["HCP Terraform / TFE 2.0+<br/>Terraform Stacks"]
 ```
 
+**How to read this diagram:**
+
+- **Top**: the two shared modules hold all logic and contain no provider or backend configuration.
+- **Middle**: the two root modules add backend and authentication; the Stack adds components and deployments. Both reuse the same modules.
+- **Bottom**: the root modules run on GitHub Actions, Azure DevOps or HCP Terraform / TFE workspaces; the Stack runs on HCP Terraform or Terraform Enterprise 2.0+.
+
 | Delivery path | Entry point | State | Azure identity | Bootstrap |
 |---|---|---|---|---|
 | **GitHub Actions** | root modules | Azure Storage (Day 0, CMK, Entra-only) | GitHub OIDC -> plan / apply apps | `day-0-bootstrap-oidc` |
@@ -102,6 +108,12 @@ flowchart TD
     D -- yes --> STK["HCP Terraform Stacks"]
     D -- no --> HCP["HCP Terraform workspaces"]
 ```
+
+**How to read this diagram:**
+
+- Start from **where the code and pipelines already live**: an Azure Repos / Boards estate points to Azure DevOps.
+- Need managed state, policy checks on plans and continuous drift detection? Move from GitHub Actions to **HCP Terraform** or **Terraform Enterprise** (self-managed when data must stay on-premises).
+- Choose **Stacks** when the same configuration is rolled out to many environments (canary -> production) or values are only known after apply.
 
 ---
 

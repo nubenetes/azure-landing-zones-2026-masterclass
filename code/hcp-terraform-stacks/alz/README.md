@@ -16,6 +16,12 @@ flowchart LR
     stack --> prod["deployment: production<br/>real hierarchy<br/>manual approval"]
 ```
 
+**How to read this diagram:**
+
+- The **Stack** contains two components: `platform` (management groups, policy, management, connectivity) feeds its outputs into `workloads` (subscription vending and guardrails).
+- The same configuration is deployed twice: **canary** (isolated `canary-` hierarchy, cheap SKUs, full enforcement, auto-approved when nothing is destroyed) and **production** (manual approval).
+- Each deployment has **its own state**; a change is proven in canary before production is approved.
+
 | File | Content |
 |---|---|
 | `.terraform-version` | Terraform CLI used by the Stack (Stacks need 1.13+) |

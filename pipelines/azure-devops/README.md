@@ -23,6 +23,12 @@ flowchart LR
     plan --> apply
 ```
 
+**How to read this diagram:**
+
+- The **Plan stage** always uses the read-only `sc-alz-plan` service connection and publishes the saved plan as an artifact.
+- The **Apply stage** is a deployment job bound to the `alz-production` environment: approval, exclusive lock and branch control must pass first.
+- Only then does it use `sc-alz-apply`, which has its own branch control (main only), and applies **exactly the published plan**.
+
 Environment variables used by the providers and the `azurerm` backend:
 
 | Variable | Value |

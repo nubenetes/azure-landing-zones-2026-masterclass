@@ -21,7 +21,7 @@ AVM is **not** a provider - it is a library of Terraform (and Bicep) *modules* b
 ```mermaid
 flowchart TB
     subgraph L3["Layer 3 - Composition (this repository)"]
-        root["Root modules: day-0 / day-1 / day-2"]
+        root["Shared modules code/modules/*<br/>+ root modules day-0 / day-1 / day-2<br/>+ Terraform Stack"]
     end
     subgraph L2["Layer 2 - Azure Verified Modules"]
         ptn["Pattern modules<br/>avm-ptn-alz, avm-ptn-alz-management,<br/>avm-ptn-alz-connectivity-*, avm-ptn-alz-sub-vending"]
@@ -41,6 +41,12 @@ flowchart TB
     azapi & azurerm --> ARM[("Azure Resource Manager")]
     azuread --> Graph[("Microsoft Graph / Entra ID")]
 ```
+
+**How to read this diagram:**
+
+- Read **top-down**: this repository composes Azure Verified Modules, and the modules call the providers that talk to Azure.
+- **Pattern modules** (`avm-ptn-*`) assemble whole capabilities (ALZ governance, management, connectivity, vending); **resource modules** (`avm-res-*`) wrap a single resource type.
+- The `alz` provider reads the versioned **ALZ Library**; `azapi` and `azurerm` call Azure Resource Manager; `azuread` calls Microsoft Graph (used only in Day 0 and the Azure DevOps bootstrap).
 
 ---
 
@@ -79,6 +85,12 @@ flowchart TD
     E -- yes --> RM["azurerm resource"]
     E -- no --> API["azapi_resource / azapi_update_resource"]
 ```
+
+**How to read this diagram:**
+
+- Use it **per resource**: start at the top and stop at the first `yes`.
+- Entra ID objects always use `azuread`; otherwise prefer an AVM **pattern** module, then an AVM **resource** module.
+- Only when no module exists choose between `azurerm` (stable, typed) and `azapi` (new or preview API versions, missing properties).
 
 ---
 
@@ -121,6 +133,12 @@ sequenceDiagram
     Mod->>Prov: data "alz_architecture"
     Mod->>ARM: create MGs, definitions, set definitions,<br/>assignments, role assignments (azapi)
 ```
+
+**How to read this diagram:**
+
+- The `alz` provider **fetches the pinned ALZ Library** release and merges the local overrides in `lib/`.
+- It resolves architecture -> archetypes -> policy and role assets and computes the role assignments DeployIfNotExists identities need.
+- `avm-ptn-alz` reads that model and creates everything in Azure through `azapi`, so upgrading policy (library ref) and upgrading code (module version) are independent changes.
 
 Consequences:
 

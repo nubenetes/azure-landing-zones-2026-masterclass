@@ -45,6 +45,12 @@ flowchart LR
     app2 -. "also reachable: ANY storage account<br/>in ANY tenant (exfiltration path)" .-> st3[("Unknown storage account")]
 ```
 
+**How to read this diagram:**
+
+- **Top**: a Private Endpoint puts a private IP for one specific resource in the spoke, and the resource's public endpoint can be disabled.
+- **Bottom**: a Service Endpoint only optimises the route to the service's **public** endpoint, which must stay enabled.
+- The **dotted arrow** is the risk: with Service Endpoints the subnet can also reach any other instance of that service, including other tenants', unless Service Endpoint Policies restrict it.
+
 - **Private Endpoint (Private Link)**: a NIC with a private IP from *your* subnet, mapped to **one specific resource** (or sub-resource such as `blob`). The service's public endpoint can be disabled entirely. Reachable from peered VNets, other regions and on-premises over ExpressRoute/VPN.
 - **Service Endpoint**: the subnet gets an optimised route to the service's **public** endpoint; the source address seen by the service becomes the private VNet address so you can write VNet firewall rules. Nothing is assigned *to the resource* - the subnet can reach **every** instance of that service unless **Service Endpoint Policies** (supported only for a few services, e.g. Storage) restrict it.
 
@@ -87,6 +93,12 @@ flowchart TD
     E -- no --> PE
     E -- yes --> SE["Service Endpoint + Service Endpoint Policy<br/>(time-boxed exception)"]
 ```
+
+**How to read this diagram:**
+
+- Follow it **for each PaaS dependency**; almost every path ends in a Private Endpoint.
+- A Service Endpoint is reached only for non-regulated data, no hybrid or cross-region need, a service that supports Service Endpoint Policies, **and** a recorded exception.
+- The exception is implemented by adding the service to `allowed_service_endpoints`, which the Deny policy honours.
 
 Legitimate exception examples: a non-production sandbox writing logs to a storage account where the cost per GB dominates; a service that has no Private Link support yet (verify before granting - coverage expands continuously).
 

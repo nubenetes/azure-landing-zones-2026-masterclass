@@ -26,6 +26,13 @@ flowchart LR
     applyapp -- "Blob Data Contributor" --> state
 ```
 
+**How to read this diagram:**
+
+- This is the **GitHub Actions view**: three job contexts produce three OIDC token subjects (`pull_request`, `ref:refs/heads/main`, `environment:production`).
+- Entra ID maps the first two subjects to the **plan** app (read-only) and only the environment subject to the **apply** app.
+- The plan app has `Reader` on the management group tree and `Storage Blob Data Reader` on state, so a pull request can never change Azure or state.
+- The apply app has `Owner` restricted by an **ABAC condition** (it cannot grant or remove Owner, User Access Administrator or RBAC Administrator) and write access to state.
+
 ## ASCII
 
 ```text
@@ -59,5 +66,11 @@ flowchart LR
     hcp -- "apply phase" --> apply
     stk -- "plan + apply" --> apply
 ```
+
+**How to read this diagram:**
+
+- **Every delivery platform reuses the same two identities**; only the token issuer and subject differ (GitHub job context, Azure DevOps service connection, HCP Terraform run phase, Stack deployment operation).
+- GitHub Actions, Azure DevOps and HCP Terraform / TFE workspaces keep the **plan / apply split**: plans and drift detection use the plan app, applies use the apply app.
+- **Terraform Stacks** use one client ID per deployment for both operations, so both subjects point to the apply app; the production approval and the ABAC condition compensate.
 
 Full subject list: [docs/07](../../docs/07-delivery-platforms.md#federated-identity-credentials-entra-id-trusts-exactly-these-subjects).
