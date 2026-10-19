@@ -6,6 +6,9 @@ The same Terraform code reaches Azure through any of five delivery paths. One di
 
 ## 1. Overview - one codebase, five delivery paths
 
+<details>
+<summary><strong>📊 Diagram: 1. Overview - one codebase, five delivery paths</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TB
     dev(["Engineer opens a pull request"])
@@ -25,6 +28,8 @@ flowchart TB
     gha & ado & hcp & tfe & stk --> az["Azure tenant<br/>platform + workload landing zones"]
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **One entry for engineers:** every change starts as a pull request against the same repository, whatever platform is chosen.
@@ -33,6 +38,9 @@ flowchart TB
 - **Same target:** every path deploys the identical platform and workload landing zones; choosing a platform changes *how* changes are gated, not *what* is built.
 
 ## 2. GitHub Actions
+
+<details>
+<summary><strong>📊 Diagram: 2. GitHub Actions</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -49,6 +57,8 @@ flowchart LR
     pr -- "review + merge" --> main
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **Pull request:** static analysis runs for every stack (plus `terraform stacks validate`); read-only plans of Day 1 and Day 2 are posted as a PR comment. The plan identity cannot write to Azure or to state.
@@ -58,6 +68,9 @@ flowchart LR
 - **Before Day 0:** all Azure jobs are skipped (not failed) until the `AZURE_PLAN_CLIENT_ID` variable exists.
 
 ## 3. Azure DevOps Pipelines
+
+<details>
+<summary><strong>📊 Diagram: 3. Azure DevOps Pipelines</strong> <em>(click to expand)</em></summary>
 
 ```mermaid
 flowchart LR
@@ -74,6 +87,8 @@ flowchart LR
     prv -- "PR completed" --> app
 ```
 
+</details>
+
 **How to read this diagram:**
 
 - **PR validation:** runs from the YAML `pr` trigger (GitHub-hosted repo) or from a build-validation branch policy (Azure Repos), using only the read-only `sc-alz-plan` service connection.
@@ -84,6 +99,9 @@ flowchart LR
 
 ## 4. HCP Terraform / Terraform Enterprise workspaces
 
+<details>
+<summary><strong>📊 Diagram: 4. HCP Terraform / Terraform Enterprise workspaces</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     vcs["VCS (GitHub / Azure Repos / GitLab)"] -- "PR" --> spec["Speculative plans<br/>alz-platform + alz-workloads<br/>(status checks on the PR)"]
@@ -93,6 +111,8 @@ flowchart LR
     vs["Variable set<br/>TFC_AZURE_PROVIDER_AUTH<br/>plan / apply client IDs"] -.-> wp & ww
     ha["Health assessments<br/>(continuous drift detection)"] -.-> wp & ww
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -105,6 +125,9 @@ flowchart LR
 
 ## 5. Terraform Stacks
 
+<details>
+<summary><strong>📊 Diagram: 5. Terraform Stacks</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     cfg["Stack configuration<br/>components: platform -> workloads"] --> canary["Deployment canary<br/>canary-* hierarchy"]
@@ -113,6 +136,8 @@ flowchart LR
     prod -- "manual approval" --> pa["apply production"]
     it["identity_token azure<br/>(per deployment)"] -.-> canary & prod
 ```
+
+</details>
 
 **How to read this diagram:**
 

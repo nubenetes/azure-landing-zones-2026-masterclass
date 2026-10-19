@@ -7,6 +7,9 @@
 
 One Stack, two components, two deployments:
 
+<details>
+<summary><strong>📊 Diagram: Terraform Stack alz (HCP Terraform / Terraform Enterprise 2.0+)</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph stack["Stack: alz"]
@@ -15,6 +18,8 @@ flowchart LR
     stack --> canary["deployment: canary<br/>canary-* MGs, Basic SKUs, enforce<br/>auto-approve if no destroys"]
     stack --> prod["deployment: production<br/>real hierarchy<br/>manual approval"]
 ```
+
+</details>
 
 **How to read this diagram:**
 

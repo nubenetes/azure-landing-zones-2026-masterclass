@@ -2,6 +2,9 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
+<details>
+<summary><strong>📊 Diagram: Azure Virtual WAN Topology (Microsoft-managed)</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TB
     subgraph vwan["vwan-westeurope (Standard) - Connectivity subscription"]
@@ -26,6 +29,8 @@ flowchart TB
     s3 ---|"VNet connection"| vh2
     branches <--> er1
 ```
+
+</details>
 
 **How to read this diagram:**
 

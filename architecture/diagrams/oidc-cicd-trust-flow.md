@@ -2,6 +2,9 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
+<details>
+<summary><strong>📊 Diagram: OIDC CI/CD Trust Flow</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph gh["GitHub: nubenetes/azure-landing-zones-2026-masterclass"]
@@ -25,6 +28,8 @@ flowchart LR
     applyapp -- "Owner + ABAC condition<br/>(cannot assign Owner/UAA/RBAC Admin)" --> rootmg
     applyapp -- "Blob Data Contributor" --> state
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -50,6 +55,9 @@ flowchart LR
 
 ## Same identities, every delivery platform
 
+<details>
+<summary><strong>📊 Diagram: Same identities, every delivery platform</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     gha["GitHub Actions<br/>repo:...:pull_request / ref main / environment:production"]
@@ -66,6 +74,8 @@ flowchart LR
     hcp -- "apply phase" --> apply
     stk -- "plan + apply" --> apply
 ```
+
+</details>
 
 **How to read this diagram:**
 

@@ -43,6 +43,9 @@ Every guardrail has a cost in complexity, money or developer friction. The table
 
 ## 2. Policy-as-Code lifecycle
 
+<details>
+<summary><strong>📊 Diagram: 2. Policy-as-Code lifecycle</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 stateDiagram-v2
     [*] --> Audit: new control / brownfield tenant
@@ -51,6 +54,8 @@ stateDiagram-v2
     Enforce --> Audit: regression or new library version (rollback via PR)
     Enforce --> [*]
 ```
+
+</details>
 
 **How to read this diagram:**
 

@@ -2,6 +2,9 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
+<details>
+<summary><strong>📊 Diagram: Management Group Hierarchy (ALZ 2026)</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TD
     TRG["Tenant Root Group"] --> ALZ["alz<br/>archetype: root_masterclass"]
@@ -24,6 +27,8 @@ flowchart TD
     ONL -.- s6(["sub: genai-assistant-prod"])
     SBX -.- s7(["sub: data-science-sandbox"])
 ```
+
+</details>
 
 **How to read this diagram:**
 

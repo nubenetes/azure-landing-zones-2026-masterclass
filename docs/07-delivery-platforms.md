@@ -10,6 +10,9 @@
 
 The Terraform CLI is **not** the operating model. After the one-off Day 0 bootstrap, every change reaches Azure through a governed pipeline or platform run. The repository is structured so that the same code serves all of them:
 
+<details>
+<summary><strong>📊 Diagram: 1. Principle: one codebase, any delivery platform</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TB
     subgraph code["Shared code (no providers, no backend)"]
@@ -30,6 +33,8 @@ flowchart TB
     r1 & r2 --> ws["HCP Terraform / TFE<br/>VCS-driven workspaces"]
     stack --> st["HCP Terraform / TFE 2.0+<br/>Terraform Stacks"]
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -97,6 +102,9 @@ No credentials live in code. The root modules' provider blocks only set `use_oid
 
 ### When to choose what
 
+<details>
+<summary><strong>📊 Diagram: When to choose what</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TD
     A{"Source code already in GitHub<br/>and platform team owns pipelines?"} -- yes --> B{"Need managed state, policy-as-code<br/>on plans and continuous drift detection?"}
@@ -108,6 +116,8 @@ flowchart TD
     D -- yes --> STK["HCP Terraform Stacks"]
     D -- no --> HCP["HCP Terraform workspaces"]
 ```
+
+</details>
 
 **How to read this diagram:**
 

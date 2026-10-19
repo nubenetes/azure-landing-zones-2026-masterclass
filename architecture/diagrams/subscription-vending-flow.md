@@ -4,6 +4,9 @@
 
 How a workload team gets a new Workload Landing Zone, regardless of the delivery platform.
 
+<details>
+<summary><strong>📊 Diagram: Subscription Vending Flow (Day 2)</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -25,6 +28,8 @@ sequenceDiagram
     DP-->>WT: outputs: subscription ID, CIDRs, DNS servers, deploy identity
     Note over Az: Workload guardrails policies (diagnostics, Defender,<br/>no service endpoints) apply from the first minute
 ```
+
+</details>
 
 **How to read this diagram:**
 

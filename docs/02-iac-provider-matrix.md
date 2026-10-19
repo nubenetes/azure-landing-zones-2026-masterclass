@@ -18,6 +18,9 @@
 
 AVM is **not** a provider - it is a library of Terraform (and Bicep) *modules* built on top of providers. A 2026 landing zone uses five building blocks at three layers:
 
+<details>
+<summary><strong>📊 Diagram: 1. The layering model</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TB
     subgraph L3["Layer 3 - Composition (this repository)"]
@@ -41,6 +44,8 @@ flowchart TB
     azapi & azurerm --> ARM[("Azure Resource Manager")]
     azuread --> Graph[("Microsoft Graph / Entra ID")]
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -73,6 +78,9 @@ flowchart TB
 
 ## 3. Choosing per resource
 
+<details>
+<summary><strong>📊 Diagram: 3. Choosing per resource</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart TD
     A["Need to manage X"] --> B{"Is X an Entra ID object?<br/>(app, SP, group, FIC)"}
@@ -85,6 +93,8 @@ flowchart TD
     E -- yes --> RM["azurerm resource"]
     E -- no --> API["azapi_resource / azapi_update_resource"]
 ```
+
+</details>
 
 **How to read this diagram:**
 
@@ -120,6 +130,9 @@ log_analytics_workspace_id = provider::azapi::resource_group_resource_id(
 
 ## 5. How the `alz` provider decouples policy from code
 
+<details>
+<summary><strong>📊 Diagram: 5. How the alz provider decouples policy from code</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 sequenceDiagram
     participant Lib as ALZ Library (git tag 2026.10.0)
@@ -133,6 +146,8 @@ sequenceDiagram
     Mod->>Prov: data "alz_architecture"
     Mod->>ARM: create MGs, definitions, set definitions,<br/>assignments, role assignments (azapi)
 ```
+
+</details>
 
 **How to read this diagram:**
 

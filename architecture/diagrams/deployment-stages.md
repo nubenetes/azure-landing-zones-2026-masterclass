@@ -2,6 +2,9 @@
 
 > **Note**: This architectural reference framework and repository content were fully generated using **Claude Opus 5.5**. Untested reference - see the [disclaimer](../../README.md).
 
+<details>
+<summary><strong>📊 Diagram: Deployment Stages &amp; State Layout</strong> <em>(click to expand)</em></summary>
+
 ```mermaid
 flowchart LR
     subgraph d0["Day 0 - operator CLI, once"]
@@ -31,6 +34,8 @@ flowchart LR
     s3[("state per deployment<br/>canary / production")] -.- stk
     s1 -. "outputs contract" .-> rs
 ```
+
+</details>
 
 **How to read this diagram:**
 
