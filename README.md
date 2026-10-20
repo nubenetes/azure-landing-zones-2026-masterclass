@@ -60,9 +60,9 @@ A complete, opinionated reference for deploying an **Azure Landing Zone** the wa
 - [3. Repository map](#3-repository-map)
 - [4. Documentation index](#4-documentation-index)
 - [5. 🎥 Video Guides, Technical Shorts & Multimedia Sessions (YouTube)](#5--video-guides-technical-shorts--multimedia-sessions-youtube)
-  - [5.1 📊 Technical Multimedia Catalog (20 Sessions)](#51--technical-multimedia-catalog-20-sessions)
-  - [5.2 Section A: Deep-Dive Architectural Video Guides (9 Sessions)](#52-section-a-deep-dive-architectural-video-guides-9-sessions)
-  - [5.3 Section B: Technical Shorts & Architecture Takeaways (11 Sessions)](#53-section-b-technical-shorts--architecture-takeaways-11-sessions)
+  - [5.1 📊 Technical Multimedia Catalog (24 Sessions)](#51--technical-multimedia-catalog-24-sessions)
+  - [5.2 Section A: Deep-Dive Architectural Video Guides (10 Sessions)](#52-section-a-deep-dive-architectural-video-guides-10-sessions)
+  - [5.3 Section B: Technical Shorts & Architecture Takeaways (14 Sessions)](#53-section-b-technical-shorts--architecture-takeaways-14-sessions)
 - [6. Quickstart: Day 0, Day 1, Day 2](#6-quickstart-day-0-day-1-day-2)
   - [6.1 Prerequisites](#61-prerequisites)
   - [6.2 Day 0 - Bootstrap trust (local, once)](#62-day-0---bootstrap-trust-local-once)
@@ -814,7 +814,7 @@ azure-landing-zones-2026-masterclass/
 
 ## 5. 🎥 Video Guides, Technical Shorts & Multimedia Sessions (YouTube)
 
-The architectural patterns, provider matrices, network topologies, zero-secret pipelines, delivery platforms, and subscription vending mechanisms of this masterclass are accompanied by a dedicated series of technical video guides and rapid architecture shorts synthesized with **Gemini NotebookLM**.
+The architectural patterns, provider matrices, network topologies, zero-secret pipelines, delivery platforms, non-production testing strategies, and subscription vending mechanisms of this masterclass are accompanied by a dedicated series of technical video guides and rapid architecture shorts synthesized with **Gemini NotebookLM**.
 
 All sessions are hosted on the official YouTube channel [**@nubenetes**](https://youtube.com/@nubenetes).
 
@@ -822,9 +822,9 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 > **Multilingual Technical Content 🌐**:
 > The architectural masterclasses and shorts feature native **English** technical narration with auto-generated subtitles (CC) in over **20 languages** to assist cloud platform teams, enterprise architects, and site reliability engineers worldwide.
 
-### 5.1 📊 Technical Multimedia Catalog (20 Sessions)
+### 5.1 📊 Technical Multimedia Catalog (24 Sessions)
 
-#### 5.1.1 📽️ Deep-Dive Architectural Video Guides (9 Episodes)
+#### 5.1.1 📽️ Deep-Dive Architectural Video Guides (10 Episodes)
 
 | Format | Title / Episode | Focus / Core Engineering Domain | Language | Duration | Direct YouTube Link |
 | :---: | :--- | :--- | :---: | :---: | :--- |
@@ -837,8 +837,9 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 | 📽️ **Video Guide** | [**Azure Landing Zones 2026: Enterprise Architecture Mental Model & Deep Dive**](https://www.youtube.com/watch?v=nVpDkEKyBr8) | **Mental Model & Operational Synthesis**: Deconstructing monolithic blast radiuses, establishing day-1 workload agility, subscription vending engines, and zero-drift governance | 🇬🇧 English *(CC 20+)* | `10:40` | [▶️ Watch Video](https://www.youtube.com/watch?v=nVpDkEKyBr8) |
 | 📽️ **Video Guide** | [**Day 0 to Day 2: Zero-Secret CI/CD Pipelines with GitHub Actions & OIDC**](https://www.youtube.com/watch?v=IcH7LalL5cc) | **Pipeline Security Deep Dive**: Workload Identity Federation (OIDC), read-only plan vs environment-gated apply identities, ABAC Owner scoping, and ephemeral Entra ID tokens | 🇬🇧 English *(CC 20+)* | `5:52` | [▶️ Watch Video](https://www.youtube.com/watch?v=IcH7LalL5cc) |
 | 📽️ **Video Guide** | [**ALZ 2026 Masterclass: Modular Architecture & AVM Rebuild**](https://www.youtube.com/watch?v=HjLte2SGCk0) | **Modular Architecture & Migration Roadmap**: Managing the retirement deadlines (August 2026 CAF monolith, 2026/2027 Blueprints & Bicep classic), AVM patterns, and AzAPI schema enforcement | 🇬🇧 English *(CC 20+)* | `6:49` | [▶️ Watch Video](https://www.youtube.com/watch?v=HjLte2SGCk0) |
+| 📽️ **Video Guide** | [**Azure Landing Zones Testing Strategies: Canary, Sandboxes & Non-Prod**](https://www.youtube.com/watch?v=N6PMQzmBwwE) | **Testing & Non-Production Topologies**: Three-tier testing model (sandboxes, canary hierarchy with reduced hub, corp-nonprod), blast radius containment, and cost-optimized validation | 🇬🇧 English *(CC 20+)* | `8:19` | [▶️ Watch Video](https://www.youtube.com/watch?v=N6PMQzmBwwE) |
 
-#### 5.1.2 ⚡ Technical Shorts & Architecture Takeaways (11 Episodes)
+#### 5.1.2 ⚡ Technical Shorts & Architecture Takeaways (14 Episodes)
 
 | Format | Title / Episode | Focus / Core Engineering Domain | Language | Duration | Direct YouTube Link |
 | :---: | :--- | :--- | :---: | :---: | :--- |
@@ -853,13 +854,16 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 | ⚡ **Short** | [**How Subscription Vending Automates Azure**](https://www.youtube.com/shorts/GVoFBsgFtms) | **Subscription Vending**: Eliminating IT approval tickets and delivering pre-governed workload environments via GitOps | 🇬🇧 English *(CC 20+)* | `1:19` | [▶️ Watch Short](https://www.youtube.com/shorts/GVoFBsgFtms) |
 | ⚡ **Short** | [**Why Azure Separates Corp and Online**](https://www.youtube.com/shorts/n2lvZtLn8Ag) | **Network Segmentation**: Establishing clean hybrid corporate transit boundaries versus public internet ingress | 🇬🇧 English *(CC 20+)* | `1:21` | [▶️ Watch Short](https://www.youtube.com/shorts/n2lvZtLn8Ag) |
 | ⚡ **Short** | [**Why Microsoft Killed the Azure Landing Zone Monolith**](https://www.youtube.com/shorts/bB2fs8A28RI) | **Modular Shift**: Escaping monolithic state file bottlenecks and adopting single-purpose AVM building blocks | 🇬🇧 English *(CC 20+)* | `1:26` | [▶️ Watch Short](https://www.youtube.com/shorts/bB2fs8A28RI) |
+| ⚡ **Short** | [**How Azure Canaries Prevent Cloud Outages**](https://www.youtube.com/shorts/0mDvTs3aO2I) | **Canary Governance**: Deploying parallel canary- management groups to test security baselines with real policy inheritance | 🇬🇧 English *(CC 20+)* | `0:59` | [▶️ Watch Short](https://www.youtube.com/shorts/0mDvTs3aO2I) |
+| ⚡ **Short** | [**Where to Put Test Workloads in Azure**](https://www.youtube.com/shorts/sj7JF4KIKPo) | **Non-Prod Segmentation**: Splitting non-production into isolated sandboxes, canary hierarchies, and corp-nonprod landing zones | 🇬🇧 English *(CC 20+)* | `1:11` | [▶️ Watch Short](https://www.youtube.com/shorts/sj7JF4KIKPo) |
+| ⚡ **Short** | [**How Azure Canary Hubs Test Routing Affordably**](https://www.youtube.com/shorts/Sb3G1tMJaQQ) | **Reduced Canary Hub**: Deploying cost-optimized single-region canary hubs with Firewall Basic to validate routing without duplicate hardware costs | 🇬🇧 English *(CC 20+)* | `1:18` | [▶️ Watch Short](https://www.youtube.com/shorts/Sb3G1tMJaQQ) |
 
 <details>
 <summary>📂 <strong>Detailed Agendas, Transcripts & Engineering Takeaways</strong></summary>
 
 <br/>
 
-### 5.2 Section A: Deep-Dive Architectural Video Guides (9 Sessions)
+### 5.2 Section A: Deep-Dive Architectural Video Guides (10 Sessions)
 
 #### 5.2.1 The Cloud Metropolis: Azure Landing Zones Architecture Blueprint (8:30)
 - 🔗 **Direct URL**: [https://www.youtube.com/watch?v=u9rLpmpUf2Y](https://www.youtube.com/watch?v=u9rLpmpUf2Y)
@@ -924,9 +928,16 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 - 📝 **Technical Overview**:
 > Comprehensive roadmap on navigating the 2026 deprecation deadlines across the Azure infrastructure ecosystem. Details the retirement timeline for legacy CAF modules, ALZ-Bicep classic, and Azure Blueprints, while demonstrating how to construct resilient, modular platforms using Microsoft Azure Verified Modules (AVM), the versioned ALZ Library, and schema-validated AzAPI providers.
 
+#### 5.2.10 Azure Landing Zones Testing Strategies: Canary, Sandboxes & Non-Prod (8:19)
+- 🔗 **Direct URL**: [https://www.youtube.com/watch?v=N6PMQzmBwwE](https://www.youtube.com/watch?v=N6PMQzmBwwE)
+- ⏱️ **Duration**: 8:19 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Testing Topologies, Canary Management Groups, Reduced Canary Hub, Non-Production Segmentation
+- 📝 **Technical Overview**:
+> Masterclass on enterprise testing and validation frameworks for Azure Landing Zones. Breaks down the three essential non-production tiers: isolated Sandboxes (zero hub connectivity for unrestricted experimentation), the parallel Canary hierarchy (testing platform changes and policy inheritance with a cost-optimized, single-region reduced hub), and Corp-Nonprod landing zones (pre-production workloads on the shared hub). Demonstrates how to test risky routing and policy changes safely without incurring massive cloud costs.
+
 ---
 
-### 5.3 Section B: Technical Shorts & Architecture Takeaways (11 Sessions)
+### 5.3 Section B: Technical Shorts & Architecture Takeaways (14 Sessions)
 
 #### 5.3.1 Why Azure is Killing the Landing Zone Monolith (1:09)
 - 🔗 **Direct URL**: [https://www.youtube.com/shorts/7S6HDnZXQhI](https://www.youtube.com/shorts/7S6HDnZXQhI)
@@ -979,8 +990,8 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 
 #### 5.3.8 How Phased Policy as Code Works (1:15)
 - 🔗 **Direct URL**: [https://www.youtube.com/shorts/bh9-IuX7Qb0](https://www.youtube.com/shorts/bh9-IuX7Qb0)
+- ⏱️ **Domain**: Policy as Code, Phased Enforcement, Well-Architected Framework
 - ⏱️ **Duration**: 1:15 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
-- 🏷️ **Domain**: Policy as Code, Phased Enforcement, Well-Architected Framework
 - 📝 **Technical Overview**:
 > Governance short outlining why immediate strict policy enforcement causes brownfield production outages. Details the 3-stage Policy-as-Code promotion model: Audit -> Remediate -> Enforce.
 
@@ -1004,6 +1015,27 @@ All sessions are hosted on the official YouTube channel [**@nubenetes**](https:/
 - 🏷️ **Domain**: IaC Architecture, Monolith Retirement, Composable AVM Modules
 - 📝 **Technical Overview**:
 > Concise breakdown explaining why Microsoft archived legacy monolithic modules in 2026. Demonstrates how modular Azure Verified Modules (AVM) allow independent module updates and blast radius isolation.
+
+#### 5.3.12 How Azure Canaries Prevent Cloud Outages (0:59)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/0mDvTs3aO2I](https://www.youtube.com/shorts/0mDvTs3aO2I)
+- ⏱️ **Duration**: 0:59 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Canary Hierarchy, Outage Prevention, Policy Inheritance Testing
+- 📝 **Technical Overview**:
+> Architecture short demonstrating how deploying a parallel canary management group hierarchy in the same Entra ID tenant validates strict security baselines and library upgrades with real policy inheritance before touching production workloads.
+
+#### 5.3.13 Where to Put Test Workloads in Azure (1:11)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/sj7JF4KIKPo](https://www.youtube.com/shorts/sj7JF4KIKPo)
+- ⏱️ **Duration**: 1:11 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Non-Production Segmentation, Sandboxes, Canary, Corp-Nonprod
+- 📝 **Technical Overview**:
+> Essential design guide explaining why dumping test workloads into a single dev environment causes security vulnerabilities and cost spikes. Details the 3-tier non-production segmentation: isolated Sandboxes, Canary platform hierarchy, and Corp-Nonprod workload landing zones.
+
+#### 5.3.14 How Azure Canary Hubs Test Routing Affordably (1:18)
+- 🔗 **Direct URL**: [https://www.youtube.com/shorts/Sb3G1tMJaQQ](https://www.youtube.com/shorts/Sb3G1tMJaQQ)
+- ⏱️ **Duration**: 1:18 | 🌐 **Language**: 🇬🇧 English *(CC 20+)*
+- 🏷️ **Domain**: Reduced Canary Hub, Network Testing, Routing Intent, Cost Optimization
+- 📝 **Technical Overview**:
+> Networking short explaining how to test risky firewall and route table changes using an affordable, reduced canary hub. Shows how using Azure Firewall Basic, a single region, and zero gateway/DDoS overhead keeps testing costs at a fraction of production while proving routing integrity.
 
 </details>
 

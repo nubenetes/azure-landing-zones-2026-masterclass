@@ -16,6 +16,7 @@
 > - ⚡ [**Why Azure Landing Zones Split Corp and Online**](https://www.youtube.com/shorts/Uab5Y1nnt08) (`1:24`, 🇬🇧 English CC 20+) — *Architecture short on Corp vs. Online archetypes, routing boundaries, and avoiding dev/test/prod anti-patterns.*
 > - ⚡ [**Why Azure Separates Corp and Online**](https://www.youtube.com/shorts/n2lvZtLn8Ag) (`1:21`, 🇬🇧 English CC 20+) — *Architecture short on why mirroring dev/stage/prod lifecycles in management groups creates security blind spots.*
 > - ⚡ [**How Subscription Vending Automates Azure**](https://www.youtube.com/shorts/GVoFBsgFtms) (`1:19`, 🇬🇧 English CC 20+) — *Architecture short on eliminating IT approval tickets and vending pre-governed subscriptions with GitOps.*
+> - ⚡ [**How Azure Canaries Prevent Cloud Outages**](https://www.youtube.com/shorts/0mDvTs3aO2I) (`0:59`, 🇬🇧 English CC 20+) — *Architecture short on deploying parallel canary- management groups to test security baselines with real policy inheritance.*
 
 ---
 

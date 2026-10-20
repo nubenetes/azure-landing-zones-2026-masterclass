@@ -10,7 +10,11 @@
 
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Azure Hub-and-Spoke vs Virtual WAN: 2026 Enterprise Network Architecture**](https://www.youtube.com/watch?v=mUmga-Nz6cc) (`8:11`, 🇬🇧 English CC 20+) — *In-depth trade-off analysis: customer-managed Hub-and-Spoke vs. Microsoft-managed vWAN, routing intents, and IPAM.*
+> - 📽️ [**Azure Landing Zones Testing Strategies: Canary, Sandboxes & Non-Prod**](https://www.youtube.com/watch?v=N6PMQzmBwwE) (`8:19`, 🇬🇧 English CC 20+) — *Masterclass on testing enterprise landing zones: isolated sandboxes, canary management groups with reduced hubs, and non-prod workloads.*
 > - ⚡ [**Why Azure Networks Switch to vWAN**](https://www.youtube.com/shorts/DmKLtsW8O8Y) (`1:28`, 🇬🇧 English CC 20+) — *Architecture short on automated full-mesh routing and managing multi-region transit beyond the 50-spoke tipping point.*
+> - ⚡ [**How Azure Canaries Prevent Cloud Outages**](https://www.youtube.com/shorts/0mDvTs3aO2I) (`0:59`, 🇬🇧 English CC 20+) — *Architecture short on deploying parallel canary- management groups to test security baselines with real policy inheritance.*
+> - ⚡ [**Where to Put Test Workloads in Azure**](https://www.youtube.com/shorts/sj7JF4KIKPo) (`1:11`, 🇬🇧 English CC 20+) — *Architecture short on splitting non-production into sandboxes, canary hierarchies, and corp-nonprod landing zones.*
+> - ⚡ [**How Azure Canary Hubs Test Routing Affordably**](https://www.youtube.com/shorts/Sb3G1tMJaQQ) (`1:18`, 🇬🇧 English CC 20+) — *Architecture short on deploying a cost-optimized canary hub with Firewall Basic to test routing without duplicate hardware costs.*
 
 ---
 
