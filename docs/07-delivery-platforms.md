@@ -19,6 +19,21 @@
 
 ## 1. Principle: one codebase, any delivery platform
 
+#### 🖼️ Architectural Infographic: Zero-Secret Delivery (15-Step OIDC Deployment Pipeline)
+
+![Zero-Secret Infrastructure Delivery: The 15-Step OIDC Deployment Pipeline](assets/img/15-Step_OIDC_Deployment_Pipeline.png)
+
+**Detailed Architectural Breakdown & Universal Delivery Contract Takeaways:**
+
+- **Universal Multi-Platform Contract:**
+  - Regardless of whether an enterprise deploys via GitHub Actions, Azure DevOps Pipelines, HCP Terraform, Terraform Enterprise, or Terraform Stacks, all delivery implementations must strictly conform to this 15-step delivery contract.
+  - **Phase 1:** Automated pull request validation with offline formatting, linting, and stack static checks.
+  - **Phase 2:** Speculative, read-only plan generation using unprivileged OIDC tokens without state locking.
+  - **Phase 3:** Multi-party peer review by CODEOWNERS and FinOps teams prior to merging into protected `main`.
+  - **Phase 4:** Immutable plan binary artifact generation on the default branch.
+  - **Phase 5:** Automated canary hierarchy deployment followed by mandatory human environment approval gates.
+  - **Phase 6:** Verbatim plan apply using privileged apply identities conditioned by ABAC, followed by scheduled continuous drift detection.
+
 The Terraform CLI is **not** the operating model. After the one-off Day 0 bootstrap, every change reaches Azure through a governed pipeline or platform run. The repository is structured so that the same code serves all of them:
 
 <details>

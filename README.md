@@ -108,6 +108,38 @@ The architecture is described from the outside in: first the end-to-end picture,
 
 ### 2.1 End-to-end overview
 
+#### 🖼️ Architectural Infographic: Enterprise Reference Architecture Framework
+
+![2026 Azure Landing Zones: Enterprise Reference Architecture Framework](docs/assets/img/Enterprise_Cloud_Reference_Architecture_Framework.png)
+
+**Detailed Architectural Breakdown & Engineering Takeaways:**
+
+- **2026 Paradigm Shifts & Deprecation Timelines:**
+  - **CAF Monolith Retirement:** The legacy `terraform-azurerm-caf-enterprise-scale` module reached extended support end-of-life and was officially **archived on August 1, 2026**. Modern landing zones assemble composable, single-purpose Azure Verified Modules (AVM).
+  - **Azure Blueprints Sunset:** Microsoft Azure Blueprints permanently sunsets (no new assignments from October 31, 2026; complete service retirement on January 31, 2027), replaced by native **Deployment Stacks** and declarative Policy-as-Code.
+  - **Azure Verified Modules (AVM) Standard:** Microsoft-owned and engineered pattern modules (`avm-ptn-alz`, `avm-ptn-alz-management`, `avm-ptn-alz-connectivity-*`) enforce consistent, hardened interfaces for Private Endpoints, diagnostics, managed identities, and customer locks.
+  - **Decoupled ALZ Policy Library:** Architectural archetypes and Azure Policy definitions reside in the versioned `Azure/Azure-Landing-Zones-Library` (`platform/alz` `2026.10.0`), processed independently by the `Azure/alz` provider to eliminate upgrade regressions.
+  - **AzAPI-First Validation:** Modern AVM modules prioritize the `azapi` provider over `azurerm` to interact directly with ARM REST APIs, guaranteeing day-zero access to new Azure capabilities and plan-time OpenAPI schema validation.
+  - **Private Subnets by Default:** In alignment with Microsoft's 2026 network security standards, new virtual networks default to `defaultOutboundAccess = false`, making explicit outbound routing via Azure Firewall or NAT Gateway mandatory.
+
+- **Management Group Hierarchy & Governance:**
+  - **Tenant Root Group:** Maintained free of direct policy assignments to avoid locking out break-glass credentials or breaking non-standard tenant workloads.
+  - **Intermediate Root (`alz`):** Anchors tenant-wide security baselines (Defender for Cloud, centralized Azure Activity Logs, TLS 1.3 enforcement) without root pollution.
+  - **Platform Management Groups:** Segregates foundational utilities into dedicated subscriptions: `Identity` (AD DS, no public IPs), `Management` (Log Analytics, Sentinel), `Connectivity` (Hub/vWAN, Azure Firewall Premium), and the dedicated 2026 `Security` archetype (SOC operations and threat intelligence).
+  - **Workload Landing Zones:** Strictly segregates internal hybrid workloads (`Corp`) requiring on-premises transit from internet-facing workloads (`Online`) fronted by WAF perimeters.
+
+- **Network Topologies & Hierarchical IPAM:**
+  - **Topology Decision:** Customer-managed Hub-and-Spoke for environments under 50 spoke VNets versus Azure Virtual WAN (vWAN) with Routing Intent for multi-region scale (50+ spokes, 3+ regions).
+  - **Structured Address Planning:** Global `/8` cloud block, partitioned into `/12` regional allocations, `/16` archetype blocks (`10.2.0.0/16` Corp Prod, `10.3.0.0/16` Corp NonProd, `10.4.0.0/16` Online Prod, `10.15.0.0/16` Sandbox), and deterministic `/24` workload spokes (256 spokes per archetype).
+  - **Centralized Private DNS:** Centralized Private DNS Zones in the Connectivity subscription resolve Private Endpoints across all connected spokes with zero public data exposure.
+
+- **Core Decision Matrix:**
+  - Composable AVM IaC with `Azure/alz` provider.
+  - Workload Identity Federation (OIDC) eliminating stored credentials.
+  - Centralized Azure Firewall Premium egress inspection.
+  - PaaS isolation with Private Endpoints by default.
+  - Phased Policy-as-Code rollout (Audit -> Remediate -> Enforce).
+
 <details>
 <summary><strong>📊 Diagram: 2.1 End-to-end overview</strong> <em>(click to expand)</em></summary>
 
@@ -163,6 +195,31 @@ flowchart LR
 - **No secrets anywhere:** every arrow into Entra ID is a workload identity federation (OIDC) token exchange.
 
 ### 2.2 Management group hierarchy, archetypes and subscription placement
+
+#### 🖼️ Architectural Infographic: Architecture & Governance Framework
+
+![2026 Azure Landing Zone Architecture & Governance Framework](docs/assets/img/Cloud_Landing_Zone_Architecture_Framework.png)
+
+**Detailed Architectural Breakdown & Governance Takeaways:**
+
+- **Hierarchy Structure & Archetype Boundaries:**
+  - **Intermediate Root (`alz`):** Sits directly below the Tenant Root Group. Houses the `root_masterclass` archetype, enforcing organization-wide baselines (Defender for Cloud, Azure Activity Log export, diagnostic logging, classic resource retirement, and allowed deployment regions) without impacting root-level break-glass accounts.
+  - **Identity Management Group (`identity`):** Hosts directory services, domain controllers, and identity sync infrastructure. Enforces policies strictly denying public IP addresses, blocking open internet management ports (RDP 3389, SSH 22), and prohibiting subnets without Network Security Groups (NSGs).
+  - **Management Management Group (`management`):** Centralizes enterprise operational telemetry, Log Analytics workspaces, Azure Monitor Agent (AMA) associations, Data Collection Rules (DCRs), and Microsoft Sentinel SIEM onboarding.
+  - **Connectivity Management Group (`connectivity`):** Manages shared transit infrastructure, including regional Hub VNets, Virtual WAN hubs, Azure Firewall Premium, Private DNS Resolver inbound/outbound endpoints, Azure Bastion, and ExpressRoute / VPN gateways.
+  - **Security Management Group (`security`):** A dedicated 2026 ALZ architecture archetype designed specifically to isolate Security Operations Center (SOC) tooling, security telemetry exports, specialized SIEM forwarders, and threat intelligence workloads.
+  - **Corp Workload Landing Zones (`corp`):** Dedicated to internal corporate applications. Policies strictly deny public IPs on virtual network interfaces (`Deny-Public-IP-On-NIC`), prohibit public endpoints on PaaS resources (`Deny-Public-Endpoints`), and enforce Private Endpoints with centralized DNS registration.
+  - **Online Workload Landing Zones (`online`):** Dedicated to public-facing applications. Inbound traffic is fronted by Application Gateway or Azure Front Door with Web Application Firewall (WAF) inspection; direct outbound internet traffic is routed through the central firewall.
+
+- **Policy-as-Code Phased Lifecycle (ALZ Library 2026):**
+  - **Phase 1: Audit Mode (`audit` / `DoNotEnforce`):** Deploys policies with `effect = Audit` or `enforcement_mode = DoNotEnforce`. Platform teams assess compliance gaps and monitor violation logs across existing brownfield workloads with zero risk of deployment disruption.
+  - **Phase 2: Remediate Mode (`DeployIfNotExists` / `Modify`):** Activates auto-remediation policies (`effect = DeployIfNotExists` / `Modify`). Remediation tasks automatically backfill missing diagnostic logs, deploy monitoring agents, and attach default network security rules without blocking day-to-day deployments.
+  - **Phase 3: Enforce Mode (`enforce` / `Deny`):** Flips guardrail policies to active enforcement (`effect = Deny`). Non-compliant resource deployments (such as assigning a public IP in a `corp` landing zone) are actively blocked at the ARM control plane before creation.
+
+- **Policy Enforcement State Matrix Across Rollout Phases:**
+  - **Standard ALZ Phased Deny Policies:** Audit (`DoNotEnforce`) -> Remediate (`DoNotEnforce`) -> Enforce (`enforced` / Active Deny).
+  - **ALZ Phased DINE / Modify Policies:** Audit (`DoNotEnforce`) -> Remediate (`enforced` / Auto-deploy tasks) -> Enforce (`enforced`).
+  - **Workload Custom Guardrails:** Audit (`DoNotEnforce`) -> Remediate (`DoNotEnforce` / Compliance remediation) -> Enforce (`enforced`).
 
 <details>
 <summary><strong>📊 Diagram: 2.2 Management group hierarchy, archetypes and subscription placement</strong> <em>(click to expand)</em></summary>
@@ -271,6 +328,33 @@ flowchart TB
 - **Feature toggles** (`connectivity_features`) switch every optional component on or off - the canary deployment turns off DDoS, Bastion and gateways to stay cheap.
 
 ### 2.4 Network topology A: customer-managed hub-and-spoke (default)
+
+#### 🖼️ Architectural Infographic: Hub-and-Spoke vs. Virtual WAN Reference Architecture
+
+![Azure Landing Zone Networking: Hub-and-Spoke vs. Azure Virtual WAN Reference Architecture](docs/assets/img/Cloud_Landing_Zone_Networking_Architecture.png)
+
+**Detailed Architectural Breakdown & Network Sizing Takeaways:**
+
+- **Topology Trade-Offs: Customer-Managed vs. Microsoft-Managed:**
+  - **Customer-Managed Hub-and-Spoke:**
+    - *Core Fabric:* Regional customer-managed hub VNets hosting Azure Firewall Premium, GatewaySubnet (ExpressRoute / VPN), Azure Bastion, and Private DNS Resolvers.
+    - *Routing Mechanics:* Explicit User-Defined Routes (UDRs) deployed to spoke subnets forcing all egress traffic (`0.0.0.0/0`) through the central firewall private IP. Spoke VNets peer bilaterally with the hub (`allow_gateway_transit = true` on hub, `use_remote_gateways = true` on spokes).
+    - *Optimal Scale:* Ideal for enterprises with fewer than 50 spoke VNets, single or dual-region deployments, or complex third-party Next-Generation Firewall (NVA) clustering requirements.
+  - **Microsoft-Managed Azure Virtual WAN (vWAN):**
+    - *Core Fabric:* Microsoft-orchestrated Virtual Hubs (`vHubs`) delivering an automated, scalable software-defined transit mesh.
+    - *Routing Mechanics:* Declarative Routing Intent policies configure automated transit, routing `InternetTraffic` and `PrivateTraffic` directly through integrated secured hub firewalls, eliminating hundreds of individual UDR route tables.
+    - *Optimal Scale:* Engineered for large global enterprises with 50+ spoke VNets, 3 or more cloud regions, extensive branch connectivity (SD-WAN / IPsec), and automated transitive routing demands.
+
+- **PaaS Security & Centralized Private DNS Integration:**
+  - **Private Endpoints by Default:** Workload PaaS services (Azure Storage, Key Vault, Azure SQL) connect exclusively via Private Endpoints in spoke subnets with private RFC 1918 IPs.
+  - **Centralized Private DNS Zones:** All private DNS zones (`privatelink.blob.core.windows.net`, `privatelink.vaultcore.azure.net`, etc.) reside in the Connectivity subscription.
+  - **Private DNS Resolver:** Inbound endpoints receive DNS queries forwarded from on-premises; outbound rulesets resolve corporate DNS zones from cloud workloads, preventing split-brain DNS resolution.
+
+- **Hierarchical Deterministic IPAM Allocation:**
+  - **Root Cloud Block:** `/8` allocation reserved for global cloud enterprise networking.
+  - **Regional Partitioning:** `/12` blocks assigned per cloud region (e.g. Primary vs Secondary).
+  - **Archetype Segmentation:** `/16` blocks assigned cleanly by archetype (`10.2.0.0/16` Corp Prod, `10.3.0.0/16` Corp NonProd, `10.4.0.0/16` Online Prod, `10.15.0.0/16` Sandbox).
+  - **Workload Spoke Slices:** Standardized `/24` subnets (providing up to 256 unique spoke VNets per `/16` block) split into `/25` App, `/26` Data, and `/27` Integration subnets with `defaultOutboundAccess = false`.
 
 <details>
 <summary><strong>📊 Diagram: 2.4 Network topology A: customer-managed hub-and-spoke (default)</strong> <em>(click to expand)</em></summary>
@@ -515,6 +599,39 @@ flowchart LR
 
 ### 2.9 Delivery: the lifecycle of a change
 
+#### 🖼️ Architectural Infographic: Zero-Secret Delivery (15-Step OIDC Deployment Pipeline)
+
+![Zero-Secret Infrastructure Delivery: The 15-Step OIDC Deployment Pipeline](docs/assets/img/15-Step_OIDC_Deployment_Pipeline.png)
+
+**Detailed Architectural Breakdown & Pipeline Lifecycle Takeaways:**
+
+- **Phase 1 — Pull Request & Static Code Validation (Steps 1–3):**
+  - **Step 1 (PR Initialization):** An engineer opens a pull request targeting the protected `main` branch to update platform modules, policies, or workload declarations.
+  - **Step 2 (CI Trigger):** The repository fires a pull request webhook, initiating parallel CI workflows across GitHub Actions, Azure DevOps, or HCP Terraform.
+  - **Step 3 (Offline Static Checks):** Formatting (`terraform fmt -check`), linting (`tflint`), OpenTofu validation, and Terraform Stacks static checks execute offline without connecting to cloud APIs.
+
+- **Phase 2 — Read-Only Speculative Plan via OIDC (Steps 4–6):**
+  - **Step 4 (Plan OIDC Token Exchange):** The runner presents a signed OIDC JWT with subject claim `repo:<org>/<repo>:pull_request` to Microsoft Entra ID, receiving a short-lived, unprivileged access token.
+  - **Step 5 (Speculative Plan Execution):** The Plan Identity (granted `Reader` on Management Groups and `Storage Blob Data Reader` on Terraform state) runs `terraform plan` without state locking.
+  - **Step 6 (PR Plan Feedback):** The plan output, resource delta, and cost estimates are posted directly back into the pull request review thread.
+
+- **Phase 3 — CODEOWNERS Review & Merge (Steps 7–8):**
+  - **Step 7 (Multi-Party Peer Review):** CODEOWNERS, cloud platform architects, and FinOps review the HCL changes and plan output.
+  - **Step 8 (Merge to Main):** Once all branch protection rules and reviews pass, code is merged into the protected `main` branch.
+
+- **Phase 4 — Production Plan & Immutable Artifact Creation (Steps 9–10):**
+  - **Step 9 (Post-Merge Trigger):** Merging to `main` triggers the production deployment pipeline in the default branch context.
+  - **Step 10 (Saved Plan Binary):** Terraform runs `plan` against the latest state and writes the execution plan to an immutable binary artifact (`tfplan`), preventing execution drift and race conditions.
+
+- **Phase 5 — Canary Validation & Human Approval Gate (Steps 11–13):**
+  - **Step 11 (Automated Canary Deployment):** The pipeline deploys the plan first against the isolated `canary-*` management group hierarchy to validate policy inheritance and API responses.
+  - **Step 12 (Production Approval Gate):** Execution pauses at an environment protection gate (GitHub Environment, Azure DevOps Approval Check, or HCP Confirmation) requiring explicit operator sign-off.
+  - **Step 13 (Apply OIDC Token Exchange):** Upon sign-off, the pipeline exchanges a protected environment JWT (`environment:production`) for the privileged Entra ID Apply Identity.
+
+- **Phase 6 — Production Execution & Continuous Drift Health (Steps 14–15):**
+  - **Step 14 (Verbatim Plan Apply):** The Apply Identity acquires an exclusive state lock and applies the saved binary plan artifact verbatim against Azure.
+  - **Step 15 (Scheduled Drift Observability):** Automated recurring background pipelines run `terraform plan` on a schedule, dispatching telemetry metrics and raising GitHub issues upon detecting configuration drift.
+
 <details>
 <summary><strong>📊 Diagram: 2.9 Delivery: the lifecycle of a change</strong> <em>(click to expand)</em></summary>
 
@@ -600,6 +717,39 @@ flowchart LR
 - **Stacks replace the two root modules, not the modules:** the Stack wires the same two modules as components and adds the `canary` deployment.
 
 ### 2.11 Subscription vending: what one entry creates
+
+#### 🖼️ Architectural Infographic: Subscription Vending Architecture
+
+![Subscription Vending Architecture: Automated Provisioning in Azure Landing Zones](docs/assets/img/Cloud_Subscription_Vending_Architecture.png)
+
+**Detailed Architectural Breakdown & Provisioning Takeaways:**
+
+- **The Input Trigger (Declarative HCL Order Form):**
+  - Platform users or workload teams submit a pull request with a single map entry in `workloads.auto.tfvars`.
+  - Parameters specify: `archetype = corp`, `environment = prod`, target `region`, deterministic `spoke_index = 0`, `budget_amount = 4000`, `github_repository = "org/payments-api"`, and `owner_group_object_id`.
+
+- **Automated Vending & Governance Placement:**
+  - **Subscription Creation:** The engine provisions a dedicated subscription (`sub-payments-prod`) via Azure billing APIs (MCA / EA) and moves it into the target management group (`corp`).
+  - **Policy Inheritance:** The subscription immediately inherits baseline security policies from `alz`, `platform`, `landingzones`, and `corp` (denying public IPs and enforcing Private Endpoints).
+
+- **Standardized Resource Group Hierarchy:**
+  - `rg-network-payments-prod`: Platform-controlled resource group hosting the spoke VNet, route tables, and NSGs.
+  - `rg-identity-payments-prod`: Platform-controlled resource group hosting the User-Assigned Managed Identity and federated credential.
+  - `rg-app-payments-prod`: Application team-owned resource group where workload engineers deploy business PaaS/IaaS resources.
+
+- **Automated Networking, Routing & Security:**
+  - **Spoke Virtual Network:** Deterministically calculated from `spoke_index = 0` as `10.2.0.0/24` with subnets: `snet-app` (`10.2.0.0/25`), `snet-data` (`10.2.0.128/26`), and `snet-integration` (`10.2.0.192/27`).
+  - **Private Subnets by Default:** Subnets are configured with `defaultOutboundAccess = false` in compliance with 2026 security baselines.
+  - **Hub Peering & UDR:** Bilateral VNet peering connects the spoke to the regional hub. A User-Defined Route (`rt-payments-prod`) routes all outbound traffic (`0.0.0.0/0`) to the Azure Firewall private IP.
+  - **DNS Proxy:** Spoke VNet points to the regional hub firewall or Private DNS Resolver inbound IP for seamless private endpoint resolution.
+
+- **Access Control, FinOps & Secret-Less CI/CD:**
+  - **RBAC Scoping:** Contributor role on the subscription is assigned exclusively to the workload team Entra ID group (`owner_group_object_id`).
+  - **FinOps Budget Guardrails:** An automated Azure Budget (`budget-payments-prod-monthly`) is provisioned with alerts configured at 80% actual spend and 100% forecasted spend.
+  - **Workload Identity Federation:** User-Assigned Managed Identity (`id-payments-prod-deploy`) is created with a federated credential bound to the workload GitHub repository and environment (`repo:org/payments-api:environment:prod`), eliminating static secrets.
+
+- **Outputs & Team Handoff:**
+  - The pipeline outputs subscription ID, VNet resource IDs, subnet IDs, and the Managed Identity Client ID directly into the PR, enabling the application team to deploy their workload immediately.
 
 <details>
 <summary><strong>📊 Diagram: 2.11 Subscription vending: what one entry creates</strong> <em>(click to expand)</em></summary>
@@ -734,6 +884,36 @@ flowchart LR
 - **Service health:** ALZ policies deploy service health alert rules into a dedicated resource group, so platform and workload owners are notified of Azure incidents affecting their subscriptions.
 
 ### 2.14 Non-production: sandboxes, canary and corp-nonprod
+
+#### 🖼️ Architectural Infographic: The 3-Tier Non-Production Strategy
+
+![Testing Platform Evolution Safely: The 3-Tier Non-Prod Strategy in Azure Landing Zones](docs/assets/img/Three-Tier_Non-Production_Strategy_Diagram.png)
+
+**Detailed Architectural Breakdown & Non-Production Strategy Takeaways:**
+
+- **Tier 1: Sandbox Landing Zones (Isolated Experimentation):**
+  - **Purpose:** Free experimentation, developer training, hackathons, and unconstrained proofs-of-concept without access to corporate data.
+  - **Network Boundary:** Dedicated isolated address block within `10.15.0.0/16`. Peering to central regional hubs, Virtual WAN, or on-premises networks is strictly prohibited by policy.
+  - **Egress Architecture:** Local NAT Gateway or direct public IPs permitted for fast experimentation; zero connectivity to shared enterprise services.
+  - **Lifecycle Control:** Mandatory `expires_on` tag enforced by policy. Expired sandboxes are automatically flagged for deletion via a two-step automated cleanup workflow.
+  - **Guardrail Policy:** The `Enforce-ALZ-Sandbox` policy explicitly denies virtual network gateways to prevent unauthorized hybrid connections.
+
+- **Tier 2: Canary Platform Environment (Safe Framework Upgrades):**
+  - **Purpose:** Testing ALZ Library upgrades, Terraform provider version bumps, and Policy-as-Code changes with authentic policy inheritance before touching production.
+  - **Hierarchy Design:** Duplicates the management group tree under `canary-*` (`canary-platform`, `canary-landingzones`) in the same Microsoft Entra ID tenant.
+  - **Reduced Cost Hub:** Deploys a lightweight, single-region testing hub utilizing **Azure Firewall Basic**. Expensive multi-region ExpressRoute gateways, Azure Bastion, and DDoS Protection plans are intentionally disabled to keep running costs negligible.
+  - **Pipeline Role:** Acts as the initial automated deployment target for continuous delivery pipelines before production approval gates.
+
+- **Tier 3: Corp Non-Prod Landing Zones (Connected Workload Testing):**
+  - **Purpose:** Development, testing, and staging environments for business applications that require integration with corporate APIs, shared middleware, or on-premises databases.
+  - **Network Boundary:** Workloads receive `/24` spoke network allocations carved out of the dedicated `10.3.0.0/16` non-production regional block.
+  - **Hub Inspection:** Spoke VNets peer directly into the central regional hub or Virtual WAN, routing all egress traffic through the central Azure Firewall Premium for full packet inspection.
+  - **Security Baseline:** Managed under the `corp` management group archetype. Policies strictly deny public IPs (`Deny-Public-IP-On-NIC`) and enforce PaaS Private Endpoints, guaranteeing that non-production matches production security posture.
+
+- **Non-Production Strategy Comparison Matrix:**
+  - **Sandbox:** Management Group = `sandbox`; IP Block = `10.15.0.0/16`; Hub Peering = None; Egress = Local NAT Gateway; Public IPs = Allowed; Lifecycle = Automated tag expiration.
+  - **Canary Platform:** Management Group = `canary-*`; IP Block = Isolated testing range; Hub Peering = Reduced testing hub (Firewall Basic); Egress = Firewall Basic; Public IPs = Denied; Lifecycle = Permanent pipeline stage.
+  - **Corp Non-Prod:** Management Group = `corp` (env=nonprod); IP Block = `10.3.0.0/16`; Hub Peering = Connected to shared hub/vWAN; Egress = Central Firewall Premium; Public IPs = Denied; Lifecycle = Permanent workload subscription.
 
 <details>
 <summary><strong>📊 Diagram: 2.14 Non-production: sandboxes, canary and corp-nonprod</strong> <em>(click to expand)</em></summary>

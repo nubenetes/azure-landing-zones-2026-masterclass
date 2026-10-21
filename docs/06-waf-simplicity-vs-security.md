@@ -45,6 +45,22 @@ Every guardrail has a cost in complexity, money or developer friction. The table
 
 ## 2. Policy-as-Code lifecycle
 
+#### 🖼️ Architectural Infographic: Architecture & Governance Framework
+
+![2026 Azure Landing Zone Architecture & Governance Framework](assets/img/Cloud_Landing_Zone_Architecture_Framework.png)
+
+**Detailed Architectural Breakdown & Policy-as-Code Takeaways:**
+
+- **Hierarchy Structure & Archetype Boundaries:**
+  - **Intermediate Root (`alz`):** Sits directly below the Tenant Root Group, enforcing organization-wide baselines (Defender for Cloud, Azure Activity Log export, diagnostic logging, classic resource retirement, and allowed deployment regions).
+  - **Platform Management Groups:** Dedicated segregation into `identity`, `management`, `connectivity`, and the dedicated 2026 `security` archetype (SOC operations, telemetry exports, and Sentinel).
+  - **Workload Landing Zones:** Structural separation between internal corporate workloads (`corp`) and public internet endpoints (`online`).
+
+- **Policy-as-Code Phased Lifecycle (ALZ Library 2026):**
+  - **Phase 1: Audit Mode (`audit` / `DoNotEnforce`):** Deploys policies with `effect = Audit` or `enforcement_mode = DoNotEnforce`. Teams assess compliance gaps without deployment disruption.
+  - **Phase 2: Remediate Mode (`DeployIfNotExists` / `Modify`):** Activates auto-remediation policies. Automated tasks backfill missing diagnostic logs, deploy monitoring agents, and enforce encryption baselines.
+  - **Phase 3: Enforce Mode (`enforce` / `Deny`):** Flips guardrails to active enforcement. Non-compliant resource deployments are actively blocked at the ARM control plane before creation.
+
 <details>
 <summary><strong>📊 Diagram: 2. Policy-as-Code lifecycle</strong> <em>(click to expand)</em></summary>
 

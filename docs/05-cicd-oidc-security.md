@@ -20,6 +20,39 @@
 
 ## 1. Principles
 
+#### 🖼️ Architectural Infographic: Zero-Secret Delivery (15-Step OIDC Deployment Pipeline)
+
+![Zero-Secret Infrastructure Delivery: The 15-Step OIDC Deployment Pipeline](assets/img/15-Step_OIDC_Deployment_Pipeline.png)
+
+**Detailed Architectural Breakdown & Pipeline Lifecycle Takeaways:**
+
+- **Phase 1 — Pull Request & Static Code Validation (Steps 1–3):**
+  - **Step 1 (PR Initialization):** An engineer opens a pull request targeting the protected `main` branch to update platform modules, policies, or workload declarations.
+  - **Step 2 (CI Trigger):** The repository fires a pull request webhook, initiating parallel CI workflows across GitHub Actions, Azure DevOps, or HCP Terraform.
+  - **Step 3 (Offline Static Checks):** Formatting (`terraform fmt -check`), linting (`tflint`), OpenTofu validation, and Terraform Stacks static checks execute offline without connecting to cloud APIs.
+
+- **Phase 2 — Read-Only Speculative Plan via OIDC (Steps 4–6):**
+  - **Step 4 (Plan OIDC Token Exchange):** The runner presents a signed OIDC JWT with subject claim `repo:<org>/<repo>:pull_request` to Microsoft Entra ID, receiving a short-lived, unprivileged access token.
+  - **Step 5 (Speculative Plan Execution):** The Plan Identity (granted `Reader` on Management Groups and `Storage Blob Data Reader` on Terraform state) runs `terraform plan` without state locking.
+  - **Step 6 (PR Plan Feedback):** The plan output, resource delta, and cost estimates are posted directly back into the pull request review thread.
+
+- **Phase 3 — CODEOWNERS Review & Merge (Steps 7–8):**
+  - **Step 7 (Multi-Party Peer Review):** CODEOWNERS, cloud platform architects, and FinOps review the HCL changes and plan output.
+  - **Step 8 (Merge to Main):** Once all branch protection rules and reviews pass, code is merged into the protected `main` branch.
+
+- **Phase 4 — Production Plan & Immutable Artifact Creation (Steps 9–10):**
+  - **Step 9 (Post-Merge Trigger):** Merging to `main` triggers the production deployment pipeline in the default branch context.
+  - **Step 10 (Saved Plan Binary):** Terraform runs `plan` against the latest state and writes the execution plan to an immutable binary artifact (`tfplan`), preventing execution drift and race conditions.
+
+- **Phase 5 — Canary Validation & Human Approval Gate (Steps 11–13):**
+  - **Step 11 (Automated Canary Deployment):** The pipeline deploys the plan first against the isolated `canary-*` management group hierarchy to validate policy inheritance and API responses.
+  - **Step 12 (Production Approval Gate):** Execution pauses at an environment protection gate (GitHub Environment, Azure DevOps Approval Check, or HCP Confirmation) requiring explicit operator sign-off.
+  - **Step 13 (Apply OIDC Token Exchange):** Upon sign-off, the pipeline exchanges a protected environment JWT (`environment:production`) for the privileged Entra ID Apply Identity.
+
+- **Phase 6 — Production Execution & Continuous Drift Health (Steps 14–15):**
+  - **Step 14 (Verbatim Plan Apply):** The Apply Identity acquires an exclusive state lock and applies the saved binary plan artifact verbatim against Azure.
+  - **Step 15 (Scheduled Drift Observability):** Automated recurring background pipelines run `terraform plan` on a schedule, dispatching telemetry metrics and raising GitHub issues upon detecting configuration drift.
+
 1. **No static secrets.** Every pipeline authenticates to Azure with **Workload Identity Federation (OIDC)**: a short-lived token from the CI platform is exchanged for an Entra ID access token. There is no client secret or certificate to leak, rotate or expire.
 2. **Two identities, two trust boundaries.** A read-only *plan* identity for pull requests and drift detection; a privileged *apply* identity reachable **only** from a protected environment with human approval.
 3. **The pipeline is part of the platform's attack surface.** Workflows, CODEOWNERS and action versions are reviewed like policy.

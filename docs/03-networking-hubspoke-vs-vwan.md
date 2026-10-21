@@ -21,6 +21,33 @@
 
 ## 1. The two supported topologies
 
+#### 🖼️ Architectural Infographic: Hub-and-Spoke vs. Virtual WAN Reference Architecture
+
+![Azure Landing Zone Networking: Hub-and-Spoke vs. Azure Virtual WAN Reference Architecture](assets/img/Cloud_Landing_Zone_Networking_Architecture.png)
+
+**Detailed Architectural Breakdown & Network Sizing Takeaways:**
+
+- **Topology Trade-Offs: Customer-Managed vs. Microsoft-Managed:**
+  - **Customer-Managed Hub-and-Spoke:**
+    - *Core Fabric:* Regional customer-managed hub VNets hosting Azure Firewall Premium, GatewaySubnet (ExpressRoute / VPN), Azure Bastion, and Private DNS Resolvers.
+    - *Routing Mechanics:* Explicit User-Defined Routes (UDRs) deployed to spoke subnets forcing all egress traffic (`0.0.0.0/0`) through the central firewall private IP. Spoke VNets peer bilaterally with the hub (`allow_gateway_transit = true` on hub, `use_remote_gateways = true` on spokes).
+    - *Optimal Scale:* Ideal for enterprises with fewer than 50 spoke VNets, single or dual-region deployments, or complex third-party Next-Generation Firewall (NVA) clustering requirements.
+  - **Microsoft-Managed Azure Virtual WAN (vWAN):**
+    - *Core Fabric:* Microsoft-orchestrated Virtual Hubs (`vHubs`) delivering an automated, scalable software-defined transit mesh.
+    - *Routing Mechanics:* Declarative Routing Intent policies configure automated transit, routing `InternetTraffic` and `PrivateTraffic` directly through integrated secured hub firewalls, eliminating hundreds of individual UDR route tables.
+    - *Optimal Scale:* Engineered for large global enterprises with 50+ spoke VNets, 3 or more cloud regions, extensive branch connectivity (SD-WAN / IPsec), and automated transitive routing demands.
+
+- **PaaS Security & Centralized Private DNS Integration:**
+  - **Private Endpoints by Default:** Workload PaaS services (Azure Storage, Key Vault, Azure SQL) connect exclusively via Private Endpoints in spoke subnets with private RFC 1918 IPs.
+  - **Centralized Private DNS Zones:** All private DNS zones (`privatelink.blob.core.windows.net`, `privatelink.vaultcore.azure.net`, etc.) reside in the Connectivity subscription.
+  - **Private DNS Resolver:** Inbound endpoints receive DNS queries forwarded from on-premises; outbound rulesets resolve corporate DNS zones from cloud workloads, preventing split-brain DNS resolution.
+
+- **Hierarchical Deterministic IPAM Allocation:**
+  - **Root Cloud Block:** `/8` allocation reserved for global cloud enterprise networking.
+  - **Regional Partitioning:** `/12` blocks assigned per cloud region (e.g. Primary vs Secondary).
+  - **Archetype Segmentation:** `/16` blocks assigned cleanly by archetype (`10.2.0.0/16` Corp Prod, `10.3.0.0/16` Corp NonProd, `10.4.0.0/16` Online Prod, `10.15.0.0/16` Sandbox).
+  - **Workload Spoke Slices:** Standardized `/24` subnets (providing up to 256 unique spoke VNets per `/16` block) split into `/25` App, `/26` Data, and `/27` Integration subnets with `defaultOutboundAccess = false`.
+
 Both are first-class in the ALZ accelerator and in this repository; you switch with one variable:
 
 ```hcl
@@ -265,6 +292,31 @@ Key properties:
 ---
 
 ## 5. Sandboxes, canary and non-production environments in hub-and-spoke
+
+#### 🖼️ Architectural Infographic: The 3-Tier Non-Production Strategy
+
+![Testing Platform Evolution Safely: The 3-Tier Non-Prod Strategy in Azure Landing Zones](assets/img/Three-Tier_Non-Production_Strategy_Diagram.png)
+
+**Detailed Architectural Breakdown & Non-Production Strategy Takeaways:**
+
+- **Tier 1: Sandbox Landing Zones (Isolated Experimentation):**
+  - **Purpose:** Free experimentation, developer training, hackathons, and unconstrained proofs-of-concept without access to corporate data.
+  - **Network Boundary:** Dedicated isolated address block within `10.15.0.0/16`. Peering to central regional hubs, Virtual WAN, or on-premises networks is strictly prohibited by policy.
+  - **Egress Architecture:** Local NAT Gateway or direct public IPs permitted for fast experimentation; zero connectivity to shared enterprise services.
+  - **Lifecycle Control:** Mandatory `expires_on` tag enforced by policy. Expired sandboxes are automatically flagged for deletion via a two-step automated cleanup workflow.
+  - **Guardrail Policy:** The `Enforce-ALZ-Sandbox` policy explicitly denies virtual network gateways to prevent unauthorized hybrid connections.
+
+- **Tier 2: Canary Platform Environment (Safe Framework Upgrades):**
+  - **Purpose:** Testing ALZ Library upgrades, Terraform provider version bumps, and Policy-as-Code changes with authentic policy inheritance before touching production.
+  - **Hierarchy Design:** Duplicates the management group tree under `canary-*` (`canary-platform`, `canary-landingzones`) in the same Microsoft Entra ID tenant.
+  - **Reduced Cost Hub:** Deploys a lightweight, single-region testing hub utilizing **Azure Firewall Basic**. Expensive multi-region ExpressRoute gateways, Azure Bastion, and DDoS Protection plans are intentionally disabled to keep running costs negligible.
+  - **Pipeline Role:** Acts as the initial automated deployment target for continuous delivery pipelines before production approval gates.
+
+- **Tier 3: Corp Non-Prod Landing Zones (Connected Workload Testing):**
+  - **Purpose:** Development, testing, and staging environments for business applications that require integration with corporate APIs, shared middleware, or on-premises databases.
+  - **Network Boundary:** Workloads receive `/24` spoke network allocations carved out of the dedicated `10.3.0.0/16` non-production regional block.
+  - **Hub Inspection:** Spoke VNets peer directly into the central regional hub or Virtual WAN, routing all egress traffic through the central Azure Firewall Premium for full packet inspection.
+  - **Security Baseline:** Managed under the `corp` management group archetype. Policies strictly deny public IPs (`Deny-Public-IP-On-NIC`) and enforce PaaS Private Endpoints, guaranteeing that non-production matches production security posture.
 
 > [!IMPORTANT]
 > **There is no "sandbox hub".** Sandboxes are never attached to the connectivity hub: each sandbox is its own isolated subscription, and there can be as many as needed. Testing *platform* changes (hub, firewall, policy) is the job of the **canary** environment, and non-production workloads that need hybrid connectivity are **`corp` non-production landing zones** on the shared hub - not sandboxes.
