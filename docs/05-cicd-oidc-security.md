@@ -10,8 +10,11 @@
 
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Day 0 to Day 2: Zero-Secret CI/CD Pipelines with GitHub Actions & OIDC**](https://www.youtube.com/watch?v=IcH7LalL5cc) (`5:52`, 🇬🇧 English CC 20+) — *Deep dive into zero-secret pipelines, Workload Identity Federation, ABAC-conditioned Owner roles, and plan vs. apply boundaries.*
+> - 📽️ [**Azure Landing Zones 2026 4**](https://www.youtube.com/watch?v=mZ944GFanYc) (`6:19`, 🇬🇧 English CC 20+) — *Deep dive into automated 2026 landing zone frameworks, credential elimination, least privilege, and rapid workload onboarding.*
 > - ⚡ [**How Workload Identity Federation Replaces Stored Secrets**](https://www.youtube.com/shorts/0mdEib04nTw) (`1:16`, 🇬🇧 English CC 20+) — *Architecture short on eliminating long-lived client secrets in GitHub Actions pipelines using OpenID Connect (OIDC) and Entra ID.*
 > - ⚡ [**How OIDC Eradicates Pipeline Secrets**](https://www.youtube.com/shorts/-iBnp37YS3k) (`1:18`, 🇬🇧 English CC 20+) — *Architecture short on short-lived cryptographic JWT token exchange with Entra ID to contain repository compromise blast radiuses.*
+> - ⚡ [**How Secretless Azure Deployments Work**](https://www.youtube.com/shorts/dn29uxmC7NM) (`1:20`, 🇬🇧 English CC 20+) — *Architecture short on eliminating static secrets in CI/CD pipelines using Workload Identity Federation.*
+> - ⚡ [**How Secretless Azure Deployments Work 1**](https://www.youtube.com/shorts/QF24DXGSTgg) (`1:19`, 🇬🇧 English CC 20+) — *Architecture short on isolating pull request plan tokens to read-only claims before merging to environment-gated branches.*
 
 ---
 

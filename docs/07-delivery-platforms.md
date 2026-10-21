@@ -12,6 +12,8 @@
 > - 📽️ [**Day 0 to Day 2: Zero-Secret CI/CD Pipelines with GitHub Actions & OIDC**](https://www.youtube.com/watch?v=IcH7LalL5cc) (`5:52`, 🇬🇧 English CC 20+) — *Deep dive into zero-secret pipelines, Workload Identity Federation, ABAC-conditioned Owner roles, and multi-platform delivery.*
 > - ⚡ [**How Workload Identity Federation Replaces Stored Secrets**](https://www.youtube.com/shorts/0mdEib04nTw) (`1:16`, 🇬🇧 English CC 20+) — *Architecture short on eliminating long-lived client secrets in CI/CD delivery platforms using OpenID Connect (OIDC) and Entra ID.*
 > - ⚡ [**How OIDC Eradicates Pipeline Secrets**](https://www.youtube.com/shorts/-iBnp37YS3k) (`1:18`, 🇬🇧 English CC 20+) — *Architecture short on short-lived cryptographic JWT token exchange with Entra ID to contain repository compromise blast radiuses.*
+> - ⚡ [**Why App Branching Breaks Azure Landing Zones**](https://www.youtube.com/shorts/QuIJJDU70fk) (`1:26`, 🇬🇧 English CC 20+) — *Architecture short on why standard app development branching models cause catastrophic state drift in landing zone IaC.*
+> - ⚡ [**How to Build a Canary Hub**](https://www.youtube.com/shorts/jSKGE-2jlhI) (`1:22`, 🇬🇧 English CC 20+) — *Architecture short on building a cost-effective canary hub with Terraform Stacks and Firewall Basic to test routing intent.*
 
 ---
 

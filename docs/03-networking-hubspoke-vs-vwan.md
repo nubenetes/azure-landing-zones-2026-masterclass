@@ -15,6 +15,7 @@
 > - ⚡ [**How Azure Canaries Prevent Cloud Outages**](https://www.youtube.com/shorts/0mDvTs3aO2I) (`0:59`, 🇬🇧 English CC 20+) — *Architecture short on deploying parallel canary- management groups to test security baselines with real policy inheritance.*
 > - ⚡ [**Where to Put Test Workloads in Azure**](https://www.youtube.com/shorts/sj7JF4KIKPo) (`1:11`, 🇬🇧 English CC 20+) — *Architecture short on splitting non-production into sandboxes, canary hierarchies, and corp-nonprod landing zones.*
 > - ⚡ [**How Azure Canary Hubs Test Routing Affordably**](https://www.youtube.com/shorts/Sb3G1tMJaQQ) (`1:18`, 🇬🇧 English CC 20+) — *Architecture short on deploying a cost-optimized canary hub with Firewall Basic to test routing without duplicate hardware costs.*
+> - ⚡ [**How to Build a Canary Hub**](https://www.youtube.com/shorts/jSKGE-2jlhI) (`1:22`, 🇬🇧 English CC 20+) — *Architecture short on building a cost-effective canary hub with Terraform Stacks and Firewall Basic to test routing intent.*
 
 ---
 

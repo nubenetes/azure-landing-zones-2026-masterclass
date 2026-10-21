@@ -11,6 +11,7 @@
 > 🎥 **Multimedia Sessions & Video Guides**:
 > - 📽️ [**Azure Management Groups & Governance: Core Engine Architecture**](https://www.youtube.com/watch?v=xh84QXkuYm8) (`8:41`, 🇬🇧 English CC 20+) — *Management group hierarchy, Policy-as-Code lifecycle (Audit -> Remediate -> Enforce), and Well-Architected Framework guardrails.*
 > - ⚡ [**How Phased Policy as Code Works**](https://www.youtube.com/shorts/bh9-IuX7Qb0) (`1:15`, 🇬🇧 English CC 20+) — *Architecture short on the 3-stage Policy-as-Code promotion model (Audit -> Remediate -> Enforce) to prevent brownfield outages.*
+> - ⚡ [**How Azure Tests Policies Without Dev Branches**](https://www.youtube.com/shorts/4vuevTKihJk) (`1:22`, 🇬🇧 English CC 20+) — *Architecture short on canary management group hierarchies preventing cloud outages by testing policy guardrails safely.*
 
 ---
 

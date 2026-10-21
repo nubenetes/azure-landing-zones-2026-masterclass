@@ -8,11 +8,16 @@
 
 > 🧭 **Navigation**: [🏠 Masterclass Portal](../README.md) | [⬅️ Previous: 01. Conceptual Architecture](01-architecture-conceptual.md) | [➡️ Next: 03. Network Topology](03-networking-hubspoke-vs-vwan.md)
 
-> 🎥 **Multimedia Sessions & Video Guides**:
+> 🎥 **Multimedia Sessions, Podcasts & Video Guides**:
+> - 🎙️ [**Azure Verified Modules Replace Monolithic Architectures**](https://www.youtube.com/watch?v=5Z-TFcl8uGs) (`38:28`, 🇬🇧 English CC 20+) — *Masterclass analyzing the retirement of the CAF monolith, composable AVM pattern modules, and AzAPI schema validation.*
 > - 📽️ [**Retiring the CAF Monolith: Azure Verified Modules (AVM) & ALZ Library**](https://www.youtube.com/watch?v=BNEGxzQgDB8) (`7:59`, 🇬🇧 English CC 20+) — *Technical breakdown on retiring legacy monolithic CAF modules for Azure Verified Modules (AVM) and ALZ Library.*
 > - 📽️ [**ALZ 2026 Masterclass: Modular Architecture & AVM Rebuild**](https://www.youtube.com/watch?v=HjLte2SGCk0) (`6:49`, 🇬🇧 English CC 20+) — *Navigating 2026/2027 deprecation milestones (CAF monolith, Blueprints, Bicep classic) and building with AVM and AzAPI.*
 > - ⚡ [**Why Azure is Killing the Landing Zone Monolith**](https://www.youtube.com/shorts/7S6HDnZXQhI) (`1:09`, 🇬🇧 English CC 20+) — *Architecture short on why Microsoft archived monolithic CAF modules in favor of composable AVM pattern modules.*
 > - ⚡ [**Why Microsoft Killed the Azure Landing Zone Monolith**](https://www.youtube.com/shorts/bB2fs8A28RI) (`1:26`, 🇬🇧 English CC 20+) — *Architecture short on escaping monolithic state file bottlenecks and adopting single-purpose AVM building blocks.*
+> - ⚡ [**Why Azure Platform Teams Choose AzAPI Complexity**](https://www.youtube.com/shorts/ptetbW0C0P8) (`1:06`, 🇬🇧 English CC 20+) — *Architecture short on why platform teams choose AzAPI REST complexity over AzureRM abstraction for day-zero capabilities.*
+> - ⚡ [**How AVM and AzAPI Beat AzureRM Updates**](https://www.youtube.com/shorts/Q2fhHPqJnKk) (`1:08`, 🇬🇧 English CC 20+) — *Architecture short on eliminating upstream provider delays using Azure Verified Modules and direct ARM APIs.*
+> - ⚡ [**How AzAPI Enables Day Zero Deployments**](https://www.youtube.com/shorts/O_Mfirh5xqM) (`1:06`, 🇬🇧 English CC 20+) — *Architecture short on deploying brand new cloud features the exact day Microsoft launches them using AzAPI.*
+> - ⚡ [**How AzAPI Unlocks Day Zero Azure Features**](https://www.youtube.com/shorts/YWNUZfYelIM) (`1:16`, 🇬🇧 English CC 20+) — *Architecture short on unlocking cutting-edge ARM properties directly inside AVM modules.*
 
 ---
 
