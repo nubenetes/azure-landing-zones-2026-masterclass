@@ -46,7 +46,7 @@ module "connectivity_resource_groups" {
 #------------------------------------------------------------------------------
 module "management" {
   source  = "Azure/avm-ptn-alz-management/azurerm"
-  version = "0.9.0"
+  version = "0.10.0"
 
   location                        = local.primary_location
   resource_group_name             = local.management_rg_name
