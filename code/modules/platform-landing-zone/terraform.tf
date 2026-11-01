@@ -37,7 +37,7 @@ terraform {
     }
     azurerm = {
       source                = "hashicorp/azurerm"
-      version               = "~> 4.35"
+      version               = "~> 5.11"
       configuration_aliases = [azurerm.connectivity]
     }
     modtm = {
