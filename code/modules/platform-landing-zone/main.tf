@@ -190,7 +190,7 @@ module "hub_and_spoke" {
 #------------------------------------------------------------------------------
 module "virtual_wan" {
   source  = "Azure/avm-ptn-alz-connectivity-virtual-wan/azurerm"
-  version = "0.18.0"
+  version = "0.18.1"
   count   = local.virtual_wan_enabled ? 1 : 0
 
   virtual_wan_settings = merge(
