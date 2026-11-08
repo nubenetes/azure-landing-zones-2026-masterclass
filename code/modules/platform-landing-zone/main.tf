@@ -86,7 +86,7 @@ module "management" {
 #------------------------------------------------------------------------------
 module "hub_and_spoke" {
   source  = "Azure/avm-ptn-alz-connectivity-hub-and-spoke-vnet/azurerm"
-  version = "0.17.7"
+  version = "0.18.1"
   count   = local.hub_and_spoke_enabled ? 1 : 0
 
   # Merging the RG module outputs creates an implicit dependency edge while
