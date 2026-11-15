@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------------
 module "connectivity_resource_groups" {
   source   = "Azure/avm-res-resources-resourcegroup/azurerm"
-  version  = "0.4.0"
+  version  = "0.5.0"
   for_each = local.connectivity_resource_groups
 
   name             = each.value.name
